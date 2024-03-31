@@ -2,9 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Nav from './components/Nav';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Footer from './components/Footer';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <App />
+    <div>
+        <Nav/>
+        <App/>
+        <Footer/>
+    </div>
 );
 
