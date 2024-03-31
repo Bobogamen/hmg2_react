@@ -1,0 +1,17 @@
+.footer {
+      margin: auto;
+      display: block;
+      text-align: center;
+      font-size: larger;
+      font-weight: bold;
+      width: 98%;
+      background-color: whitesmoke;
+      border-color: gray;
+      border-style: outset;
+      border-width: 0.2rem;
+      border-radius: 0.3rem;
+}
+
+@media screen {
+      
+}

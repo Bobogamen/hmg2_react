@@ -1,0 +1,6 @@
+.notification {
+      position: fixed;
+      font-size: 0.9rem;
+      top: 5%;
+      left: 50%;
+  }
