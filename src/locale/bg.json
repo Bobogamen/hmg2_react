@@ -1,6 +1,24 @@
 {
-      "home_manager": "Домоуправител",
-      "register": "Регистрация",
-      "login": "Вход",
-      "logout": "Изход"
+      "Home manager": "Домоуправител",
+      "Register": "Регистрация",
+      "Login": "Вход",
+      "Logout": "Изход",
+      "Forgot password": "Забравена парола",
+      "Remember me": "Запомни ме",
+      "Profile": "Профил",
+
+      "password": "парола",
+
+      "Admin": "Админ",
+      "Manager": "Управление",
+      "Finance": "Финанси",
+      "Repairs": "Ремонти",
+      "Statistic": "Статистика",
+      "Cashier": "Касиер",
+
+      "Change name": "Промяна име",
+      "Change password": "Промяна парола",
+      "Info": "Информация",
+
+      "Select": "Избери"
 }

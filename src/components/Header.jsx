@@ -1,85 +1,110 @@
-import React, { useEffect, useState } from 'react';
-import '../Navbar.css'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import '../Navbar.css';
 import logo from '../assets/images/app/logo.png';
+import bg from '../assets/images/lang/bg.png';
+import eng from '../assets/images/lang/eng.png';
+import { useTranslation } from 'react-i18next';
+import AuthorizationButtons from './AuthorizationButtons';
+import { Link } from 'react-router-dom';
 
 function Header() {
   const [authenticated, setAuthenticated] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
+  const [showAuthorizationButtons, setShowAuthorizationButtons] = useState(false);
+  const { t, i18n } = useTranslation();
+  const languageImage = i18n.language === 'bg' ? eng : bg;
+  const menuRef = useRef(null);
 
   useEffect(() => {
     setAuthenticated(true);
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+
   }, []);
 
+  const handleClickOutside = (event) => {
+    if ((menuRef.current && !menuRef.current.contains(event.target)) || event.target.className === 'authorization-button') {
+      setShowAuthorizationButtons(false);
+    }
+  };
+
   const loginFormHandler = () => {
-    setShowLogin(!showLogin)
-  }
+    setShowLogin(!showLogin);
+  };
 
-  const profileHandler = () => {
-    setShowProfile(!showProfile)
-  }
+  const authorizationButtonsHandler = () => {
+    setShowAuthorizationButtons(!showAuthorizationButtons);
+  };
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem('selectedLanguage', lng);
+  };
 
   return (
-    <nav className="nav-bar">
-      <div>
+    <nav>
+      <div className="d-flex">
         <a href="/">
           <img src={logo} alt="logo" className="logo" />
         </a>
+        <img
+          src={languageImage}
+          alt={i18n.language}
+          className="i18-img m-auto ms-1"
+          onClick={() => changeLanguage(i18n.language === 'bg' ? 'eng' : 'bg')}
+        />
       </div>
-      {authenticated ? (
+      {authenticated && (
         <>
-          <div className="menu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div className="justify-content-between m-auto">
-            <Link to="/admin"><button className="authorization-button">Admin</button></Link>
-            <Link to="/manager"><button className="authorization-button">Manager</button></Link>
-            <Link to="/finance"><button className="authorization-button">Finance</button></Link>
-            <Link to="/repair"><button className="authorization-button">Repair</button></Link>
-            <Link to="/statistic"><button className="authorization-button">Statistic</button></Link>
-            <Link to="/cashier"><button className="authorization-button">Cashier</button></Link>
-          </div>
-          <div className="m-auto me-0">
-            <button className="profile-button dropdown-toggle" onClick={profileHandler}>Profile</button>
-            {showProfile && (
-              <div className="profile-menu">
-                  <div className="fs-6 my-1 p-1">Change name</div>
-                  <div className="fs-6 mb-1 p-1">Change password</div>
-                  <div className="fs-6 mb-1 p-1">Info</div>
-              </div>
-            )}
-            <button className="authentication-button">Logout</button>
+          {window.innerWidth > 1089 ? (
+            <AuthorizationButtons privileges={'Admin'} />
+          ) : (
+            <div ref={menuRef} className="menu m-auto">
+              <button className="profile-button dropdown-toggle" onClick={authorizationButtonsHandler}>
+                {t('Select')}
+              </button>
+              {showAuthorizationButtons && <AuthorizationButtons privileges={'Admin'} />}
+            </div>
+          )}
+          
+          <div id="profile" className="m-auto me-0">
+            <Link to="/profile"><button className="profile-button">{t('Profile')}</button></Link>
+            <button className="authentication-button">{t('Logout')}</button>
           </div>
         </>
-      ) : (
+      )}
+      {!authenticated && (
         <>
           <div className="m-auto">
             <a href="/register">
-              <button className="authentication-button">Register</button>
+              <button className="authentication-button">{t('Register')}</button>
             </a>
           </div>
           <div className="my-auto">
-            <button className="authentication-button dropdown-toggle" onClick={loginFormHandler}>Login</button>
+            <button className="authentication-button dropdown-toggle" onClick={loginFormHandler}>
+              {t('Login')}
+            </button>
             {showLogin && (
               <div className="login-form">
                 <div className="p-2">
                   <form>
                     <input type="text" placeholder="email" name="username" id="username" className="my-3" />
-                    <input type="password" placeholder="password" name="password" id="password" className="" />
+                    <input type="password" placeholder={t('password')} name="password" id="password" className="" />
                     <div className="mt-3">
-                      <input type="checkbox" name="remember-me" id="remember-me" className="w-auto mx-2" style={{ transform: 'scale(1.2)' }} />
-                      <span>Remember me</span>
-                      <button type="submit" className="authentication-button">Login</button>
+                      <input type="checkbox" name="remember-me" id="remember-me" className="w-auto mx-2" style={{ transform: 'scale(1.2)' }}/>
+                      <span>{t('Remember me')}</span>
+                      <button type="submit" className="authentication-button">
+                        {t('Login')}
+                      </button>
                     </div>
                   </form>
                 </div>
                 <div className="mt-1 pb-3">
-                  <a href="/forgot-password" className="btn btn-sm btn-secondary"
-                    style={{ fontSize: '0.7rem' }}>Forgot password?</a>
+                  <a href="/forgot-password" className="btn btn-sm btn-secondary" style={{ fontSize: '0.7rem' }}>
+                    {t('Forgot password')}?
+                  </a>
                 </div>
               </div>
             )}
@@ -89,4 +114,5 @@ function Header() {
     </nav>
   );
 }
+
 export default Header;

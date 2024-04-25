@@ -6,12 +6,12 @@
       font-weight: bold;
       width: 98%;
       background-color: whitesmoke;
-      border-color: gray;
-      border-style: outset;
-      border-width: 0.2rem;
+      border: 0.2rem outset gray;
       border-radius: 0.3rem;
 }
 
-@media screen {
-      
+@media screen and (max-width: 1090px) {
+      .footer {
+            font-size: smaller;
+      }
 }
