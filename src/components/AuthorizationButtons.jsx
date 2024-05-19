@@ -3,10 +3,8 @@ import '../Navbar.css'
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-function AuthorizationButtons(priveleges) {
+const AuthorizationButtons = (priveleges) => {
       const { t } = useTranslation();
-
-
 
       return (
             <div id="main-buttons" className="justify-content-between m-auto">

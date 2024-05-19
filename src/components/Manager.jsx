@@ -1,6 +1,6 @@
 import React from "react";
 
-function Manager() {
+const Manager = () => {
 
       return (
             <>

@@ -1,6 +1,6 @@
 import React from "react";
 
-function Statistic() {
+const Statistic = () => {
 
       return (
             <>

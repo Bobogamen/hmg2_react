@@ -1,6 +1,6 @@
 import React from "react";
 
-function Repair() {
+const Repair = () => {
 
       return (
             <>

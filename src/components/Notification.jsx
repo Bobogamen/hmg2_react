@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../Notification.css'
 
-function Notification() {
+const Notification = () => {
       const [success, setSuccess] = useState(false);
       const [fail, setFail] = useState(false);
 
@@ -13,10 +13,10 @@ function Notification() {
       return (
             <section className="notification">
                   {success ?
-                        <p id="fail" className="bg-success text-light rounded p-1 px-1">Successfull</p>
+                        <p id="fail" className="bg-success text-light rounded mb-1 px-1">Successfull</p>
                         : null}
                   {fail ?
-                        <p id="success" className="bg-danger text-light rounded p-1 px-1">Fail</p>
+                        <p id="success" className="bg-danger text-light rounded mb-1 px-1">Fail</p>
                         : null}
             </section>
       )

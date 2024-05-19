@@ -5,9 +5,9 @@ nav {
       background-color: #00e3ae;
       border: 0.2em solid gray;
       border-radius: 0.3em;
-      position: sticky;
       top: 0;
       font-size: smaller;
+      z-index: 1;
 }
 
 nav #menu {
@@ -78,6 +78,7 @@ button:hover {
       border: 0.2em inset gray;
       border-radius: 0.3em;
       padding: 0.2em 0.8em 0.2em 0.8em;
+      z-index: 1;
 }
 
 .login-form input {

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import AuthorizationButtons from './AuthorizationButtons';
 import { Link } from 'react-router-dom';
 
-function Header() {
+const Header = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showAuthorizationButtons, setShowAuthorizationButtons] = useState(false);
@@ -16,7 +16,7 @@ function Header() {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    setAuthenticated(true);
+    setAuthenticated(false);
     document.addEventListener('click', handleClickOutside);
     return () => {
       document.removeEventListener('click', handleClickOutside);
@@ -90,7 +90,7 @@ function Header() {
               <div className="login-form">
                 <div className="p-2">
                   <form>
-                    <input type="text" placeholder="email" name="username" id="username" className="my-3" />
+                    <input type="text" placeholder="email" name="email" id="email" className="my-3" />
                     <input type="password" placeholder={t('password')} name="password" id="password" className="" />
                     <div className="mt-3">
                       <input type="checkbox" name="remember-me" id="remember-me" className="w-auto mx-2" style={{ transform: 'scale(1.2)' }}/>
