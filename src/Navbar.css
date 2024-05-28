@@ -16,6 +16,7 @@ nav #menu {
 
 .menu {
       display: none;
+      z-index: 1;
 }
 
 .logo {
@@ -30,7 +31,7 @@ nav #menu {
 }
 
 .authorization-button {
-      background-color: #00ffc3;
+      background-color: #00b288;
       border: 0.2em inset gray;
       border-radius: 0.3em;
       padding: 0.2em 0.8em 0.2em 0.8em;

@@ -9,7 +9,7 @@ const AuthorizationButtons = (priveleges) => {
       return (
             <div id="main-buttons" className="justify-content-between m-auto">
                   <Link to="/admin"><button className="authorization-button">{t('Admin')}</button></Link>
-                  <Link to="/manager"><button className="authorization-button">{t('Manager')}</button></Link>
+                  <Link to="/management"><button className="authorization-button">{t('Management')}</button></Link>
                   <Link to="/finance"><button className="authorization-button">{t('Finance')}</button></Link>
                   <Link to="/repair"><button className="authorization-button">{t('Repairs')}</button></Link>
                   <Link to="/statistic"><button className="authorization-button">{t('Statistic')}</button></Link>

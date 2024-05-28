@@ -29,7 +29,7 @@
 }
 
 .aside div {
-    height: 13em;
+    height: 12em;
 }
 
 .middle {
@@ -52,6 +52,10 @@
         display: grid;
         gap: 0.3em;
         grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    .aside div {
+        height: 15em;
     }
 
     .card {

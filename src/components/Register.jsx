@@ -11,20 +11,20 @@ const Register = () => {
                         <div>
                               <form className="registrationForm">
                                     <div>
-                                          <input type="text" placeholder={t('Name')} name="name" id="name" className="" />
-                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Text</small>
+                                          <input type="text" placeholder={t('Name')} name="name" id="name" />
+                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Validation text</small>
                                     </div>
                                     <div>
-                                          <input type="text" placeholder="Email" name="email" id="email" className="" />
-                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Text</small>
+                                          <input type="text" placeholder="Email" name="email" id="email" />
+                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Validation text</small>
                                     </div>
                                     <div>
-                                          <input type="password" placeholder={t('password')} name="password" id="password" className="" />
-                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Text</small>
+                                          <input type="password" placeholder={t('password')} name="password" id="password" />
+                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Validation text</small>
                                     </div>
                                     <div>
-                                          <input type="password" placeholder={`${t('Confirm')} ${t('password')}`} name="comfirmPassword" id="comfirmPassword" className="" />
-                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Text</small>
+                                          <input type="password" placeholder={`${t('Confirm')} ${t('password')}`} name="comfirmPassword" id="comfirmPassword" />
+                                          <small className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">Validation text</small>
                                     </div>
                                     <button type="submit" className="authentication-button mt-3">
                                           {t('Register')}

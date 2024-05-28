@@ -1,0 +1,77 @@
+.management {
+      display: grid;
+      row-gap: 2em;
+      grid-template-rows: 1fr;
+      place-items: center;
+}
+
+.management ul {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+      margin: 0;
+      padding: 0;
+      gap: 1em;
+      justify-content: space-evenly;
+}
+
+.management ul li {
+      list-style-type: none;
+      display: grid;
+      max-width: 18em;
+      place-items: center;
+      padding: 0.6em 0.6em 0.4em 0.6em;
+      border: 0.2em outset #0e1111;
+      border-radius: 0.5em;
+      grid-template-rows: 1fr;
+      font-weight: bold;
+      cursor: pointer;
+}
+
+.management ul li span {
+      display: grid;
+      place-items: center;
+      margin-top: 0.5em;
+      border: 0.2em solid whitesmoke;
+      border-radius: 0.3em;
+      background-color: whitesmoke;
+      grid-template-rows: 1fr;
+      font-weight: bold;
+}
+
+.warning-card {
+      position: absolute;
+      background-color: #D4F3EEFF;
+      width: 18em;
+      border: solid black 0.12em;
+      border-radius: 0.7em;
+      z-index: 10;
+}
+
+.warning-card span {
+      display: grid;
+      grid-template-rows: repeat(3, auto);
+      text-align: center;
+      font-size: small;
+      overflow: hidden;
+}
+
+label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
+      font-weight: bold;
+}
+
+label span {
+      font-size: 1.5em;
+}
+
+input {
+      width: 16em;
+}
+
+select {
+      width: 16em;
+}

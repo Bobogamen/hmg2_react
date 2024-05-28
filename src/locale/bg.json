@@ -1,4 +1,5 @@
 {
+      "All rights reserved.": "Всички права са запазени.",
       "Home manager": "Домоуправител",
       "Register": "Регистрация",
       "Login": "Вход",
@@ -26,7 +27,7 @@
       "Send": "Изпрати",
 
       "Admin": "Админ",
-      "Manager": "Управление",
+      "Management": "Управление",
       "Finance": "Финанси",
       "Repairs": "Ремонти",
       "Cashier": "Касиер",
@@ -35,5 +36,32 @@
       "Change password": "Промяна парола",
       "Info": "Информация",
 
-      "Select": "Избери"
+      "Select": "Избери",
+      "Add": "Добави",
+      "Create": "Създай",
+      "group": "група",
+      "Number": "Брой",
+      "apartments": "апартаменти",
+      "homes": "домове",
+      "type": "вид",
+      "initial date": "начална дата",
+      "background": "фон",
+      "color": "цвят",
+      "month": "месец",
+      "year": "година",
+
+      "WARNING!": "ВНИМАНИЕ!", 
+      "After creation,": "След създаване,",
+      "CANNOT BE CHANGED!": "НЕ МОЖЕ ДА БЪДЕ ПРОМЕНЯНА!",
+
+      "of which reports begins!": "от които започва отчитането!",
+      "EXAMPLE: May 2020": "ПРИМЕР: Май 2020",
+
+      "and": "и",
+      "for": "за",
+      "is": "е",
+
+      "No groups added": "Няма добавени групи"
+
+
 }

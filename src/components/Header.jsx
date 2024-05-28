@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import '../Navbar.css';
 import logo from '../assets/images/app/logo.png';
 import bg from '../assets/images/lang/bg.png';
 import eng from '../assets/images/lang/eng.png';
@@ -7,8 +6,7 @@ import { useTranslation } from 'react-i18next';
 import AuthorizationButtons from './AuthorizationButtons';
 import { Link } from 'react-router-dom';
 
-const Header = () => {
-  const [authenticated, setAuthenticated] = useState(false);
+const Header = ({ authenticated, role }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showAuthorizationButtons, setShowAuthorizationButtons] = useState(false);
   const { t, i18n } = useTranslation();
@@ -16,7 +14,6 @@ const Header = () => {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    setAuthenticated(false);
     document.addEventListener('click', handleClickOutside);
     return () => {
       document.removeEventListener('click', handleClickOutside);
@@ -68,7 +65,7 @@ const Header = () => {
               {showAuthorizationButtons && <AuthorizationButtons privileges={'Admin'} />}
             </div>
           )}
-          
+
           <div id="profile" className="m-auto me-0">
             <Link to="/profile"><button className="profile-button">{t('Profile')}</button></Link>
             <button className="authentication-button">{t('Logout')}</button>
@@ -93,7 +90,7 @@ const Header = () => {
                     <input type="text" placeholder="email" name="email" id="email" className="my-3" />
                     <input type="password" placeholder={t('password')} name="password" id="password" className="" />
                     <div className="mt-3">
-                      <input type="checkbox" name="remember-me" id="remember-me" className="w-auto mx-2" style={{ transform: 'scale(1.2)' }}/>
+                      <input type="checkbox" name="remember-me" id="remember-me" className="w-auto mx-2" style={{ transform: 'scale(1.2)' }} />
                       <span>{t('Remember me')}</span>
                       <button type="submit" className="authentication-button">
                         {t('Login')}
