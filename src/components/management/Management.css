@@ -75,3 +75,46 @@ input {
 select {
       width: 16em;
 }
+
+table {
+      font-size: x-small;
+}
+
+/* HomesGroup styling */
+.hg-title {
+      border: 0.1em solid black;
+      border-radius: 0.3em;
+      width: fit-content;
+      font-size: large;
+      font-weight: bold;
+      margin: 0.2em;
+      padding: 0.2em 0.3em 0.2em 0.3em;
+      transform: scale(0.85);
+}
+
+.homes-section {
+      display: grid;
+      height: fit-content;
+}
+
+.utility-section {
+      display: grid;
+      gap: 0.3em;
+      grid-template-columns: 1fr;
+      height: fit-content;
+}
+
+@media (min-width: 1090px) {
+      .hg-title {
+            transform: scale(1);
+      }
+
+      table {
+            font-size: small;
+      }
+
+
+
+
+
+}
