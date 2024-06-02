@@ -19,7 +19,7 @@ const HomesTable = ({ homes }) => {
                               <tr className="fw-bold">
                                     <td>{t('fl')}</td>
                                     <td>{t('apt')}</td>
-                                    <td>{t('Owner')}</td>
+                                    <td className="w-50">{t('Owner')}</td>
                                     <td>{t('Residents')}</td>
                                     <td>{`${t('Total')}(лв.)`}</td>
                                     <td><img src={settings} alt="settings" className="icon" /></td>

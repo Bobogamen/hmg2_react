@@ -2,7 +2,6 @@
     display: grid;
     gap: 0.3em;
     grid-template-columns: 1fr;
-    height: 100vh;
 }
 
 .mosaic-section {
@@ -44,8 +43,7 @@
     .layout {
         display: grid;
         gap: 0.3em;
-        grid-template-columns: 1.2fr 1fr;
-        height: 100vh;
+        grid-template-columns: 1.4fr 1fr;
     }
 
     .mosaic-section {
