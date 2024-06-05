@@ -72,7 +72,7 @@ const ModalHomesGroup = ({ show, handleClose, input }) => {
                 <div>
                   <label>{`${t('Select')} ${t('type')}`}</label>
                   <select id="type" name="type">
-                    <option className="text-center">{t('apartements')}</option>
+                    <option className="text-center">{t('Apartments building')}</option>
                   </select>
                 </div>
                 <div>

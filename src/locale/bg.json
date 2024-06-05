@@ -38,6 +38,8 @@
       "Change password": "Промяна парола",
       "Info": "Информация",
 
+      "Apartments building": "Жилищна сграда",
+
       "Select": "Избери",
       "Add": "Добави",
       "Create": "Създай",
@@ -52,8 +54,12 @@
       "Owner": "Собственик",
       "apartments": "апартаменти",
       "Total": "Общо",
+      "value": "стойност",
       "homes": "домове",
-      "fees": "Такси",
+      "fees": "такси",
+      "bills": "сметки",
+      "repairs": "ремонти",
+      "budget": "бюджет",
       "type": "вид",
       "initial date": "начална дата",
       "background": "фон",

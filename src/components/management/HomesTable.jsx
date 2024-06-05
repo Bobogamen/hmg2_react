@@ -2,6 +2,8 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import settings from '../../assets/images/app/settings.png';
+import home from '../../assets/images/app/home.png';
+import addResident from '../../assets/images/app/add_resident.png';
 
 
 const HomesTable = ({ homes }) => {
@@ -27,13 +29,16 @@ const HomesTable = ({ homes }) => {
                         </thead>
                         <tbody>
                               {homes.map(h => (
-                                    <tr key={h.key} id={h.id}>
+                                    <tr key={`h${h.id}`} id={h.id}>
                                           <td>{h.floor}</td>
                                           <td>{h.name}</td>
                                           <td>{h.owner}</td>
                                           <td>{h.residentsSize}</td>
                                           <td>{h.totalForMonth}</td>
-                                          <td></td>
+                                          <td className="d-flex justify-content-evenly">
+                                                <img src={home} alt="home" className="icon pointer" />
+                                                <img src={addResident} alt="add_resident" className="icon pointer" />
+                                          </td>
                                     </tr>
                               ))}
                         </tbody>

@@ -5,12 +5,14 @@ import apartments from '../../assets/images/app/apartment_building.png';
 import ModalHomesGroup from "./ModalHomesGroup";
 import HomesTable from "./HomesTable";
 import FeesTable from "./FeesTable";
+import BillsTable from "./BillsTable";
+import RepairsTable from "./RepairsTable";
 
 const HomesGroup = () => {
       const { id } = useParams()
       const { t } = useTranslation();
       const [homesGroup, setHomesGroup] = useState(testHomesGroup);
-      const [editHomesGroup, setEditHomesGroup] = useState(false)
+      const [editHomesGroup, setEditHomesGroup] = useState(false);
 
       useEffect(() => {
             setHomesGroup(testHomesGroup);
@@ -36,8 +38,12 @@ const HomesGroup = () => {
                               <div>
                                     <FeesTable fees={homesGroup.fees} />
                               </div>
-                              <div className="bg-info">bills</div>
-                              <div className="bg-warning">repairs</div>
+                              <div>
+                                    <BillsTable bills={homesGroup.bills} />
+                              </div>
+                              <div>
+                                    <RepairsTable repairs={homesGroup.repairs} />
+                              </div>
                         </section>
                   </div>
             </>
