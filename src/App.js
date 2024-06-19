@@ -20,6 +20,7 @@ import Notification from './components/Notification';
 import Profile from './components/Profile';
 import TitleChanger from './components/TitleChanger';
 import HomesGroup from './components/management/HomesGroup';
+import Home from './components/management/Home';
 
 const LANGUAGE_KEY = 'selectedLanguage'
 
@@ -62,6 +63,7 @@ const App = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/management" element={<Management />} />
           <Route path="/management/homesGroup/:id" element={<HomesGroup />} />
+          <Route path="/management/homesGroup/:id/home/:id" element={<Home />} />
           <Route path="/finance" element={<Finance />} />
           <Route path="/repair" element={<Repair />} />
           <Route path="/statistic" element={<Statistic />} />

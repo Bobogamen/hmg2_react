@@ -1,6 +1,6 @@
 .layout {
     display: grid;
-    gap: 0.3em;
+    gap: 0.5em;
     grid-template-columns: 1fr;
 }
 

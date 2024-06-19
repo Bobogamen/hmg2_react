@@ -5,7 +5,7 @@ import homeIcon from '../../assets/images/app/home.png';
 import ModalHome from "./ModalHome";
 import Resident from "./Resident";
 
-const Home = () => {
+const Fee = () => {
       const { id } = useParams()
       const [home, setHome] = useState()
       const [editHome, setEditHome] = useState(false)
@@ -16,29 +16,23 @@ const Home = () => {
       const handleClose = () => setEditHome(false);
 
       useEffect(() => {
-            //fetch home
             setHome();
       }, [])
 
       return (
             <div>
-                  <ModalHome show={editHome} handleClose={handleClose} action={'edit'} data={''} />
+                  <ModalHome show={editHome} handleClose={handleClose} action={'edit'} data={''}/>
                   <button className="hg-title my-2" onClick={handleOpen}>
                         <div className="d-flex justify-content-center align-items-center">
                               <span>Home</span>
                               <img src={homeIcon} className="medium-icon ms-3" alt="home" />
                         </div>
                   </button>
-                  <div className="layout">
-                        <section className="homes-section">
-                              <Resident />
-                        </section>
-                        <section className="utility-section">
-                              Fees
-                        </section>
-                  </div>
+                  <Resident />
+                  <Resident />
+                  <Resident />
             </div>
       )
 }
 
-export default Home;
+export default Fee;

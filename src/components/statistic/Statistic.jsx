@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const Statistic = () => {
 
+      const { t } = useTranslation();
+
       return (
             <>
-                  <h2>Statistic</h2>
+                  <h3 className="title my-3">{t('Statistic')}</h3>
+
             </>
       )
 }

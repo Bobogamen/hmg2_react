@@ -1,11 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "../cashier/Cashier.css"
 
 const Cashier = () => {
+      const { t } = useTranslation();
+
 
       return (
             <>
-                  <h2>Cahsier</h2>
+                  <h3 className="title my-3">{t('Cashier')}</h3>
                   <div className="layout">
                         <main className="bg-info">Main</main>
                         <aside className="right bg-warning">

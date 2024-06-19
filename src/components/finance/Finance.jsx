@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const Finance = () => {
 
+      const { t } = useTranslation();
+
       return (
             <>
-                  <h2>Finance</h2>
+                  <h3 className="title my-3">{t('Finance')}</h3>
+
             </>
       )
 }

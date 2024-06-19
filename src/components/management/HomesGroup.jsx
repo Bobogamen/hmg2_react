@@ -15,6 +15,7 @@ const HomesGroup = () => {
       const [editHomesGroup, setEditHomesGroup] = useState(false);
 
       useEffect(() => {
+            //fetch homesGroup
             setHomesGroup(testHomesGroup);
       }, [homesGroup]);
 
@@ -24,7 +25,7 @@ const HomesGroup = () => {
       return (
             <>
                   <ModalHomesGroup show={editHomesGroup} handleClose={handleClose} input={homesGroup} />
-                  <button className="hg-title" onClick={handleOpen}>
+                  <button className="hg-title my-2" onClick={handleOpen}>
                         <div className="d-flex justify-content-center align-items-center">
                               <span>{homesGroup.name}</span>
                               <img src={apartments} className="medium-icon ms-3" alt="aparatments" />
@@ -32,18 +33,12 @@ const HomesGroup = () => {
                   </button>
                   <div className="layout">
                         <section className="homes-section">
-                              <HomesTable homes={homesGroup.homes} />
+                              <HomesTable homesGroup={homesGroup} />
                         </section>
                         <section className="utility-section">
-                              <div>
-                                    <FeesTable fees={homesGroup.fees} />
-                              </div>
-                              <div>
-                                    <BillsTable bills={homesGroup.bills} />
-                              </div>
-                              <div>
-                                    <RepairsTable repairs={homesGroup.repairs} />
-                              </div>
+                              <FeesTable fees={homesGroup.fees} />
+                              <BillsTable bills={homesGroup.bills} />
+                              <RepairsTable repairs={homesGroup.repairs} />
                         </section>
                   </div>
             </>
@@ -82,6 +77,30 @@ const testHomesGroup = {
                   name: '3',
                   owner: 'Веска Берова',
                   residentsSize: 2,
+                  totalForMonth: 0.0
+            },
+            {
+                  id: 4,
+                  floor: '2',
+                  name: '4',
+                  owner: 'Анелия Димитрова',
+                  residentsSize: 2,
+                  totalForMonth: 0.0
+            },
+            {
+                  id: 5,
+                  floor: '2',
+                  name: '5',
+                  owner: 'Гергана',
+                  residentsSize: 2,
+                  totalForMonth: 0.0
+            },
+            {
+                  id: 6,
+                  floor: '3',
+                  name: '6',
+                  owner: 'Борис Илиев',
+                  residentsSize: 4,
                   totalForMonth: 0.0
             }
 

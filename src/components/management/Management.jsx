@@ -13,6 +13,7 @@ const Management = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
+    //fetch homesGroups
     setHomesGroups(testHomesGroups);
   }, []);
 
@@ -22,8 +23,9 @@ const Management = () => {
   return (
     <div>
       <div className="management">
+        <h3 className="title mt-3">{t('Management')}</h3>
         {homesGroups.length > 0 ? (
-          <ul className="mt-5">
+          <ul>
             {homesGroups.map(hg => (
               <Link to={`/management/homesGroup/${hg.id}`} className="text-decoration-none text-dark" key={hg.id}>
                 <li id={hg.id} style={{ backgroundColor: hg.backgroundColor }}>
@@ -50,19 +52,19 @@ export default Management;
 
 
 const testHomesGroups = [
-      {
-            id: 1,
-            name: 'кв. Надежда бл. 103 вх. А',
-            backgroundColor: '#7d73db'
-      },
-      {
-            id: 2,
-            name: 'Люлин 5',
-            backgroundColor: '#1bd711'
-      },
-      {
-            id: 3,
-            name: 'Люлин 7',
-            backgroundColor: '#fb3d37'
-      },
+  {
+    id: 1,
+    name: 'кв. Надежда бл. 103 вх. А',
+    backgroundColor: '#7d73db'
+  },
+  {
+    id: 2,
+    name: 'Люлин 5',
+    backgroundColor: '#1bd711'
+  },
+  {
+    id: 3,
+    name: 'Люлин 7',
+    backgroundColor: '#fb3d37'
+  },
 ]

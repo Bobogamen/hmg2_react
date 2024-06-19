@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const Admin = () => {
 
+      const { t } = useTranslation()
+
       return (
             <>
-                  <h2>Admin</h2>
+                  <h3 className="title mt-3">{t('Admin')}</h3>
+
             </>
       )
 }

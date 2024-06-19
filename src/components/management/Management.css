@@ -24,7 +24,6 @@
       border: 0.2em outset #0e1111;
       border-radius: 0.5em;
       grid-template-rows: 1fr;
-      font-weight: bold;
       cursor: pointer;
 }
 
@@ -99,7 +98,7 @@ table {
 
 .utility-section {
       display: grid;
-      gap: 0.3em;
+      gap: 0.7em;
       grid-template-columns: 1fr;
       height: fit-content;
 }
