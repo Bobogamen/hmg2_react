@@ -1,7 +1,6 @@
-.notification {
-      position: fixed;
-      font-size: 0.9rem;
-      top: 5%;
-      left: 8%;
-      z-index: 1;
-  }
+.Toastify__toast {
+    margin: 11% 0 0 1%;
+    width: fit-content;
+    background: blue;
+    font-weight: bold;
+}

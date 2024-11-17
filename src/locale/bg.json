@@ -1,4 +1,21 @@
 {
+
+      "Successful Login": "Успешен вход",
+      "Successful Registration": "Успешена регистрация",
+      "Wrong email/password": "Невалиден email/парола",
+      "Server not responding": "Сървървът не отговаря",
+
+      "must not be empty": "не може да е празно",
+      "must not be blank": "не може само интервал",
+      "size must be between 2 and 20" : "дължина между 2 и 20 символа",
+      "size must be between 5 and 20" : "дължина между 5 и 20 символа",
+      "passwords must match": "паролите трябва да съвпадат",
+      "Email address is already in use": "Email вече се използва",
+      "must be a well-formed email address": "Tрябва да е валиден email",
+
+
+
+
       "All rights reserved.": "Всички права са запазени.",
       "Home manager": "Домоуправител",
       "Register": "Регистрация",
@@ -22,7 +39,7 @@
       "Observe your statistic.": "Наблюдавайте вашите статистики.",
 
       "Name": "Име",
-      "password": "парола",
+      "Password": "Парола",
       "Confirm": "Потвърди",
       "Send": "Изпрати",
       "Close": "Затвори",
@@ -31,6 +48,7 @@
       "Admin": "Администрация",
       "Management": "Управление",
       "Finance": "Финанси",
+      "Funds": "Фондове",
       "Repairs": "Ремонти",
       "Cashier": "Касиер",
 
@@ -90,6 +108,4 @@
       "in": "в",
 
       "No groups added": "Няма добавени групи"
-
-
 }

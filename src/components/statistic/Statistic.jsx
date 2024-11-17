@@ -7,7 +7,7 @@ const Statistic = () => {
 
       return (
             <>
-                  <h3 className="title my-3">{t('Statistic')}</h3>
+                  <h3 className="title my-3 text-bg-secondary bg-opacity-75">{t('Statistic')}</h3>
 
             </>
       )

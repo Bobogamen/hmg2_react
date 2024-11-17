@@ -6,16 +6,19 @@ import apartments from '../../assets/images/app/apartment_building.png';
 import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ModalHomesGroup from "./ModalHomesGroup";
+import { useUser } from "../../UserContext";
 
 const Management = () => {
+  const { user } = useUser();
   const [homesGroups, setHomesGroups] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
-    //fetch homesGroups
-    setHomesGroups(testHomesGroups);
-  }, []);
+    if (user) {
+      setHomesGroups(user.homesGroups);
+    }
+  }, [user]);
 
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
@@ -23,7 +26,7 @@ const Management = () => {
   return (
     <div>
       <div className="management">
-        <h3 className="title mt-3">{t('Management')}</h3>
+        <h3 className="title mt-3 text-bg-danger bg-opacity-50">{t('Management')}</h3>
         {homesGroups.length > 0 ? (
           <ul>
             {homesGroups.map(hg => (
@@ -36,7 +39,7 @@ const Management = () => {
             ))}
           </ul>
         ) : (
-          <h3 className="mt-5">{t('No groups added')}</h3>
+          <h3 className="mt-3">{t('No groups added')}</h3>
         )}
         <ModalHomesGroup show={openModal} handleClose={handleClose} />
         <div className="img-button pointer mt-3" onClick={handleOpen}>
@@ -49,22 +52,3 @@ const Management = () => {
 };
 
 export default Management;
-
-
-const testHomesGroups = [
-  {
-    id: 1,
-    name: 'кв. Надежда бл. 103 вх. А',
-    backgroundColor: '#7d73db'
-  },
-  {
-    id: 2,
-    name: 'Люлин 5',
-    backgroundColor: '#1bd711'
-  },
-  {
-    id: 3,
-    name: 'Люлин 7',
-    backgroundColor: '#fb3d37'
-  },
-]

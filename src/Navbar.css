@@ -31,13 +31,15 @@ nav #menu {
 }
 
 .authorization-button {
-      background-color: #00b288;
       border: 0.2em inset gray;
       border-radius: 0.3em;
-      padding: 0.2em 0.8em 0.2em 0.8em;
-      margin: 0 1em 0 1em;
+      margin: 0 0.5em 0 0.5em;
       font-family: 'Lucida Sans Unicode';
       font-weight: bold;
+}
+
+.authorization-button-icon {
+      margin-right: 0.3em;
 }
 
 .profile-button {

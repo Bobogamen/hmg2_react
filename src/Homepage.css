@@ -22,6 +22,7 @@
 .main {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    margin: 0 auto;
 }
 
 .aside {
@@ -29,7 +30,7 @@
 }
 
 .aside div {
-    height: 12em;
+    height: 16em;
 }
 
 .middle {
@@ -52,6 +53,7 @@
         display: grid;
         gap: 0.3em;
         grid-template-columns: 1fr 2fr 1fr;
+        width: 95%;
     }
 
     .aside div {

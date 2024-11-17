@@ -8,21 +8,27 @@
   display: grid;
   place-items: center;
   gap: 1em;
-  max-width: 30rem;
+  max-width: 34rem;
   border: 0.2em solid gray;
   border-radius: 0.3em;
   margin-top: 0.8em;
   text-align: center;
-  padding: 0.6em 1.6em 0.6em 1.6em;
+  padding: 1.6em 1em 1.6em 1em;
 }
 
 .registrationForm div {
+  width: 20em;
   display: grid;
   text-align: left;
+  place-items: center;
+}
+
+.registrationForm input {
+  width: 18em;
 }
 
 .registrationForm small {
-  display: none;
+  display: flex;
 }
 
 .width-fit-content {

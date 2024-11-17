@@ -8,7 +8,7 @@ const Cashier = () => {
 
       return (
             <>
-                  <h3 className="title my-3">{t('Cashier')}</h3>
+                  <h3 className="title my-3 text-bg-dark bg-opacity-50">{t('Cashier')}</h3>
                   <div className="layout">
                         <main className="bg-info">Main</main>
                         <aside className="right bg-warning">
