@@ -1,10 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import './index.css';
+import './style/index.css';
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { LoadingProvider } from './LoadingContext';
-import { UserProvider } from './UserContext';
+import { LoadingProvider } from './loader/LoadingContext';
+import { UserProvider } from './user/UserContext';
 
 const container = document.getElementById('root');
 const root = createRoot(container);

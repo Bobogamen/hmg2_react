@@ -6,7 +6,7 @@ import apartments from '../../assets/images/app/apartment_building.png';
 import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ModalHomesGroup from "./ModalHomesGroup";
-import { useUser } from "../../UserContext";
+import { useUser } from "../../user/UserContext";
 
 const Management = () => {
   const { user } = useUser();

@@ -1,0 +1,199 @@
+nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background-color: #00e3ae;
+      border: 0.2em solid gray;
+      border-radius: 0.3em;
+      top: 0;
+      font-size: smaller;
+      z-index: 1;
+}
+
+.logo {
+      width: 4em;
+      height: 4em
+}
+
+.menu {
+      display: none;
+}
+
+.menu-icon-button {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background-color: #00b17c;
+      border: 0.2em inset gray;
+      border-radius: 0.3em;
+      padding: 0.4em;
+      margin: 0.3em 0 0.3em 0.3em;
+      font-family: 'Lucida Sans Unicode';
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease-in-out;
+}
+
+.menu-icon-button:hover {
+      background-color: #008f67;
+      border-color: darkgray;
+      transform: scale(1.05);
+}
+
+.authorization-button {
+      border: 0.2em inset gray;
+      border-radius: 0.3em;
+      margin: 0 0.5em 0 0.5em;
+      font-family: 'Lucida Sans Unicode';
+      font-weight: bold;
+}
+
+.authorization-button:hover .authorization-button-icon {
+      transform: scale(1.2);
+      transition: transform 0.3s ease;
+      filter: brightness(1.2);
+}
+
+
+.authorization-button:hover {
+      background-color: darkblue;
+}
+
+.authorization-button-icon {
+      margin-right: 0.3em;
+}
+
+.authentication-button {
+      display: flex;
+      align-items: center;
+      background-color: #00b17c;
+      border: 0.2em inset gray;
+      border-radius: 0.3em;
+      padding: 0.2em 0.8em 0.2em 0.8em;
+      margin: 0.3em 0.3em 0.3em 0;
+      font-family: 'Lucida Sans Unicode';
+      font-weight: bold;
+}
+
+button:hover {
+      background-color: #8bcbe7;
+}
+
+.login-form {
+      display: block;
+      background-color: #89b9ce;
+      position: absolute;
+      inset: 0px 0px auto auto;
+      transform: translate(-1em, 3.2em);
+      width: 20em;
+      text-align: center;
+      border: 0.2em inset gray;
+      border-radius: 0.3em;
+      padding: 0.2em 0.8em 0.2em 0.8em;
+      z-index: 1;
+}
+
+.login-form input {
+      width: 16em;
+      border: 0.2em inset gray;
+      border-radius: 0.3em;
+      padding: 0.2em 0.8em 0.2em 0.8em;
+}
+
+.i18-img {
+      cursor: pointer;
+      height: 1.8em;
+      width: 2.2em;
+}
+
+.profile-dropdown-button .dropdown-toggle {
+      background-color: #00b17c;
+      border: 0.2em inset gray;
+      border-radius: 0.3em;
+      font-family: 'Lucida Sans Unicode';
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      transform: scale(0.8);
+}
+
+.profile-dropdown-button .dropdown-toggle:hover,
+.profile-dropdown-button .dropdown-toggle:focus {
+      border: 0.2em inset gray;
+      color: white;
+      outline: none;
+      box-shadow: none;
+}
+
+.profile-dropdown-button .dropdown-menu {
+      background-color: #89b9ce;
+      border: 0.2em inset gray;
+      border-radius: 0.3em;
+}
+
+.profile-dropdown-button .dropdown-item {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: black;
+      display: flex;
+      align-items: center;
+}
+
+.profile-dropdown-button .dropdown-item:hover {
+      background-color: #00e3ae;
+      color: white;
+}
+
+/* Medium screens: Show only text (855px <= width < 1145px) */
+@media (max-width: 1144px) and (min-width: 855px) {
+      .authorization-button .authorization-button-icon {
+            display: none;
+      }
+}
+
+/* Small screens: Show only icons (width < 855px) */
+@media (max-width: 854px) {
+      .authorization-button .button-text {
+            display: none;
+      }
+
+      .logo {
+            height: 2.8em;
+            width: 2.8em;
+      }
+}
+
+/* Mobile screens: Show only icons (width < 505px) */
+@media (max-width: 505px) {
+      .menu-icon-button {
+            display: flex;
+      }
+
+      nav #main-buttons {
+            display: flex;
+            background-color: #89b9ce;
+            flex-direction: column;
+            position: absolute;
+            top: 3.2em;
+            left: 0.1em;
+            text-align: center;
+            border: 0.2em inset #808080;
+            border-radius: 0.3em;
+            padding: 0.1em 0 0.1em 0;
+      }
+
+      nav #main-buttons a> :first-child {
+            margin-top: 0.6em;
+      }
+
+      nav #main-buttons a {
+            margin-bottom: 0.6em;
+      }
+
+      .logo {
+            display: none;
+      }
+}

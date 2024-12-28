@@ -1,12 +1,12 @@
 import React from "react";
-import '../Homepage.css'
-import logo from '../assets/images/app/logo.png'
-import bills from '../assets/images/app/home_page/bills.png'
-import expenses from '../assets/images/app/home_page/expenses.png'
-import multiPlaces from '../assets/images/app/home_page/multi-places.png'
-import resident from '../assets/images/app/home_page/resident.png'
-import secure from '../assets/images/app/home_page/secure.png'
-import surveillance from '../assets/images/app/home_page/stats.png'
+import './Homepage.css'
+import logo from '../../assets/images/app/logo.png'
+import bills from '../../assets/images/app/home_page/bills.png'
+import expenses from '../../assets/images/app/home_page/expenses.png'
+import multiPlaces from '../../assets/images/app/home_page/multi-places.png'
+import resident from '../../assets/images/app/home_page/resident.png'
+import secure from '../../assets/images/app/home_page/secure.png'
+import surveillance from '../../assets/images/app/home_page/stats.png'
 import { useTranslation } from "react-i18next";
 import HomepageCard from "./HomepageCard";
 

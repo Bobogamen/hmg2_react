@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { register } from "../api/services/authService";
+import { register } from "../../api/services/authService";
 import { toast } from "react-toastify";
-import { useLoading } from "../LoadingContext";
+import { useLoading } from "../../loader/LoadingContext";
 
 const Register = () => {
     const { t } = useTranslation();
