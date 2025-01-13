@@ -69,7 +69,7 @@ const App = () => {
       )}
       <Router>
         <TitleChanger />
-        <ToastContainer position="top-left" autoClose={3000} theme="colored" hideProgressBar={true} rtl={false} transition={Slide} />
+        <ToastContainer position="bottom-right" autoClose={3000} theme="colored" hideProgressBar={true} rtl={false} transition={Slide} />
         <Header />
         <Routes>
           <Route path="" element={user ? <Management /> : <Homepage />} />

@@ -11,6 +11,14 @@ nav {
       z-index: 1;
 }
 
+nav ul {
+      display: flex;
+}
+
+nav ul li {
+      list-style: none;
+}
+
 .logo {
       width: 4em;
       height: 4em
@@ -83,17 +91,7 @@ button:hover {
 }
 
 .login-form {
-      display: block;
-      background-color: #89b9ce;
-      position: absolute;
-      inset: 0px 0px auto auto;
-      transform: translate(-1em, 3.2em);
-      width: 20em;
-      text-align: center;
-      border: 0.2em inset gray;
-      border-radius: 0.3em;
       padding: 0.2em 0.8em 0.2em 0.8em;
-      z-index: 1;
 }
 
 .login-form input {
@@ -164,16 +162,23 @@ button:hover {
             height: 2.8em;
             width: 2.8em;
       }
+
+      .menu {
+            display: flex;
+      }
 }
 
 /* Mobile screens: Show only icons (width < 505px) */
 @media (max-width: 505px) {
+      .menu {
+            display: flex;
+      }
+
       .menu-icon-button {
             display: flex;
       }
 
       nav #main-buttons {
-            display: flex;
             background-color: #89b9ce;
             flex-direction: column;
             position: absolute;
@@ -182,7 +187,7 @@ button:hover {
             text-align: center;
             border: 0.2em inset #808080;
             border-radius: 0.3em;
-            padding: 0.1em 0 0.1em 0;
+            padding: 0.1em 0 0.6em 0;
       }
 
       nav #main-buttons a> :first-child {
@@ -191,6 +196,15 @@ button:hover {
 
       nav #main-buttons a {
             margin-bottom: 0.6em;
+      }
+
+      nav ul {
+            display: none;
+      }
+
+      nav ul.open {
+            display: flex;
+            z-index: 1000;
       }
 
       .logo {
