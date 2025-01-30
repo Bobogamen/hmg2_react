@@ -14,12 +14,13 @@ import eng from '../../assets/images/lang/eng.png';
 import { FaBars } from 'react-icons/fa';
 
 const Header = () => {
-  const { user, setUser } = useUser();
+  const { user, saveUser, logout } = useUser();
   const { setIsLoading } = useLoading();
   const [showAuthButtons, setShowAuthButtons] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const { t } = useTranslation();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
@@ -59,10 +60,9 @@ const Header = () => {
     setShowDropdown(false)
     try {
       const data = await login(email, password);
-      setUser(data)
+      saveUser(data, rememberMe)
       navigate('/management');
       toast.success(t('Successful Login'), { transition: Bounce });
-      console.log(data)
     } catch (error) {
       if (error.response) {
         if (error.response.status === 401) {
@@ -95,7 +95,7 @@ const Header = () => {
             title={<img src={Profile} className="small-icon" alt="admin"></img>}>
             <Dropdown.Item href="/profile">{t('Profile')}</Dropdown.Item>
             <DropdownDivider />
-            <Dropdown.Item href="#">{t('Logout')}</Dropdown.Item>
+            <Dropdown.Item onClick={logout}>{t('Logout')}</Dropdown.Item>
           </DropdownButton>
         </>
       )}
@@ -106,7 +106,8 @@ const Header = () => {
               <button className="authentication-button">{t('Register')}</button>
             </Link>
           </div>
-          <DropdownButton className="profile-dropdown-button" variant="info" title={t("Login")} show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
+          <DropdownButton className="profile-dropdown-button" variant="info" title={t("Login")}
+            show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
             <div className="login-form">
               <div className="p-2">
                 <form onSubmit={handleLogin}>
@@ -115,7 +116,8 @@ const Header = () => {
                   <input id="password" type="password" placeholder={t('Password')} name="password" value={password}
                     onChange={(e) => setPassword(e.target.value)} />
                   <div className="mt-3 d-flex justify-content-center align-items-center">
-                    <input type="checkbox" name="remember-me" id="remember-me" className="w-auto mx-2" style={{ transform: 'scale(1.2)' }} />
+                    <input type="checkbox" name="remember-me" id="remember-me" checked={rememberMe} className="w-auto mx-2" style={{ transform: 'scale(1.2)' }}
+                      onChange={() => setRememberMe(!rememberMe)} />
                     <span className="fw-bold">{t('Remember me')}</span>
                     <button type="submit" className="authentication-button ms-4" style={{ transform: ' scale(1.15)' }}>
                       {t('Login')}

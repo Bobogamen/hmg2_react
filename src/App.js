@@ -28,6 +28,7 @@ import { useLoading } from './loader/LoadingContext';
 import { Bars } from 'react-loader-spinner';
 import { useUser } from './user/UserContext';
 import Fund from './components/fund/Fund';
+import ResetPassword from './components/homepage/ResetPassword';
 
 const LANGUAGE_KEY = 'selectedLanguage';
 
@@ -85,6 +86,7 @@ const App = () => {
           <Route path="/cashier" element={<Cashier />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </Router>
       <Footer />

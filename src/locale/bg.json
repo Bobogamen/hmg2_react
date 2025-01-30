@@ -1,5 +1,4 @@
 {
-
       "Successful Login": "Успешен вход",
       "Successful Registration": "Успешена регистрация",
       "Wrong email/password": "Невалиден email/парола",
@@ -12,6 +11,10 @@
       "passwords must match": "паролите трябва да съвпадат",
       "Email address is already in use": "Email вече се използва",
       "must be a well-formed email address": "Tрябва да е валиден email",
+      "Email not found": "Email не е намерен",
+      "Password reset email sent": "Изпратен имейл за възстановяване на парола",
+      "Please check your inbox and spam folder": "Моля, проверете входящата поща и папката спам",
+      "Delivery might take a few minutes": "Получаването може да отнеме няколко минути",
 
 
 
@@ -22,6 +25,10 @@
       "Login": "Вход",
       "Logout": "Изход",
       "Forgot password": "Забравена парола",
+      "Password change": "Смяна на парола",
+      "Password has been changed": "Паролата беше променена",
+      "You can now login with new password": "Вече можете да влезете с нова парола",
+      "Link expired": "Връзката е изтекла",
       "Remember me": "Запомни ме",
       "Profile": "Профил",
       "Settings": "Настройки",

@@ -19,7 +19,7 @@
 .registrationForm div {
   width: 20em;
   display: grid;
-  text-align: left;
+  text-align: center;
   place-items: center;
 }
 

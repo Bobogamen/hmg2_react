@@ -16,7 +16,8 @@ export const register = async (formData) => {
               name: formData.name,
               email: formData.email,
               password: formData.password,
-              confirmPassword: formData.confirmPassword
+              confirmPassword: formData.confirmPassword,
+              language: formData.language
           });
           
           return response.data;

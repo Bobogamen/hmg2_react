@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { register } from "../../api/services/authService";
-import { toast } from "react-toastify";
+import { login, register } from "../../api/services/authService";
+import { toast, Bounce } from "react-toastify";
 import { useLoading } from "../../loader/LoadingContext";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../../user/UserContext";
 
 const Register = () => {
-    const { t } = useTranslation();
+    const { saveUser } = useUser();
+    const { t, i18n } = useTranslation();
     const { setIsLoading } = useLoading();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
+        language: i18n.language
     });
-    const [errors, setErrors] = useState({});
+    const [registerErrors, setRegisterErrors] = useState({});
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,19 +31,24 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         setIsLoading(true)
+
         const response = await register(formData);
 
         if (response.errors) {
-            setErrors(response.errors);
+            setRegisterErrors(response.errors);
             setIsLoading(false);
             return
         } else {
-            console.log(response)
+            const data = await login(formData.email, formData.password);
+            saveUser(data, false);
+            navigate('/management')
+            toast.success(t('Successful Login'), { transition: Bounce });
         }
-        toast.success(t('Successful Registration'));
 
+        setIsLoading(false);
+        navigate('/management');
+        toast.success(t('Successful Registration'));
     };
 
     return (
@@ -57,7 +67,7 @@ const Register = () => {
                                 value={formData.name}
                                 onChange={handleChange}
                             />
-                            {errors.name ? errors.name.map((error, index) => (
+                            {registerErrors.name ? registerErrors.name.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}
                         </div>
@@ -71,7 +81,7 @@ const Register = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                             />
-                            {errors.email ? errors.email.map((error, index) => (
+                            {registerErrors.email ? registerErrors.email.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}
                         </div>
@@ -85,7 +95,7 @@ const Register = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                             />
-                            {errors.password ? errors.password.map((error, index) => (
+                            {registerErrors.password ? registerErrors.password.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}
                         </div>
@@ -99,7 +109,7 @@ const Register = () => {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                             />
-                            {errors.confirmPassword ? errors.confirmPassword.map((error, index) => (
+                            {registerErrors.confirmPassword ? registerErrors.confirmPassword.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}
                         </div>
