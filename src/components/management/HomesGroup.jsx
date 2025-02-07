@@ -15,7 +15,6 @@ const HomesGroup = () => {
       const [editHomesGroup, setEditHomesGroup] = useState(false);
 
       useEffect(() => {
-            //fetch homesGroup
             setHomesGroup(testHomesGroup);
       }, [homesGroup]);
 

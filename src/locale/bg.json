@@ -1,13 +1,18 @@
 {
       "Successful Login": "Успешен вход",
       "Successful Registration": "Успешена регистрация",
+      "Registration failed. Please try again.": "Регистрацията е неуспешна. Моля, опитайте отново.",
       "Wrong email/password": "Невалиден email/парола",
       "Server not responding": "Сървървът не отговаря",
-
-      "must not be empty": "не може да е празно",
-      "must not be blank": "не може само интервал",
-      "size must be between 2 and 20" : "дължина между 2 и 20 символа",
-      "size must be between 5 and 20" : "дължина между 5 и 20 символа",
+      "must not be blank": "не може празно или само интервал",
+      "must not be null": "не може празно или само интервал",
+      "must be positive whole number": "трябва да е положително цяло число",
+      "it's not a color code": "не е цветен код",
+      "size must be between 2 and 20": "дължина между 2 и 20 символа",
+      "size must be between 3 and 30": "дължина между 3 и 30 символа",
+      "size must be between 5 and 20": "дължина между 5 и 20 символа",
+      "it's not type 'Apartments building'": "не е избран вид 'Жилищен блок'",
+      "start date must be in or after 2020": "начална дата трябва през или след 2020г.",
       "passwords must match": "паролите трябва да съвпадат",
       "Email address is already in use": "Email вече се използва",
       "must be a well-formed email address": "Tрябва да е валиден email",
@@ -15,10 +20,6 @@
       "Password reset email sent": "Изпратен имейл за възстановяване на парола",
       "Please check your inbox and spam folder": "Моля, проверете входящата поща и папката спам",
       "Delivery might take a few minutes": "Получаването може да отнеме няколко минути",
-
-
-
-
       "All rights reserved.": "Всички права са запазени.",
       "Home manager": "Домоуправител",
       "Register": "Регистрация",
@@ -32,7 +33,6 @@
       "Remember me": "Запомни ме",
       "Profile": "Профил",
       "Settings": "Настройки",
-
       "Expenses": "Разходи",
       "Track your monthly expenses.": "Следете месечните разходи.",
       "Residents": "Живущи",
@@ -45,27 +45,22 @@
       "Keep your data safe.": "Запазете данните си безопасни.",
       "Statistic": "Статистика",
       "Observe your statistic.": "Наблюдавайте вашите статистики.",
-
       "Name": "Име",
       "Password": "Парола",
       "Confirm": "Потвърди",
       "Send": "Изпрати",
       "Close": "Затвори",
       "Edit": "Редактирай",
-
       "Admin": "Администрация",
       "Management": "Управление",
       "Finance": "Финанси",
       "Funds": "Фондове",
       "Repairs": "Ремонти",
       "Cashier": "Касиер",
-
       "Change name": "Промяна име",
       "Change password": "Промяна парола",
       "Info": "Информация",
-
       "Apartments building": "Жилищна сграда",
-
       "Select": "Избери",
       "Add": "Добави",
       "Create": "Създай",
@@ -92,28 +87,24 @@
       "repairs": "ремонти",
       "budget": "бюджет",
       "type": "вид",
-      "initial date": "начална дата",
+      "start date": "начална дата",
       "background": "фон",
       "color": "цвят",
       "month": "месец",
       "year": "година",
-
       "First name": "Собствено име",
       "Middle name": "Бащино име",
       "Last name": "Фамилно име",
       "Telephone": "Телефон",
-
-      "WARNING!": "ВНИМАНИЕ!", 
+      "Roles": "Роли",
+      "WARNING!": "ВНИМАНИЕ!",
       "After creation,": "След създаване,",
       "CANNOT BE CHANGED!": "НЕ МОЖЕ ДА БЪДЕ ПРОМЕНЯНА!",
-
       "of which reports begins!": "от които започва отчитането!",
       "EXAMPLE: May 2020": "ПРИМЕР: Май 2020",
-
       "and": "и",
       "for": "за",
       "is": "е",
       "in": "в",
-
       "No groups added": "Няма добавени групи"
 }

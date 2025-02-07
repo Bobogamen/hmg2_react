@@ -42,6 +42,7 @@ const ResetPassword = () => {
                               setErrors(response.errors)
                               setIsLoading(false)
                         } else {
+                              setErrors({})
                               toast.error(t(response.errors))
                         }
 
@@ -52,6 +53,7 @@ const ResetPassword = () => {
                         response.messages.map(m => toast.success(t(m)))
                   }
             } catch (error) {
+                  console.error("Reset password request error:", error);
                   toast.error(t('Server not responding'), { transition: Bounce })
             } finally {
                   setIsLoading(false)

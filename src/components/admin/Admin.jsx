@@ -7,7 +7,7 @@ const Admin = () => {
       const { user } = useUser();
 
       return (
-            <>{console.log(user)}
+            <>
                   <h3 className="title mt-3 text-bg-primary bg-opacity-75">{t('Admin')}</h3>
             </>
       )

@@ -7,7 +7,7 @@ import eng from '../../assets/images/lang/eng.png';
 const Profile = () => {
       const { user } = useUser();
 
-      const { i18n } = useTranslation();
+      const { t, i18n } = useTranslation();
       const languageImage = i18n.language === 'bg' ? eng : bg;
 
       const changeLanguage = (lng) => {
@@ -18,9 +18,57 @@ const Profile = () => {
       return (
             <>
                   <h2>Profile</h2>
-                  <h4>{user ? user.name : 'Please, login first'}</h4>
-                  <img src={languageImage} alt={i18n.language} className="i18-img"
-                        onClick={() => changeLanguage(i18n.language === 'bg' ? 'eng' : 'bg')} />
+                  <div>
+                        <h4>{!user ? 'Please, login first' : null}</h4>
+                        <img src={languageImage} alt={i18n.language} className="i18-img"
+                              onClick={() => changeLanguage(i18n.language === 'bg' ? 'eng' : 'bg')} />
+                  </div>
+                  <div className="border border-3 border-primary border-opacity-50 rounded-5 shadow-lg p-3 mx-1 mt-3">
+                        <div className="d-flex justify-content-center align-items-center flex-wrap">
+                              <table className="table table-sm table-striped table-bordered table-hover">
+                                    <thead>
+                                          <tr>
+                                                <th>{t('Name')}</th>
+                                                <th>Email</th>
+                                                <th>{t('Roles')}</th>
+                                          </tr>
+                                    </thead>
+                                    <tbody>
+                                          <tr>
+                                                <td>{user.name}</td>
+                                                <td>{user.email}</td>
+                                                <td>{user.roles.join(', ')}</td>
+                                          </tr>
+                                    </tbody>
+                              </table>
+
+                              <h2>homeGroups</h2>
+                              <table className="table table-sm table-striped table-bordered table-hover">
+                                    <thead>
+                                          <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Size</th>
+                                                <th>Start Date</th>
+                                                <th>Background Color</th>
+                                          </tr>
+                                    </thead>
+                                    <tbody>
+                                          {user.homesGroups.map((home) => (
+                                                <tr key={home.id}>
+                                                      <td>{home.name}</td>
+                                                      <td>{home.type}</td>
+                                                      <td>{home.size}</td>
+                                                      <td>{home.startDate}</td>
+                                                      <td>
+                                                            <input type="color" value={home.backgroundColor} disabled style={{width: '3em'}}/>
+                                                      </td>
+                                                </tr>
+                                          ))}
+                                    </tbody>
+                              </table>
+                        </div>
+                  </div>
             </>
       )
 }

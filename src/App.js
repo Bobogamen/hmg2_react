@@ -20,6 +20,7 @@ import Profile from './components/nav/Profile';
 import TitleChanger from './components/TitleChanger';
 import HomesGroup from './components/management/HomesGroup';
 import Home from './components/management/Home';
+import ProtectedRoute from './components/ProtectedRoute';
 import './style/Notification.css';
 import './loader/Loader.css';
 import { Slide, ToastContainer } from 'react-toastify';
@@ -29,6 +30,7 @@ import { Bars } from 'react-loader-spinner';
 import { useUser } from './user/UserContext';
 import Fund from './components/fund/Fund';
 import ResetPassword from './components/homepage/ResetPassword';
+import NotFoundPage from './components/error/NotFoundPage';
 
 const LANGUAGE_KEY = 'selectedLanguage';
 
@@ -73,20 +75,52 @@ const App = () => {
         <ToastContainer position="bottom-right" autoClose={3000} theme="colored" hideProgressBar={true} rtl={false} transition={Slide} />
         <Header />
         <Routes>
-          <Route path="" element={user ? <Management /> : <Homepage />} />
+          {/* Unauthenticated Users Can Access These */}
+          <Route path='*' element={<NotFoundPage />} />
+          <Route path="/" element={
+            user ? (
+              user.roles.length === 1 && user.roles.includes("CASHIER")
+                ? <Cashier />
+                : <Management />
+            ) : <Homepage />
+          }
+          />
+
           <Route path="/register" element={<Register />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/management" element={<Management />} />
-          <Route path="/management/homesGroup/:id" element={<HomesGroup />} />
-          <Route path="/management/homesGroup/:id/home/:id" element={<Home />} />
-          <Route path="/finance" element={<Finance />} />
-          <Route path="/fund" element={<Fund />} />
-          <Route path="/repair" element={<Repair />} />
-          <Route path="/statistic" element={<Statistic />} />
-          <Route path="/cashier" element={<Cashier />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* Protected Routes */}
+          <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}>
+            <Admin />
+          </ProtectedRoute>} />
+          <Route path="/management" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
+            <Management />
+          </ProtectedRoute>} />
+          <Route path="/management/homesGroup/:id" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
+            <HomesGroup />
+          </ProtectedRoute>} />
+          <Route path="/management/homesGroup/:id/home/:id" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
+            <Home />
+          </ProtectedRoute>} />
+          <Route path="/finance" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+            <Finance />
+          </ProtectedRoute>} />
+          <Route path="/fund" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+            <Fund />
+          </ProtectedRoute>} />
+          <Route path="/repair" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+            <Repair />
+          </ProtectedRoute>} />
+          <Route path="/statistic" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+            <Statistic />
+          </ProtectedRoute>} />
+          <Route path="/cashier" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+            <Cashier />
+          </ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+            <Profile />
+          </ProtectedRoute>} />
         </Routes>
       </Router>
       <Footer />

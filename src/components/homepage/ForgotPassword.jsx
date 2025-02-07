@@ -26,6 +26,7 @@ const ForgotPassword = () => {
                         setErrors([])
                   }
             } catch (error) {
+                  console.error("Forgot password request error:", error);
                   toast.error(t('Server not responding'), { transition: Bounce })
             } finally {
                   setIsLoading(false)

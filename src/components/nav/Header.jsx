@@ -76,6 +76,11 @@ const Header = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/')
+  }
+
   return (
     <nav>
       <div>
@@ -93,9 +98,9 @@ const Header = () => {
           </div>
           <DropdownButton className="profile-dropdown-button" variant="info"
             title={<img src={Profile} className="small-icon" alt="admin"></img>}>
-            <Dropdown.Item href="/profile">{t('Profile')}</Dropdown.Item>
+            <Dropdown.Item as={Link} to='/profile'>{t('Profile')}</Dropdown.Item>
             <DropdownDivider />
-            <Dropdown.Item onClick={logout}>{t('Logout')}</Dropdown.Item>
+            <Dropdown.Item onClick={handleLogout} className="text-danger">{t('Logout')}</Dropdown.Item>
           </DropdownButton>
         </>
       )}

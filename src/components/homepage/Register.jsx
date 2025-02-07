@@ -12,7 +12,7 @@ const Register = () => {
     const { setIsLoading } = useLoading();
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
+    const [userData, setUserData] = useState({
         name: '',
         email: '',
         password: '',
@@ -23,7 +23,7 @@ const Register = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({
+        setUserData(prevState => ({
             ...prevState,
             [name]: value
         }));
@@ -31,25 +31,27 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true)
+        setIsLoading(true);
 
-        const response = await register(formData);
+        try {
+            const response = await register(userData);
 
-        if (response.errors) {
-            setRegisterErrors(response.errors);
+            if (response?.errors) {
+                setRegisterErrors(response.errors);
+            } else {
+                const data = await login(userData.email, userData.password);
+                saveUser(data, false);
+                toast.success(t('Successful Login'), { transition: Bounce });
+                navigate('/management');
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            toast.error(t('Registration failed. Please try again.'));
+        } finally {
             setIsLoading(false);
-            return
-        } else {
-            const data = await login(formData.email, formData.password);
-            saveUser(data, false);
-            navigate('/management')
-            toast.success(t('Successful Login'), { transition: Bounce });
         }
-
-        setIsLoading(false);
-        navigate('/management');
-        toast.success(t('Successful Registration'));
     };
+
 
     return (
         <>
@@ -64,7 +66,7 @@ const Register = () => {
                                 placeholder={t('Name')}
                                 name="name"
                                 id="name"
-                                value={formData.name}
+                                value={userData.name}
                                 onChange={handleChange}
                             />
                             {registerErrors.name ? registerErrors.name.map((error, index) => (
@@ -78,7 +80,7 @@ const Register = () => {
                                 placeholder="Email"
                                 name="email"
                                 id="email"
-                                value={formData.email}
+                                value={userData.email}
                                 onChange={handleChange}
                             />
                             {registerErrors.email ? registerErrors.email.map((error, index) => (
@@ -92,7 +94,7 @@ const Register = () => {
                                 placeholder={t('Password')}
                                 name="password"
                                 id="password"
-                                value={formData.password}
+                                value={userData.password}
                                 onChange={handleChange}
                             />
                             {registerErrors.password ? registerErrors.password.map((error, index) => (
@@ -106,7 +108,7 @@ const Register = () => {
                                 placeholder={`${t('Confirm')} ${t('Password')}`}
                                 name="confirmPassword"
                                 id="confirmPassword"
-                                value={formData.confirmPassword}
+                                value={userData.confirmPassword}
                                 onChange={handleChange}
                             />
                             {registerErrors.confirmPassword ? registerErrors.confirmPassword.map((error, index) => (
