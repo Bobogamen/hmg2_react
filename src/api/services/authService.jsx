@@ -22,15 +22,6 @@ export const register = async (formData) => {
 
         return response.data;
     } catch (error) {
-        if (error.response) {
-            // Server responded with a status code outside the range of 2xx
-            console.log('Error response:', error.response.data);
-        } else if (error.request) {
-            // Request was made but no response received
-            console.log('No response received:', error.request);
-        } else {
-            // Something happened in setting up the request
-            console.log('Error:', error.message);
-        }
+        throw error
     }
 }

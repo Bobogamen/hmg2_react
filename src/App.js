@@ -76,7 +76,7 @@ const App = () => {
         <Header />
         <Routes>
           {/* Unauthenticated Users Can Access These */}
-          <Route path='*' element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
           <Route path="/" element={
             user ? (
               user.roles.length === 1 && user.roles.includes("CASHIER")

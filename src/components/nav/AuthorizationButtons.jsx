@@ -5,7 +5,7 @@ import Management from '../../assets/images/app/management.png'
 import Finance from '../../assets/images/app/finance.png'
 import Funds from '../../assets/images/app/fund.png'
 import Repairs from '../../assets/images/app/repair.png'
-import Statistics from '../../assets/images/app/stsatistic.png'
+import Statistic from '../../assets/images/app/stsatistic.png'
 import Cashier from '../../assets/images/app/cashier..png'
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ const BUTTONS = [
     { role: "FINANCE", path: "/finance", label: "Finance", img: Finance, color: "text-bg-warning bg-opacity-75" },
     { role: "FUNDS", path: "/fund", label: "Funds", img: Funds, color: "text-bg-info bg-opacity-75" },
     { role: "REPAIRS", path: "/repair", label: "Repairs", img: Repairs, color: "text-bg-success bg-opacity-75" },
-    { role: "STATISTICS", path: "/statistic", label: "Statistics", img: Statistics, color: "text-bg-secondary bg-opacity-75" },
+    { role: "STATISTIC", path: "/statistic", label: "Statistic", img: Statistic, color: "text-bg-secondary bg-opacity-75" },
     { role: "CASHIER", path: "/cashier", label: "Cashier", img: Cashier, color: "text-bg-dark bg-opacity-50" },
 ];
 

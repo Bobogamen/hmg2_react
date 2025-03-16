@@ -62,11 +62,13 @@ const Header = () => {
       const data = await login(email, password);
       saveUser(data, rememberMe)
       navigate('/management');
-      toast.success(t('Successful Login'), { transition: Bounce });
+      toast.success(t('Successful Login'));
     } catch (error) {
       if (error.response) {
         if (error.response.status === 401) {
           toast.error(t('Wrong email/password'), { transition: Bounce });
+        } else {
+          toast.error(t('Server error'), { transition: Bounce });
         }
       } else {
         toast.error(t('Server not responding'), { transition: Bounce });

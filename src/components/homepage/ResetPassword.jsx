@@ -43,7 +43,7 @@ const ResetPassword = () => {
                               setIsLoading(false)
                         } else {
                               setErrors({})
-                              toast.error(t(response.errors))
+                              toast.error(t(response.errors), { transition: Bounce })
                         }
 
                   } else if (response.messages) {

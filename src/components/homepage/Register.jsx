@@ -41,12 +41,15 @@ const Register = () => {
             } else {
                 const data = await login(userData.email, userData.password);
                 saveUser(data, false);
-                toast.success(t('Successful Login'), { transition: Bounce });
+                toast.success(t('Successful Login'));
                 navigate('/management');
             }
         } catch (error) {
-            console.error("Registration error:", error);
-            toast.error(t('Registration failed. Please try again.'));
+            if (error.code === 'ERR_NETWORK') {
+                toast.error(t('Server not responding'), { transition: Bounce });
+            } else {
+                toast.error(t('Server error'), { transition: Bounce })
+            }
         } finally {
             setIsLoading(false);
         }

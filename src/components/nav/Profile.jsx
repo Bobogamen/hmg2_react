@@ -49,7 +49,7 @@ const Profile = () => {
                                                 <th>Name</th>
                                                 <th>Type</th>
                                                 <th>Size</th>
-                                                <th>Start Date</th>
+                                                <th>Start Period</th>
                                                 <th>Background Color</th>
                                           </tr>
                                     </thead>
@@ -59,7 +59,7 @@ const Profile = () => {
                                                       <td>{home.name}</td>
                                                       <td>{home.type}</td>
                                                       <td>{home.size}</td>
-                                                      <td>{home.startDate}</td>
+                                                      <td>{home.startPeriod}</td>
                                                       <td>
                                                             <input type="color" value={home.backgroundColor} disabled style={{width: '3em'}}/>
                                                       </td>
