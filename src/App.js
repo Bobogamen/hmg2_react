@@ -30,7 +30,7 @@ import { Bars } from 'react-loader-spinner';
 import { useUser } from './user/UserContext';
 import Fund from './components/fund/Fund';
 import ResetPassword from './components/homepage/ResetPassword';
-import NotFoundPage from './components/error/NotFoundPage';
+import NotFoundPage from './components/errorHandling/NotFoundPage';
 
 const LANGUAGE_KEY = 'selectedLanguage';
 
