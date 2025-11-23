@@ -41,6 +41,7 @@ const Register = () => {
             } else {
                 const data = await login(userData.email, userData.password);
                 saveUser(data, false);
+                toast.success(t('Successful Registration'));
                 toast.success(t('Successful Login'));
                 navigate('/management');
             }
