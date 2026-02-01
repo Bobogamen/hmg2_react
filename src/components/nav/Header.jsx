@@ -66,7 +66,7 @@ const Header = () => {
     } catch (error) {
       if (error.response) {
         if (error.response.status === 401) {
-          toast.error(t('Wrong email/password'), { transition: Bounce });
+          toast.error(t('Invalid email or password'), { transition: Bounce });
         } else {
           toast.error(t('Server error'), { transition: Bounce });
         }

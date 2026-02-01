@@ -1,7 +1,7 @@
 {
       "Successful Login": "Успешен вход",
       "Successful Registration": "Успешена регистрация",
-      "Wrong email/password": "Невалиден email/парола",
+      "Invalid email or password": "Невалиден email или парола",
       "Please, log in again": "Моля, влезнете отново",
       "Server not responding": "Сървърът не отговаря",
       "Server error": "Грешка в сървърът",
