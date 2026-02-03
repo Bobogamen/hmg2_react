@@ -1,5 +1,5 @@
 import axios from "axios";
-import API_URL from "../configuration";
+import config from "../configuration";
 
 export const addHomesGroup = async (homesGroupData) => {
     try {
@@ -10,7 +10,7 @@ export const addHomesGroup = async (homesGroupData) => {
             throw new Error('Please, log in again');
         }
 
-        const response = await axios.post(`${API_URL}/management/add-homes_group`, homesGroupData, {
+        const response = await axios.post(`${config.API_URL}/management/add-homes_group`, homesGroupData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -31,7 +31,7 @@ export const getHomesGroup = async (homesGroupId) => {
             throw new Error("Please log in again.");
         }
 
-        const response = await axios.get(`${API_URL}/management/homesGroup/${homesGroupId}`, {
+        const response = await axios.get(`${config.API_URL}/management/homesGroup/${homesGroupId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -56,7 +56,7 @@ export const editHomesGroup = async (homesGroupData) => {
             throw new Error('Missing group ID for update');
         }
 
-        const response = await axios.put(`${API_URL}/management/edit-homes_group/${homesGroupData.id}`, homesGroupData, {
+        const response = await axios.put(`${config.API_URL}/management/edit-homes_group/${homesGroupData.id}`, homesGroupData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

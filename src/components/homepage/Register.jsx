@@ -5,6 +5,7 @@ import { toast, Bounce } from "react-toastify";
 import { useLoading } from "../../loader/LoadingContext";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../user/UserContext";
+import config from "../../api/configuration";
 
 const Register = () => {
     const { saveUser } = useUser();
@@ -17,7 +18,8 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        language: i18n.language
+        language: i18n.language,
+        baseUrl: config.BASE_URL
     });
     const [registerErrors, setRegisterErrors] = useState({});
 
@@ -33,8 +35,13 @@ const Register = () => {
         e.preventDefault();
         setIsLoading(true);
 
+        const payload = {
+            ...userData,
+            language: i18n.language
+        };
+
         try {
-            const response = await register(userData);
+            const response = await register(payload);
 
             if (response?.errors) {
                 setRegisterErrors(response.errors);

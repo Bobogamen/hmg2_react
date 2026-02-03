@@ -1,3 +1,6 @@
-const API_URL = 'http://localhost:8080';
+const config = {
+  API_URL: 'http://localhost:8080',
+  BASE_URL: window.location.origin
+};
 
-export default API_URL;
+export default config;

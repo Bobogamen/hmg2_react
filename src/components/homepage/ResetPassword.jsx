@@ -44,6 +44,7 @@ const ResetPassword = () => {
                         } else {
                               setErrors({})
                               toast.error(t(response.errors), { transition: Bounce })
+                              navigate('/')
                         }
 
                   } else if (response.messages) {

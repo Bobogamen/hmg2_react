@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { sendEmail } from "../../api/services/forgotPasswordService";
 import { Bounce, toast } from "react-toastify";
 import { useLoading } from "../../loader/LoadingContext";
+import config from "../../api/configuration";
 
 const ForgotPassword = () => {
       const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ const ForgotPassword = () => {
             e.preventDefault();
             setIsLoading(true);
             try {
-                  const response = await sendEmail(email, i18n.language)
+                  const response = await sendEmail(email, i18n.language, config.BASE_URL)
 
                   if (response.errors) {
                         setErrors(response.errors)
