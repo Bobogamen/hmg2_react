@@ -10,13 +10,13 @@ import { useUser } from "../../user/UserContext";
 
 const Management = () => {
   const { user } = useUser();
-  const [homesGroups, setHomesGroups] = useState([]);
+  const [condominiums, setCondominiums] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (user) {
-      setHomesGroups(user.homesGroups);
+      setCondominiums(user.condominiums);
     }
   }, [user]);
 
@@ -27,9 +27,9 @@ const Management = () => {
     <div>
       <div className="management">
         <h3 className="title mt-3 text-bg-danger bg-opacity-50">{t('Management')}</h3>
-        {homesGroups.length > 0 ? (
+        {condominiums.length > 0 ? (
           <ul>
-            {homesGroups.map(hg => (
+            {condominiums.map(hg => (
               <Link to={`/management/homesGroup/${hg.id}`} className="text-decoration-none text-dark" key={hg.id}>
                 <li id={hg.id} style={{ backgroundColor: hg.backgroundColor }}>
                   <img src={apartments} className="big-icon" alt="apartments" />

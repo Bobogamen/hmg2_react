@@ -17,7 +17,7 @@ const Profile = () => {
 
       return (
             <>
-                  <h2>Profile</h2>
+                  <h2>{t('Profile')}</h2>
                   <div>
                         <h4>{!user ? 'Please, login first' : null}</h4>
                         <img src={languageImage} alt={i18n.language} className="i18-img"
@@ -42,19 +42,18 @@ const Profile = () => {
                                     </tbody>
                               </table>
 
-                              <h2>homeGroups</h2>
+                              <h2>{t('Condominiums')}</h2>
                               <table className="table table-sm table-striped table-bordered table-hover">
                                     <thead>
                                           <tr>
-                                                <th>Name</th>
-                                                <th>Type</th>
-                                                <th>Size</th>
-                                                <th>Start Period</th>
-                                                <th>Background Color</th>
+                                                <th>{t('Name')}</th>
+                                                <th>{t('Homes')}</th>
+                                                <th>{t('Start period')}</th>
+                                                <th>{t('Background color')}</th>
                                           </tr>
                                     </thead>
                                     <tbody>
-                                          {user.homesGroups.map((home) => (
+                                          {user.condominiums.map((home) => (
                                                 <tr key={home.id}>
                                                       <td>{home.name}</td>
                                                       <td>{home.type}</td>

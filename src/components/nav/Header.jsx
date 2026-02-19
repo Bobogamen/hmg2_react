@@ -64,6 +64,7 @@ const Header = () => {
       navigate('/management');
       toast.success(t('Successful Login'));
     } catch (error) {
+      console.log(error)
       if (error.response) {
         if (error.response.status === 401) {
           toast.error(t('Invalid email or password'), { transition: Bounce });
