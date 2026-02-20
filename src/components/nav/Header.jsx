@@ -100,10 +100,26 @@ const Header = () => {
             <AuthorizationButtons roles={user.roles} show={showAuthButtons} close={() => setShowAuthButtons(false)} />
           </div>
           <DropdownButton className="profile-dropdown-button" variant="info"
-            title={<img src={Profile} className="small-icon" alt="admin"></img>}>
-            <Dropdown.Item as={Link} to='/profile'>{t('Profile')}</Dropdown.Item>
+            title={<img src={Profile} className="small-icon" alt="admin" />}>
+            <Dropdown.Item as={Link} to="/profile">
+              {t("Profile")}
+            </Dropdown.Item>
             <DropdownDivider />
-            <Dropdown.Item onClick={handleLogout} className="text-danger">{t('Logout')}</Dropdown.Item>
+            <Dropdown.Item
+              active={i18n.language === "en"}
+              onClick={() => changeLanguage("en")}>
+              🇬🇧 English
+            </Dropdown.Item>
+
+            <Dropdown.Item
+              active={i18n.language === "bg"}
+              onClick={() => changeLanguage("bg")}>
+              🇧🇬 Български
+            </Dropdown.Item>
+            <DropdownDivider />
+            <Dropdown.Item onClick={handleLogout} className="text-danger">
+              {t("Logout")}
+            </Dropdown.Item>
           </DropdownButton>
         </>
       )}

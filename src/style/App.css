@@ -36,11 +36,12 @@
 }
 
 .img-button {
-  display: flex;
+  display: inline-flex;
   width: fit-content;
   justify-content: center;
   align-items: center;
   font-size: small;
+  margin: 0;
   font-weight: bold;
   font-family: sans-serif;
   padding: 0.6em;

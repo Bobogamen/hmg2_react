@@ -31,6 +31,7 @@ import { useUser } from './user/UserContext';
 import Fund from './components/fund/Fund';
 import ResetPassword from './components/homepage/ResetPassword';
 import NotFoundPage from './components/errorHandling/NotFoundPage';
+import ProfileEdit from './components/nav/ProfileEdit';
 
 const LANGUAGE_KEY = 'selectedLanguage';
 
@@ -91,40 +92,54 @@ const App = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected Routes */}
-          <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}>
-            <Admin />
-          </ProtectedRoute>} />
-          <Route path="/management" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
-            <Management />
-          </ProtectedRoute>} />
-          <Route path="/management/homesGroup/:id" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
-            <HomesGroup />
-          </ProtectedRoute>} />
-          <Route path="/management/homesGroup/:id/home/:id" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
-            <Home />
-          </ProtectedRoute>} />
-          <Route path="/finance" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
-            <Finance />
-          </ProtectedRoute>} />
-          <Route path="/fund" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
-            <Fund />
-          </ProtectedRoute>} />
-          <Route path="/repair" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
-            <Repair />
-          </ProtectedRoute>} />
-          <Route path="/statistic" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
-            <Statistic />
-          </ProtectedRoute>} />
-          <Route path="/cashier" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
-            <Cashier />
-          </ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
-            <Profile />
-          </ProtectedRoute>} />
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <Admin />
+            </ProtectedRoute>} />
+          <Route path="/management" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
+              <Management />
+            </ProtectedRoute>} />
+          <Route path="/management/homesGroup/:id" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
+              <HomesGroup />
+            </ProtectedRoute>} />
+          <Route path="/management/homesGroup/:id/home/:id" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
+              <Home />
+            </ProtectedRoute>} />
+          <Route path="/finance" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+              <Finance />
+            </ProtectedRoute>} />
+          <Route path="/fund" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+              <Fund />
+            </ProtectedRoute>} />
+          <Route path="/repair" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+              <Repair />
+            </ProtectedRoute>} />
+          <Route path="/statistic" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+              <Statistic />
+            </ProtectedRoute>} />
+          <Route path="/cashier" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+              <Cashier />
+            </ProtectedRoute>} />
+          <Route path="/profile" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+              <Profile />
+            </ProtectedRoute>} />
+          <Route path="/profile/edit" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
+              <ProfileEdit />
+          </ProtectedRoute> } />
         </Routes>
       </Router>
       <Footer />
-    </div>
+    </div >
   );
 };
 

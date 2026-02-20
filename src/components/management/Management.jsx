@@ -39,12 +39,12 @@ const Management = () => {
             ))}
           </ul>
         ) : (
-          <h3 className="mt-3">{t('No groups added')}</h3>
+          <h5 className="text-muted">{t('No condominuims added')}</h5>
         )}
         <ModalHomesGroup show={openModal} handleClose={handleClose} />
-        <div className="img-button pointer mt-3" onClick={handleOpen}>
+        <div className="img-button pointer" onClick={handleOpen}>
           <img src={add} className="icon" alt="add" />
-          <span className="ms-1">{`${t('Create')} ${t('group')}`}</span>
+          <span className="ms-2">{`${t('Create')}`}</span>
         </div>
       </div>
     </div>
