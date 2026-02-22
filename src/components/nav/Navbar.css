@@ -146,6 +146,10 @@ button:hover {
       color: white;
 }
 
+label {
+      font-size: 0.8rem;
+}
+
 /* Medium screens: Show only text (855px <= width < 1145px) */
 @media (max-width: 1144px) and (min-width: 855px) {
       .authorization-button .authorization-button-icon {

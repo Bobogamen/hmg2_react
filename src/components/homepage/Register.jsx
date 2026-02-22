@@ -30,39 +30,37 @@ const Register = () => {
             [name]: value
         }));
     };
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-
-        const payload = {
-            ...userData,
-            language: i18n.language
-        };
+        setRegisterErrors({});
 
         try {
-            const response = await register(payload);
+            await register(userData);
 
-            if (response?.errors) {
-                setRegisterErrors(response.errors);
-            } else {
-                const data = await login(userData.email, userData.password);
-                saveUser(data, false);
-                toast.success(t('Successful Registration'));
-                toast.success(t('Successful Login'));
-                navigate('/management');
-            }
+            const loginResponse = await login(userData.email, userData.password);
+
+            saveUser(loginResponse.user, loginResponse.token, false);
+
+            toast.success(t('Successful Registration'));
+            toast.success(t('Successful Login'));
+
+            navigate('/management');
+
         } catch (error) {
-            if (error.code === 'ERR_NETWORK') {
-                toast.error(t('Server not responding'), { transition: Bounce });
-            } else {
-                toast.error(t('Server error'), { transition: Bounce })
+
+            if (error.isValidationError) {
+                setRegisterErrors(error.errors);
+                return;
             }
+
+            toast.error(t(error.message), { transition: Bounce });
+
         } finally {
             setIsLoading(false);
         }
     };
-
 
     return (
         <>
@@ -78,8 +76,7 @@ const Register = () => {
                                 name="name"
                                 id="name"
                                 value={userData.name}
-                                onChange={handleChange}
-                            />
+                                onChange={handleChange} />
                             {registerErrors.name ? registerErrors.name.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}
@@ -92,8 +89,7 @@ const Register = () => {
                                 name="email"
                                 id="email"
                                 value={userData.email}
-                                onChange={handleChange}
-                            />
+                                onChange={handleChange} />
                             {registerErrors.email ? registerErrors.email.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}
@@ -106,8 +102,7 @@ const Register = () => {
                                 name="password"
                                 id="password"
                                 value={userData.password}
-                                onChange={handleChange}
-                            />
+                                onChange={handleChange} />
                             {registerErrors.password ? registerErrors.password.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}
@@ -120,8 +115,7 @@ const Register = () => {
                                 name="confirmPassword"
                                 id="confirmPassword"
                                 value={userData.confirmPassword}
-                                onChange={handleChange}
-                            />
+                                onChange={handleChange} />
                             {registerErrors.confirmPassword ? registerErrors.confirmPassword.map((error, index) => (
                                 <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content">{t(error)}</small>
                             )) : null}

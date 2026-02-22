@@ -8,13 +8,13 @@ const Profile = () => {
       const { user } = useUser();
       const { t } = useTranslation();
       const navigate = useNavigate();
-
+      
       return (
             <div className="container mt-4">
                   <div className="row justify-content-center">
 
                         {/* PROFILE CARD */}
-                        <div className="col-12 col-md-8 col-lg-6">
+                        <div className="col-md-8 col-lg-6">
                               <div className="card my-4 shadow border-0 rounded-4">
                                     <div className="card-header bg-secondary bg-opacity-75 text-white text-center fw-bold rounded-top-4">
                                           {t("Profile")}

@@ -16,49 +16,71 @@ const ForgotPassword = () => {
       const checkEmailHandler = async (e) => {
             e.preventDefault();
             setIsLoading(true);
-            try {
-                  const response = await sendEmail(email, i18n.language, config.BASE_URL)
+            setErrors([]);
+            setMessages([]);
 
-                  if (response.errors) {
-                        setErrors(response.errors)
-                        setMessages([])
-                  } else if (response.messages) {
-                        setMessages(response.messages)
-                        setErrors([])
-                  }
+            try {
+                  const response = await sendEmail(
+                        email,
+                        i18n.language,
+                        config.BASE_URL
+                  );
+
+                  setMessages(response.messages || []);
+
             } catch (error) {
-                  console.error("Forgot password request error:", error);
-                  toast.error(t('Server not responding'), { transition: Bounce })
+
+                  if (error.isValidationError) {
+                        setErrors(error.errors);
+                        return;
+                  }
+
+                  toast.error(t(error.message), { transition: Bounce });
+
             } finally {
-                  setIsLoading(false)
+                  setIsLoading(false);
             }
-      }
+      };
 
       return (
             <>
                   <h2 className="mt-2">{t('Forgot password')}</h2>
                   <div className="d-flex justify-content-center">
                         <div>
-                              <form className="registrationForm">
+                              <form className="registrationForm" onSubmit={checkEmailHandler}>
                                     <div>
-                                          <input type="text" placeholder="Email" name="email" id="email" value={email} onChange={(e) => { setEmail(e.target.value) }} />
-                                          {errors && errors.length > 0 ? (
+                                          <input
+                                                type="text"
+                                                placeholder="Email"
+                                                name="email"
+                                                id="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}/>
+                                          {/* 🔴 Errors (400) */}
+                                          {errors && errors.length > 0 &&
                                                 errors.map((error, index) => (
-                                                      <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content" >
+                                                      <small
+                                                            key={index}
+                                                            className="bg-danger text-light rounded mt-1 mx-2 px-1 width-fit-content"
+                                                      >
                                                             {t(error)}
                                                       </small>
                                                 ))
-                                          ) : (
-                                                messages &&
+                                          }
+
+                                          {/* 🟢 Success messages (200) */}
+                                          {messages && messages.length > 0 &&
                                                 messages.map((message, index) => (
-                                                      <span key={index} className="bg-success text-light rounded mt-1 mx-2 px-1 width-fit-content" >
+                                                      <span
+                                                            key={index}
+                                                            className="bg-success text-light rounded mt-1 mx-2 px-1 width-fit-content"
+                                                      >
                                                             {t(message)}
                                                       </span>
                                                 ))
-                                          )}
+                                          }
                                     </div>
-
-                                    <button type="submit" className="authentication-button mt-3" onClick={checkEmailHandler} disabled={isLoading || messages.length > 0}>
+                                    <button type="submit" className="authentication-button mt-3" disabled={isLoading || messages.length > 0}>
                                           {t('Send')}
                                     </button>
                               </form>

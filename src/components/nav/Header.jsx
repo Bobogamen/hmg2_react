@@ -39,8 +39,7 @@ const Header = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  });
-
+  }, []);
 
   const handleClickOutside = (e) => {
     if (menuRef.current && !menuRef.current.contains(e.target) &&
@@ -57,25 +56,26 @@ const Header = () => {
     e.preventDefault();
     setIsLoading(true);
     setShowAuthButtons(false);
-    setShowDropdown(false)
+    setShowDropdown(false);
+
     try {
       const data = await login(email, password);
-      saveUser(data, rememberMe)
+      saveUser(data.user, data.token, rememberMe);
       navigate('/management');
       toast.success(t('Successful Login'));
     } catch (error) {
-      console.log(error)
-      if (error.response) {
-        if (error.response.status === 401) {
-          toast.error(t('Invalid email or password'), { transition: Bounce });
-        } else {
-          toast.error(t('Server error'), { transition: Bounce });
-        }
+
+      if (error.status === 401) {
+        toast.error(t('Invalid email or password'), { transition: Bounce });
+      } else if (error.status > 0) {
+        toast.error(t(error.message || 'Server error'), { transition: Bounce });
       } else {
         toast.error(t('Server not responding'), { transition: Bounce });
       }
     } finally {
       setIsLoading(false);
+      setEmail('');
+      setPassword('');
     }
   };
 

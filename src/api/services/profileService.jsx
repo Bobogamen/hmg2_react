@@ -1,31 +1,24 @@
-import axios from "axios";
-import config from "../configuration";
+import { api, ApiError } from "../axios";
 
 export const editProfile = async (profileData) => {
-    try {
-        const userData =
-            sessionStorage.getItem('hmg_user') ||
-            localStorage.getItem('hmg_user');
+  try {
+    const { data } = await api.post("/profile/edit", profileData);
+    return data;
 
-        const token = userData ? JSON.parse(userData)?.token : null;
-
-        if (!token) {
-            throw new Error('Please, log in again');
-        }
-
-        const response = await axios.post(
-            `${config.API_URL}/profile/edit`,
-            profileData,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-
-        return response.data;
-
-    } catch (error) {
-        throw error;
+  } catch (error) {
+    if (!error.response) {
+      throw new ApiError({
+        message: "Server not responding",
+        status: 0
+      });
     }
+
+    const { status, data } = error.response;
+
+    throw new ApiError({
+      status,
+      message: data?.message || "Request failed",
+      errors: data?.errors || null
+    });
+  }
 };
