@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Homepage from "./components/homepage/Homepage";
@@ -31,30 +31,10 @@ import { useLoading } from "./loader/LoadingContext";
 import { useUser } from "./user/UserContext";
 import { Bars } from "react-loader-spinner";
 
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import bgTranslation from "../src/locale/bg.json";
-import enTranslation from "../src/locale/eng.json";
-
 import "./style/App.css";
 import "./style/Notification.css";
 import "./loader/Loader.css";
 import "react-toastify/dist/ReactToastify.css";
-
-const LANGUAGE_KEY = "selectedLanguage";
-
-/* =========================
-   i18n Init
-========================= */
-i18n.use(initReactI18next).init({
-  resources: {
-    bg: { translation: bgTranslation },
-    en: { translation: enTranslation },
-  },
-  lng: localStorage.getItem(LANGUAGE_KEY) || "bg",
-  fallbackLng: "en",
-  interpolation: { escapeValue: false },
-});
 
 /* =========================
    Role Groups
@@ -66,13 +46,6 @@ const ALL_AUTH = ["ADMIN", "MANAGER", "CASHIER"];
 const App = () => {
   const { isLoading } = useLoading();
   const { user } = useUser();
-
-  useEffect(() => {
-    const storedLanguage = localStorage.getItem(LANGUAGE_KEY);
-    if (storedLanguage && storedLanguage !== i18n.language) {
-      i18n.changeLanguage(storedLanguage);
-    }
-  }, []);
 
   const getHomePage = () => {
     if (!user) return <Homepage />;
@@ -108,13 +81,11 @@ const App = () => {
         <Header />
 
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={getHomePage()} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Admin */}
           <Route
             path="/admin"
             element={
@@ -124,7 +95,6 @@ const App = () => {
             }
           />
 
-          {/* Management */}
           <Route
             path="/management"
             element={
@@ -150,7 +120,6 @@ const App = () => {
             }
           />
 
-          {/* Financial / Operational */}
           {[
             { path: "/finance", component: <Finance /> },
             { path: "/fund", component: <Fund /> },
@@ -171,7 +140,6 @@ const App = () => {
             />
           ))}
 
-          {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>

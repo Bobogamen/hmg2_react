@@ -1,0 +1,13 @@
+{
+  "title": "Профил",
+  "info": "Информация за профила",
+  "settings": "Настройки",
+  "changeName": "Промяна на име",
+  "changePassword": "Промяна на парола",
+  "updated": "Профилът беше обновен",
+  "currentPassword": "Текуща парола",
+  "newPassword": "Нова парола",
+  "currentPasswordRequired": "Текущата парола е задължителна",
+  "currentPasswordIncorrect": "Текущата парола е неправилна",
+  "newPasswordDifferent": "Новата парола трябва да бъде различна"
+}

@@ -6,6 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { LoadingProvider } from './loader/LoadingContext';
 import { UserProvider } from './user/UserContext';
 
+import "./locales/i18n";
+
 const container = document.getElementById('root');
 const root = createRoot(container);
 

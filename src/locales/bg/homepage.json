@@ -1,0 +1,15 @@
+{
+  "homeManager": "Домоуправител",
+  "expenses": "Разходи",
+  "trackMonthlyExpenses": "Следете месечните разходи.",
+  "residents": "Живущи",
+  "organizeResidentDetails": "Организирай данните за жителите.",
+  "multiPlaces": "Множество обекти",
+  "overseeDifferentPlaces": "Надзиравайте различни места.",
+  "bills": "Сметки",
+  "manageAllBills": "Управлявай всичките си сметки.",
+  "secure": "Сигурност",
+  "keepDataSafe": "Запазете данните си безопасни.",
+  "statistic": "Статистика",
+  "observeStatistic": "Наблюдавайте вашите статистики."
+}

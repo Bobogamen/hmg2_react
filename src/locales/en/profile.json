@@ -1,0 +1,13 @@
+{
+  "title": "Profile",
+  "info": "Profile Information",
+  "settings": "Settings",
+  "changeName": "Change Name",
+  "changePassword": "Change Password",
+  "updated": "Profile has been updated",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "currentPasswordRequired": "Current password is required",
+  "currentPasswordIncorrect": "Current password is incorrect",
+  "newPasswordDifferent": "New password must be different"
+}

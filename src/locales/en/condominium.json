@@ -1,0 +1,19 @@
+{
+  "title": "Condominium",
+  "typeApartmentBuilding": "Apartment Building",
+  "typeCondominium": "Condominium",
+  "created": "The condominium was successfully created",
+  "noneAdded": "No condominium has been added",
+
+  "name": "Name",
+  "city": "City",
+  "address": "Address",
+  "startDate": "Start Date",
+
+  "namePlaceholder": "Condominium name",
+  "cityPlaceholder": "City",
+  "addressPlaceholder": "Address",
+
+  "startDateWarning": "After creation, it cannot be changed because accounting starts from this date.",
+  "example": "Example: May 2020"
+}

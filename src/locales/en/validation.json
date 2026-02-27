@@ -1,0 +1,10 @@
+{
+  "required": "This field is required",
+  "notBlank": "Cannot be blank or contain only spaces",
+  "positiveWholeNumber": "Must be a positive whole number",
+  "invalidColor": "Invalid color code",
+  "invalidEmail": "Invalid email address",
+  "passwordsMustMatch": "Passwords must match",
+  "lengthBetween": "Length must be between {{min}} and {{max}} characters",
+  "startDateAfter2020": "Start date must be in or after 2020"
+}
