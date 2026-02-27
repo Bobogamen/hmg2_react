@@ -5,7 +5,7 @@ import add from '../../assets/images/app/add.png';
 import apartments from '../../assets/images/app/apartment_building.png';
 import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ModalHomesGroup from "./ModalHomesGroup";
+import ModalCondominium from "./ModalCondominium";
 import { useUser } from "../../user/UserContext";
 
 const Management = () => {
@@ -29,11 +29,11 @@ const Management = () => {
         <h3 className="title mt-3 text-bg-danger bg-opacity-50">{t('Management')}</h3>
         {condominiums.length > 0 ? (
           <ul>
-            {condominiums.map(hg => (
-              <Link to={`/management/homesGroup/${hg.id}`} className="text-decoration-none text-dark" key={hg.id}>
-                <li id={hg.id} style={{ backgroundColor: hg.backgroundColor }}>
+            {condominiums.map(condo => (
+              <Link to={`/management/condominium/${condo.id}`} className="text-decoration-none text-dark" key={condo.id}>
+                <li id={condo.id} style={{ backgroundColor: condo.backgroundColor }}>
                   <img src={apartments} className="big-icon" alt="apartments" />
-                  <span>{hg.name}</span>
+                  <span>{condo.name}</span>
                 </li>
               </Link>
             ))}
@@ -41,11 +41,15 @@ const Management = () => {
         ) : (
           <h5 className="text-muted">{t('No condominuims added')}</h5>
         )}
-        <ModalHomesGroup show={openModal} handleClose={handleClose} />
-        <div className="img-button pointer" onClick={handleOpen}>
-          <img src={add} className="icon" alt="add" />
-          <span className="ms-2">{`${t('Create')}`}</span>
-        </div>
+        {condominiums.length <= 2 ? (
+          <>
+            <ModalCondominium show={openModal} handleClose={handleClose} />
+            <div className="img-button pointer" onClick={handleOpen}>
+              <img src={add} className="icon" alt="add" />
+              <span className="ms-2">{`${t('Create')}`}</span>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

@@ -40,7 +40,7 @@ const Profile = () => {
                         <div className="col-12 col-md-10 col-lg-8">
                               <div className="card my-4 shadow border-0 rounded-4">
                                     <div className="card-header bg-success bg-opacity-75 text-white text-center fw-bold rounded-top-4">
-                                          {t("Condominiums")}
+                                          {t("Condominium")}
                                     </div>
 
                                     {user.condominiums.length === 0 ? (

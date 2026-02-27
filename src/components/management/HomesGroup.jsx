@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apartments from '../../assets/images/app/apartment_building.png';
-import ModalHomesGroup from "./ModalHomesGroup";
+import ModalHomesGroup from "./ModalCondominium";
 import HomesTable from "./HomesTable";
 import FeesTable from "./FeesTable";
 import BillsTable from "./BillsTable";
