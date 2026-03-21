@@ -7,7 +7,7 @@ const TitleChanger = () => {
 
       return (
             <Helmet>
-                  <title>{t('Home manager')}</title>
+                  <title>{t('homepage:homeManager')}</title>
             </Helmet>
       )
 }

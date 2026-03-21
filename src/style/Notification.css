@@ -1,6 +1,8 @@
 .Toastify__toast {
-    margin: auto;
-    width: fit-content;
-    background: blue;
     font-weight: bold;
+    width: fit-content;
+}
+
+.Toastify__toast-container {
+    width: fit-content !important;
 }

@@ -1,52 +1,56 @@
-import React, { useEffect, useState, useRef } from 'react';
-import logo from '../../assets/images/app/logo.png';
-import Profile from '../../assets/images/app/profile.png';
-import { useTranslation } from 'react-i18next';
-import AuthorizationButtons from './AuthorizationButtons';
-import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../api/services/authService';
-import { Bounce, toast } from 'react-toastify';
-import { useUser } from '../../user/UserContext';
-import { useLoading } from '../../loader/LoadingContext';
-import { Dropdown, DropdownButton, DropdownDivider } from 'react-bootstrap';
+import React, { useEffect, useState, useRef } from "react";
 import bg from '../../assets/images/lang/bg.png';
 import eng from '../../assets/images/lang/eng.png';
-import { FaBars } from 'react-icons/fa';
+import logo from "../../assets/images/app/logo.png";
+import Profile from "../../assets/images/app/profile.png";
+import { useTranslation } from "react-i18next";
+import AuthorizationButtons from "./AuthorizationButtons";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../../api/services/authService";
+import { useUser } from "../../user/UserContext";
+import { useLoading } from "../../loader/LoadingContext";
+import { Dropdown, DropdownButton, DropdownDivider } from "react-bootstrap";
+import { FaBars } from "react-icons/fa";
+import { Bounce, toast } from "react-toastify";
 
 const Header = () => {
+  const { t, i18n } = useTranslation(["auth", "common", "profile"]);
   const { user, saveUser, logout } = useUser();
   const { setIsLoading } = useLoading();
-  const [showAuthButtons, setShowAuthButtons] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const { t } = useTranslation();
-  const menuRef = useRef(null);
-  const buttonRef = useRef(null);
   const navigate = useNavigate();
 
-  const { i18n } = useTranslation();
-  const languageImage = i18n.language === 'bg' ? eng : bg;
+  const [showAuthButtons, setShowAuthButtons] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  const languageImage = i18n.language === "bg" ? eng : bg;
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    localStorage.setItem('selectedLanguage', lng);
+    localStorage.setItem("selectedLanguage", lng);
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const handleClickOutside = (e) => {
-    if (menuRef.current && !menuRef.current.contains(e.target) &&
-      buttonRef.current && !buttonRef.current.contains(e.target)) {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(e.target) &&
+      buttonRef.current &&
+      !buttonRef.current.contains(e.target)
+    ) {
       setShowAuthButtons(false);
     }
   };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const authButtonsHandler = () => {
     setShowAuthButtons((prev) => !prev);
@@ -54,107 +58,165 @@ const Header = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     setIsLoading(true);
-    setShowAuthButtons(false);
     setShowDropdown(false);
+    setShowAuthButtons(false);
 
     try {
       const data = await login(email, password);
+
       saveUser(data.user, data.token, rememberMe);
-      navigate('/management');
-      toast.success(t('Successful Login'));
+      toast.success(t("auth:successfulLogin"), { transition: Bounce });
+      navigate("/management");
+
     } catch (error) {
 
-      if (error.status === 401) {
-        toast.error(t('Invalid email or password'), { transition: Bounce });
-      } else if (error.status > 0) {
-        toast.error(t(error.message || 'Server error'), { transition: Bounce });
-      } else {
-        toast.error(t('Server not responding'), { transition: Bounce });
-      }
     } finally {
       setIsLoading(false);
-      setEmail('');
-      setPassword('');
+      setEmail("");
+      setPassword("");
     }
   };
 
   const handleLogout = () => {
     logout();
-    navigate('/')
-  }
+    navigate("/");
+  };
 
   return (
     <nav>
       <div>
-        <a href="/">
+        <Link to="/">
           <img src={logo} alt="logo" className="logo" />
-        </a>
-        <button className={user ? 'menu-icon-button' : 'd-none'} onClick={authButtonsHandler} ref={buttonRef}>
-          <FaBars />
-        </button>
+        </Link>
+        {user && (
+          <button
+            className="menu-icon-button"
+            onClick={authButtonsHandler}
+            ref={buttonRef}
+          >
+            <FaBars />
+          </button>
+        )}
       </div>
+
       {user && (
         <>
           <div ref={menuRef}>
-            <AuthorizationButtons roles={user.roles} show={showAuthButtons} close={() => setShowAuthButtons(false)} />
+            <AuthorizationButtons
+              roles={user.roles}
+              show={showAuthButtons}
+              close={() => setShowAuthButtons(false)}
+            />
           </div>
-          <DropdownButton className="profile-dropdown-button" variant="info"
-            title={<img src={Profile} className="small-icon" alt="admin" />}>
+
+          <DropdownButton
+            className="profile-dropdown-button"
+            variant="info"
+            title={<img src={Profile} className="small-icon" alt="profile" />}
+          >
             <Dropdown.Item as={Link} to="/profile">
-              {t("Profile")}
+              {t("profile:title")}
             </Dropdown.Item>
+
             <DropdownDivider />
+
             <Dropdown.Item
               active={i18n.language === "en"}
-              onClick={() => changeLanguage("en")}>
+              onClick={() => changeLanguage("en")}
+            >
               🇬🇧 English
             </Dropdown.Item>
 
             <Dropdown.Item
               active={i18n.language === "bg"}
-              onClick={() => changeLanguage("bg")}>
+              onClick={() => changeLanguage("bg")}
+            >
               🇧🇬 Български
             </Dropdown.Item>
+
             <DropdownDivider />
+
             <Dropdown.Item onClick={handleLogout} className="text-danger">
-              {t("Logout")}
+              {t("auth:logout")}
             </Dropdown.Item>
           </DropdownButton>
         </>
       )}
+
       {!user && (
         <>
           <div className="m-auto">
             <Link to="/register" className="text-decoration-none">
-              <button className="authentication-button">{t('Register')}</button>
+              <button className="authentication-button">
+                {t("auth:register")}
+              </button>
             </Link>
           </div>
-          <DropdownButton className="profile-dropdown-button" variant="info" title={t("Login")}
-            show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
+
+          <DropdownButton
+            className="profile-dropdown-button"
+            variant="info"
+            title={t("auth:login")}
+            show={showDropdown}
+            onToggle={() => setShowDropdown(!showDropdown)}
+          >
             <div className="login-form">
               <div className="p-2">
                 <form onSubmit={handleLogin}>
-                  <input id="email" type="text" placeholder="Email" name="email" className="my-3" value={email}
-                    onChange={(e) => setEmail(e.target.value)} />
-                  <input id="password" type="password" placeholder={t('Password')} name="password" value={password}
-                    onChange={(e) => setPassword(e.target.value)} />
+                  <input
+                    type="text"
+                    placeholder="Email"
+                    className="my-3"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+
+                  <input
+                    type="password"
+                    placeholder={t("profile:password")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
                   <div className="mt-3 d-flex justify-content-center align-items-center">
-                    <input type="checkbox" name="remember-me" id="remember-me" checked={rememberMe} className="w-auto mx-2" style={{ transform: 'scale(1.2)' }}
-                      onChange={() => setRememberMe(!rememberMe)} />
-                    <span className="fw-bold">{t('Remember me')}</span>
-                    <button type="submit" className="authentication-button ms-4" style={{ transform: ' scale(1.15)' }}>
-                      {t('Login')}
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      className="w-auto mx-2"
+                      style={{ transform: "scale(1.2)" }}
+                      onChange={() => setRememberMe(!rememberMe)}
+                    />
+
+                    <span className="fw-bold">
+                      {t("auth:rememberMe")}
+                    </span>
+
+                    <button
+                      type="submit"
+                      className="authentication-button ms-4"
+                      style={{ transform: "scale(1.15)" }}
+                    >
+                      {t("auth:login")}
                     </button>
                   </div>
                 </form>
               </div>
               <div className="d-flex justify-content-evenly mt-4">
-                <a href="/forgot-password" className="btn btn-sm btn-secondary" style={{ fontSize: '0.7rem' }}>
-                  {t('Forgot password')}?
-                </a>
-                <img src={languageImage} alt={i18n.language} className="i18-img"
-                  onClick={() => changeLanguage(i18n.language === 'bg' ? 'eng' : 'bg')} />
+                <Link
+                  to="/forgot-password"
+                  className="btn btn-sm btn-secondary"
+                  style={{ fontSize: "0.7rem" }}
+                >
+                  {t("auth:forgotPassword")}?
+                </Link>
+                <img
+                  src={languageImage}
+                  alt={i18n.language}
+                  className="i18-img"
+                  onClick={() => changeLanguage(i18n.language === "bg" ? "en" : "bg")}
+                />
               </div>
             </div>
           </DropdownButton>
@@ -162,6 +224,6 @@ const Header = () => {
       )}
     </nav>
   );
-}
+};
 
 export default Header;

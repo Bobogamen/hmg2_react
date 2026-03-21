@@ -72,9 +72,14 @@ const App = () => {
 
         <ToastContainer
           position="bottom-right"
-          autoClose={3000}
+          autoClose={3200}
           theme="colored"
           hideProgressBar
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
           transition={Slide}
         />
 
