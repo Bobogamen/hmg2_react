@@ -5,11 +5,12 @@ import { useTranslation } from "react-i18next";
 import { editProfile } from "../../api/services/profileService";
 import { toast, Bounce } from "react-toastify";
 import { useLoading } from "../../loader/LoadingContext";
+import renderFieldErrors from "../../utils/renderFieldErrors";
 
 export default function ProfileEdit() {
 
       const { user, updateUser } = useUser();
-      const { t } = useTranslation();
+      const { t } = useTranslation(["common", "profile"]);
       const { setIsLoading } = useLoading();
       const navigate = useNavigate();
 
@@ -59,11 +60,11 @@ export default function ProfileEdit() {
             setErrors({});
 
             try {
-                  const userResponse  = await editProfile(formData);
+                  const userResponse = await editProfile(formData);
 
-                  updateUser(userResponse , null, false);
+                  updateUser(userResponse, null, false);
 
-                  toast.success(t("Profile updated!"));
+                  toast.success(t("profile:updated"));
 
                   navigate("/profile")
 
@@ -94,7 +95,7 @@ export default function ProfileEdit() {
                         <div className="col-md-8 col-lg-6">
                               <div className="card shadow border-0 rounded-4">
                                     <div className="card-header bg-secondary bg-opacity-75 text-white text-center fw-bold rounded-top-4">
-                                          {t("Edit")} {t("Profile")}
+                                          {t("common:edit")} {t("profile:title")}
                                     </div>
 
                                     <div className="card-body">
@@ -102,28 +103,24 @@ export default function ProfileEdit() {
                                                 <div className="border border-3 rounded-3 p-2">
                                                       {/* ================= PROFILE SECTION ================= */}
                                                       <h6 className="fw-bold mb-3 text-secondary">
-                                                            {t("Profile information")}
+                                                            {t("profile:info")}
                                                       </h6>
 
                                                       {/* Name */}
                                                       <div className="mb-3">
-                                                            <label className="smaller">{t("Name")}</label>
+                                                            <label className="smaller">{t("common:name")}</label>
                                                             <input
                                                                   type="text"
                                                                   name="name"
                                                                   className="form-control"
                                                                   value={formData.name}
                                                                   onChange={handleChange} />
-                                                            {errors.name?.map((error, index) => (
-                                                                  <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 d-inline-block">
-                                                                        {t(error)}
-                                                                  </small>
-                                                            ))}
+                                                            {renderFieldErrors(errors, "name", t)}
                                                       </div>
 
                                                       {/* Current Password */}
                                                       <div className="mb-4">
-                                                            <label>{t("Current password")}</label>
+                                                            <label>{t("profile:currentPassword")}</label>
                                                             <div className="position-relative">
                                                                   <input
                                                                         type={showPasswords.currentPassword ? "text" : "password"}
@@ -138,11 +135,7 @@ export default function ProfileEdit() {
                                                                         {showPasswords.currentPassword ? "🙈" : "👁"}
                                                                   </button>
                                                             </div>
-                                                            {errors.currentPassword?.map((error, index) => (
-                                                                  <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 d-inline-block">
-                                                                        {t(error)}
-                                                                  </small>
-                                                            ))}
+                                                            {renderFieldErrors(errors, "currentPassword", t)}
                                                       </div>
                                                 </div>
 
@@ -150,12 +143,12 @@ export default function ProfileEdit() {
                                                 <div className="border border-3 rounded-3 p-2">
                                                       {/* ================= PASSWORD SECTION ================= */}
                                                       <h6 className="fw-bold mb-3 text-secondary">
-                                                            {t("Change password")}
+                                                            {t("profile:changePassword")}
                                                       </h6>
 
                                                       {/* New Password */}
                                                       <div className="mb-3 position-relative">
-                                                            <label>{t("New password")}</label>
+                                                            <label>{t("profile:newPassword")}</label>
                                                             <div className="position-relative">
                                                                   <input
                                                                         type={showPasswords.newPassword ? "text" : "password"}
@@ -170,16 +163,12 @@ export default function ProfileEdit() {
                                                                         {showPasswords.newPassword ? "🙈" : "👁"}
                                                                   </button>
                                                             </div>
-                                                            {errors.newPassword?.map((error, index) => (
-                                                                  <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 d-inline-block">
-                                                                        {t(error)}
-                                                                  </small>
-                                                            ))}
+                                                            {renderFieldErrors(errors, "newPassword", t)}
                                                       </div>
 
                                                       {/* Confirm New Password */}
                                                       <div className="mb-4 position-relative">
-                                                            <label>{t("Confirm")} {t("New password")}</label>
+                                                            <label>{t("common:confirm")} {t("profile:newPassword")}</label>
                                                             <div className="position-relative">
                                                                   <input
                                                                         type={showPasswords.confirmNewPassword ? "text" : "password"}
@@ -194,25 +183,21 @@ export default function ProfileEdit() {
                                                                         {showPasswords.confirmNewPassword ? "🙈" : "👁"}
                                                                   </button>
                                                             </div>
-                                                            {errors.confirmNewPassword?.map((error, index) => (
-                                                                  <small key={index} className="bg-danger text-light rounded mt-1 mx-2 px-1 d-inline-block">
-                                                                        {t(error)}
-                                                                  </small>
-                                                            ))}
+                                                            {renderFieldErrors(errors, "confirmNewPassword", t)}
                                                       </div>
                                                 </div>
                                                 <div className="mt-3">
                                                       {/* Buttons */}
                                                       <div className="d-flex justify-content-between">
                                                             <button type="submit" className="btn btn-success">
-                                                                  {t("Save")}
+                                                                  {t("common:save")}
                                                             </button>
 
                                                             <button
                                                                   type="button"
                                                                   className="btn btn-secondary"
                                                                   onClick={() => navigate("/profile")}>
-                                                                  {t("Cancel")}
+                                                                  {t("common:cancel")}
                                                             </button>
                                                       </div>
                                                 </div>

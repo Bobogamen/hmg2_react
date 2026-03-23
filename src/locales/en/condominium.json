@@ -3,9 +3,8 @@
   "typeApartmentBuilding": "Apartment Building",
   "typeCondominium": "Condominium",
   "created": "The condominium was successfully created",
-  "noneAdded": "No condominium has been added",
+  "noneAddedCondo": "No condominium has been added",
 
-  "name": "Name",
   "city": "City",
   "address": "Address",
   "startDate": "Start Date",

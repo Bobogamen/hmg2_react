@@ -8,7 +8,7 @@
   "password": "Парола",
   "currentPassword": "Текуща парола",
   "newPassword": "Нова парола",
-  "currentPasswordRequired": "Текущата парола е задължителна",
-  "currentPasswordIncorrect": "Текущата парола е неправилна",
-  "newPasswordDifferent": "Новата парола трябва да бъде различна"
+  "admin": "Админ",
+  "manager": "Домоуправител",
+  "cashier": "Касиер"
 }

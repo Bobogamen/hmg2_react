@@ -11,6 +11,9 @@
   "deliveryDelay": "Delivery may take a few minutes",
   "wrongOrExpiredLink": "Invalid or expired link",
   "passwordsMustMatch": "Passwords must match",
+  "currentPasswordRequired": "Current password is required",
+  "currentPasswordIncorrect": "Current password is incorrect",
+  "newPasswordDifferent": "New password must be different",
   "lengthBetween": "Length must be between {{min}} and {{max}} characters",
   "startDateAfter2020": "Start date must be in or after 2020"
 }

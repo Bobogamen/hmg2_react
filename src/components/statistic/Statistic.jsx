@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 
 const Statistic = () => {
 
-      const { t } = useTranslation();
+      const { t } = useTranslation(["dashboard"]);
 
       return (
             <>
-                  <h3 className="title my-3 text-bg-secondary bg-opacity-75">{t('Statistic')}</h3>
+                  <h3 className="title my-3 text-bg-secondary bg-opacity-75">{t("dashboard:statistic")}</h3>
 
             </>
       )

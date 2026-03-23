@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 import "../cashier/Cashier.css"
 
 const Cashier = () => {
-      const { t } = useTranslation();
+      const { t } = useTranslation(["dashboard"]);
 
 
       return (
             <>
-                  <h3 className="title my-3 text-bg-dark bg-opacity-50">{t('Cashier')}</h3>
+                  <h3 className="title my-3 text-bg-dark bg-opacity-50">{t("dashboard:cashier")}</h3>
                   <div className="layout">
                         <main className="bg-info">Main</main>
                         <aside className="right bg-warning">

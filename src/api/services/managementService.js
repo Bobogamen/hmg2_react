@@ -10,7 +10,7 @@ export const addCondominium = async (condominiumData) => {
             throw new Error('Please, log in again');
         }
 
-        const response = await axios.post(`${config.API_URL}/management/add-condominium`, condominiumData, {
+        const response = await axios.post(`${config.api.baseURL}/management/add-condominium`, condominiumData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

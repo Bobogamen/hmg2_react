@@ -11,17 +11,17 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const BUTTONS = [
-    { role: "ADMIN", path: "/admin", label: "Admin", img: Admin, color: "text-bg-primary bg-opacity-75" },
-    { role: "MANAGER", path: "/management", label: "Management", img: Management, color: "text-bg-danger bg-opacity-50" },
-    { role: "FINANCE", path: "/finance", label: "Finance", img: Finance, color: "text-bg-warning bg-opacity-75" },
-    { role: "FUNDS", path: "/fund", label: "Funds", img: Funds, color: "text-bg-info bg-opacity-75" },
-    { role: "REPAIRS", path: "/repair", label: "Repairs", img: Repairs, color: "text-bg-success bg-opacity-75" },
-    { role: "STATISTIC", path: "/statistic", label: "Statistic", img: Statistic, color: "text-bg-secondary bg-opacity-75" },
-    { role: "CASHIER", path: "/cashier", label: "Cashier", img: Cashier, color: "text-bg-dark bg-opacity-50" },
+    { role: "ADMIN", path: "/admin", label: "admin", img: Admin, color: "text-bg-primary bg-opacity-75" },
+    { role: "MANAGER", path: "/management", label: "management", img: Management, color: "text-bg-danger bg-opacity-50" },
+    { role: "FINANCE", path: "/finance", label: "finance", img: Finance, color: "text-bg-warning bg-opacity-75" },
+    { role: "FUNDS", path: "/fund", label: "funds", img: Funds, color: "text-bg-info bg-opacity-75" },
+    { role: "REPAIRS", path: "/repair", label: "repairs", img: Repairs, color: "text-bg-success bg-opacity-75" },
+    { role: "STATISTIC", path: "/statistic", label: "statistics", img: Statistic, color: "text-bg-secondary bg-opacity-75" },
+    { role: "CASHIER", path: "/cashier", label: "cashier", img: Cashier, color: "text-bg-dark bg-opacity-50" },
 ];
 
 const AuthorizationButtons = ({ roles, show, close }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(["dashboard"]);
 
     let filteredButtons = [];
     if (roles.includes("ADMIN")) {
@@ -39,7 +39,7 @@ const AuthorizationButtons = ({ roles, show, close }) => {
                     <Link to={path} className="text-decoration-none">
                         <button className={`authorization-button d-flex align-items-center ${color}`}>
                             <img src={img} className="icon authorization-button-icon" alt={label.toLowerCase()} />
-                            <span className="button-text">{t(label)}</span>
+                            <span className="button-text">{t(`dashboard:${label}`)}</span>
                         </button>
                     </Link>
                 </li>

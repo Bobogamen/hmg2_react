@@ -11,6 +11,9 @@
   "deliveryDelay": "Получаването може да отнеме няколко минути",
   "wrongOrExpiredLink": "Невалиден или изтекъл линк",
   "passwordsMustMatch": "Паролите трябва да съвпадат",
+  "currentPasswordRequired": "Текущата парола е задължителна",
+  "currentPasswordIncorrect": "Текущата парола е неправилна",
+  "newPasswordDifferent": "Новата парола трябва да бъде различна",
   "lengthBetween": "Дължината трябва да бъде между {{min}} и {{max}} символа",
   "startDateAfter2020": "Началната дата трябва да бъде през или след 2020 г."
 }

@@ -6,9 +6,9 @@ import profile_edit from "../../assets/images/app/profile_edit.png"
 
 const Profile = () => {
       const { user } = useUser();
-      const { t } = useTranslation();
+      const { t } = useTranslation(["common", "profile", "condo"]);
       const navigate = useNavigate();
-      
+
       return (
             <div className="container mt-4">
                   <div className="row justify-content-center">
@@ -17,19 +17,26 @@ const Profile = () => {
                         <div className="col-md-8 col-lg-6">
                               <div className="card my-4 shadow border-0 rounded-4">
                                     <div className="card-header bg-secondary bg-opacity-75 text-white text-center fw-bold rounded-top-4">
-                                          {t("Profile")}
+                                          {t("profile:title")}
                                     </div>
 
                                     <div className="card-body text-center">
                                           <p className="mb-2"><strong>{t("name")}:</strong> {user.name}</p>
                                           <p className="mb-2"><strong>{t("email")}:</strong> {user.email}</p>
-                                          <p className="mb-2"><strong>{t("roles")}:</strong> {user.roles.join(", ")}</p>
+                                          <p className="mb-2">
+                                                <strong>{t("roles")}:</strong>{" "}
+                                                {user.roles.map(role => (
+                                                      <span key={role} className="fw-bold fst-italic mx-1">
+                                                            {t(`profile:${role.toLowerCase()}`)}
+                                                      </span>
+                                                ))}
+                                          </p>
 
                                           <div className="mt-3 d-flex justify-content-center">
                                                 <div className="img-button pointer"
                                                       onClick={() => navigate("/profile/edit")}>
                                                       <img src={profile_edit} className="icon" alt="edit" />
-                                                      <span className="ms-2">{t("Edit")}</span>
+                                                      <span className="ms-2">{t("edit")}</span>
                                                 </div>
                                           </div>
                                     </div>
@@ -40,13 +47,13 @@ const Profile = () => {
                         <div className="col-12 col-md-10 col-lg-8">
                               <div className="card my-4 shadow border-0 rounded-4">
                                     <div className="card-header bg-success bg-opacity-75 text-white text-center fw-bold rounded-top-4">
-                                          {t("Condominium")}
+                                          {t("condo:title")}
                                     </div>
 
                                     {user.condominiums.length === 0 ? (
                                           <div className="card-body text-center">
                                                 <h5 className="text-muted">
-                                                      {t("No condominuims added")}
+                                                      {t("condo:noneAddedCondo")}
                                                 </h5>
                                           </div>
                                     ) : (
