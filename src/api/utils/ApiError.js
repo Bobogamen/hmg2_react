@@ -1,13 +1,15 @@
 class ApiError extends Error {
-  constructor({ message, status, errors }) {
-    super(message || "server:error");
+  constructor({ status, message, errors }) {
+    super(message);
 
-    this.status = status || 0;
-    this.errors = errors || null;
+    this.status = status;
+    this.message = message;
+    this.errors = errors;
 
-    this.isValidationError = status === 400 && !!errors;
+    // ✅ CRITICAL FLAGS
     this.isAuthError = status === 401;
     this.isForbidden = status === 403;
+    this.isValidationError = status === 400;
     this.isServerError = status >= 500;
     this.isNetworkError = status === 0;
   }

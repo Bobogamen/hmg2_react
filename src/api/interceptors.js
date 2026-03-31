@@ -1,68 +1,90 @@
 import { toast, Bounce } from "react-toastify";
 import i18n from "../locales/i18n";
-import ApiError from "../api/utils/ApiError";
 
-// Pass a logout callback from your app to handle session expiration
-export const setupInterceptors = (api, onLogout) => {
+let isLoggingOut = false;
 
+export const setupInterceptors = (api, logout) => {
   api.interceptors.response.use(
     (response) => response,
 
     (error) => {
-      let apiError;
+      const status = error.response?.status;
+      const url = error.config?.url;
 
-      if (!error.response) {
-        // Network / server not responding
-        apiError = new ApiError({
-          message: "server:notResponding",
-          status: 0,
-        });
-      } else {
-        const { status, data } = error.response;
-
-        // Determine message from backend
-        const message = data?.message
-          || (Array.isArray(data?.errors) ? data.errors[0] : null)
-          || (typeof data === "string" ? data : "server:error");
-
-        apiError = new ApiError({
-          status,
-          message,
-          errors: data?.errors || null,
-        });
-      }
-
-      // Toast messages
-      let toastMessage = "";
-
-      if (apiError.isValidationError) {
-        // Form will handle field errors, optional generic toast
-        toastMessage = i18n.t("server:badRequest");
-      } else if (apiError.isAuthError) {
-        // 401 - Unauthorized
-        toastMessage = i18n.t(`auth:${apiError.message}`) || i18n.t("auth:pleaseLoginAgain");
-
-        // Force logout if callback provided
-        if (onLogout) onLogout();
-      } else if (apiError.isForbidden) {
-        toastMessage = i18n.t("auth:accessDenied");
-      } else if (apiError.isServerError) {
-        toastMessage = i18n.t("server:serverError");
-      } else if (apiError.isNetworkError) {
-        toastMessage = i18n.t("server:notResponding");
-      } else {
-        toastMessage = i18n.t(`auth:${apiError.message}`) || i18n.t("server:error");
-      }
-
-      // Show toast for all errors except validation (which is handled in forms)
-      if (!apiError.isValidationError || apiError.isServerError) {
-        toast.error(toastMessage, {
+      // -------------------------
+      // ❌ NETWORK ERROR
+      // -------------------------
+      if (!error.response && !error.isValidationError) {
+        toast.error(i18n.t("server:notResponding"), {
           transition: Bounce,
-          toastId: `${apiError.status}-${apiError.message}`,
+          toastId: "network-error",
+        });
+
+        return Promise.reject(error);
+      }
+
+      // -------------------------
+      // ⚠️ VALIDATION ERROR
+      // -------------------------
+      if (status === 400 || status === 422) {
+        error.isValidationError = true;
+        error.validationErrors = error.response?.data?.errors;
+
+        return Promise.reject(error);
+      }
+
+      // -------------------------
+      // 🔑 LOGIN ERROR (MUST BE FIRST)
+      // -------------------------
+      if (url?.includes("/login")) {
+        if (status === 401) {
+          toast.error(i18n.t("auth:invalidCredentials"), {
+            transition: Bounce,
+            toastId: "invalid-credentials",
+          });
+        }
+
+        return Promise.reject(error);
+      }
+
+      // -------------------------
+      // 🔐 SESSION EXPIRED (ALL OTHER 401s)
+      // -------------------------
+      if (status === 401) {
+        toast.error(i18n.t("auth:sessionExpired"), {
+          transition: Bounce,
+          toastId: "session-expired",
+        });
+
+        if (!isLoggingOut && logout) {
+          isLoggingOut = true;
+          logout();
+        }
+
+        return Promise.reject(error);
+      }
+
+      // -------------------------
+      // ⛔ FORBIDDEN
+      // -------------------------
+      if (status === 403) {
+        toast.error(i18n.t("auth:accessDenied"), {
+          transition: Bounce,
+          toastId: "forbidden",
         });
       }
 
-      return Promise.reject(apiError);
+      // -------------------------
+      // 💥 SERVER ERROR
+      // -------------------------
+      if (status >= 500) {
+        toast.error(i18n.t("server:serverError"), {
+          transition: Bounce,
+          toastId: "server-error",
+        });
+      }
+
+      return Promise.reject(error);
     }
   );
 };

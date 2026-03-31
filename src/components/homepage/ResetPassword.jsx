@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bounce, toast } from "react-toastify";
 import { useLoading } from "../../loader/LoadingContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { changePassword } from "../../api/services/forgotPasswordService";
-import renderFieldErrors from "../../utils/renderFieldErrors";
 import i18n from "../../locales/i18n";
+import { Bounce, toast } from "react-toastify";
+import renderFieldErrors from "../../utils/renderFieldErrors";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -15,10 +15,20 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
 
-  const { t } = useTranslation(["auth", "common", "validation", "profile", "server"]);
+  const { t } = useTranslation([
+    "auth",
+    "common",
+    "validation",
+    "profile",
+    "server",
+  ]);
+
   const { setIsLoading } = useLoading();
   const navigate = useNavigate();
 
+  // -------------------------
+  // 🌍 language sync
+  // -------------------------
   useEffect(() => {
     const langFromUrl = searchParams.get("selectedLanguage");
 
@@ -28,14 +38,25 @@ const ResetPassword = () => {
     }
   }, [searchParams]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "password") setPassword(value);
-    else if (name === "confirmPassword") setConfirmPassword(value);
+  // -------------------------
+  // 🔥 normalize validation errors
+  // -------------------------
+  const normalizeErrors = (err) => {
+    const data = err?.validationErrors || err?.errors;
+
+    if (!data) return {};
+
+    if (Array.isArray(data)) {
+      // global errors → handled via toast, not fields
+      return { _global: data };
+    }
+
+    return data;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setIsLoading(true);
     setErrors({});
 
@@ -46,32 +67,50 @@ const ResetPassword = () => {
         token,
       });
 
-      if (response.messages?.length) {
+      // -------------------------
+      // ✅ SUCCESS
+      // -------------------------
+      if (response?.messages?.length) {
         response.messages.forEach((m) =>
           toast.success(t(`auth:${m}`), { transition: Bounce })
         );
-
-        setPassword("");
-        setConfirmPassword("");
-        navigate("/");
       }
 
+      setPassword("");
+      setConfirmPassword("");
+      navigate("/");
+
     } catch (error) {
-      if (error.isValidationError && error.errors) {
+      // -------------------------
+      // ⚠️ VALIDATION ERROR
+      // -------------------------
+      if (error.isValidationError) {
+        const normalized = normalizeErrors(error);
 
-        // 🔴 FIELD errors (object)
-        if (!Array.isArray(error.errors)) {
-          setErrors(error.errors);
-        }
-
-        // 🔴 GLOBAL errors (array) → show toast
-        else {
-          error.errors.forEach((err) =>
-            toast.error(t(`validation:${err}`), { transition: Bounce })
+        // 🔴 global errors → toast
+        if (normalized._global) {
+          normalized._global.forEach((err) =>
+            toast.error(t(`validation:${err}`), {
+              transition: Bounce,
+              toastId: err,
+            })
           );
         }
 
+        // 🔴 field errors → inline
+        const { _global, ...fieldErrors } = normalized;
+        setErrors(fieldErrors);
+
+        return;
       }
+
+      // -------------------------
+      // 💥 fallback safety (optional)
+      // -------------------------
+      toast.error(t("server:serverError"), {
+        transition: Bounce,
+        toastId: "server-error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -84,27 +123,26 @@ const ResetPassword = () => {
       <div className="d-flex justify-content-center">
         <div>
           <form className="registrationForm" onSubmit={handleSubmit}>
-
+            {/* PASSWORD */}
             <div className="mt-2">
               <label>{t("profile:password")}</label>
               <input
                 type="password"
-                placeholder={t("profile:password")}
                 name="password"
                 value={password}
-                onChange={handleChange}
+                onChange={(e) => setPassword(e.target.value)}
               />
               {renderFieldErrors(errors, "password", t)}
             </div>
 
+            {/* CONFIRM PASSWORD */}
             <div className="mt-2">
               <label>{t("auth:confirmPassword")}</label>
               <input
                 type="password"
-                placeholder={t("auth:confirmPassword")}
                 name="confirmPassword"
                 value={confirmPassword}
-                onChange={handleChange}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
               {renderFieldErrors(errors, "confirmPassword", t)}
             </div>
@@ -112,7 +150,6 @@ const ResetPassword = () => {
             <button type="submit" className="authentication-button mt-4">
               {t("common:send")}
             </button>
-
           </form>
         </div>
       </div>

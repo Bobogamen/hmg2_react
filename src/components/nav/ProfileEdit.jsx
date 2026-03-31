@@ -71,7 +71,7 @@ export default function ProfileEdit() {
             } catch (error) {
 
                   if (error.isValidationError) {
-                        setErrors(error.errors);
+                        setErrors(error.validationErrors || error.errors || {});
                         return;
                   }
 

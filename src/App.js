@@ -14,7 +14,7 @@ import Home from "./components/management/Home";
 import Finance from "./components/finance/Finance";
 import Fund from "./components/fund/Fund";
 import Repair from "./components/repair/Repair";
-import Statistic from "./components/statistic/Statistic";
+import Statistics from "./components/statistic/Statistics";
 import Cashier from "./components/cashier/Cashier";
 
 import Profile from "./components/nav/Profile";
@@ -129,7 +129,7 @@ const App = () => {
             { path: "/finance", component: <Finance /> },
             { path: "/fund", component: <Fund /> },
             { path: "/repair", component: <Repair /> },
-            { path: "/statistic", component: <Statistic /> },
+            { path: "/statistics", component: <Statistics /> },
             { path: "/cashier", component: <Cashier /> },
             { path: "/profile", component: <Profile /> },
             { path: "/profile/edit", component: <ProfileEdit /> },

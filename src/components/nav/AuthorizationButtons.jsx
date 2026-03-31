@@ -16,7 +16,7 @@ const BUTTONS = [
     { role: "FINANCE", path: "/finance", label: "finance", img: Finance, color: "text-bg-warning bg-opacity-75" },
     { role: "FUNDS", path: "/fund", label: "funds", img: Funds, color: "text-bg-info bg-opacity-75" },
     { role: "REPAIRS", path: "/repair", label: "repairs", img: Repairs, color: "text-bg-success bg-opacity-75" },
-    { role: "STATISTIC", path: "/statistic", label: "statistics", img: Statistic, color: "text-bg-secondary bg-opacity-75" },
+    { role: "STATISTIC", path: "/statistics", label: "statistics", img: Statistic, color: "text-bg-secondary bg-opacity-75" },
     { role: "CASHIER", path: "/cashier", label: "cashier", img: Cashier, color: "text-bg-dark bg-opacity-50" },
 ];
 

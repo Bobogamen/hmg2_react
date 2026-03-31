@@ -55,7 +55,7 @@ const Register = () => {
     } catch (error) {
 
       if (error.isValidationError) {
-        setRegisterErrors(error.errors);
+        setRegisterErrors(error.validationErrors);
       }
     } finally {
       setIsLoading(false);

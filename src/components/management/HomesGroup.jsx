@@ -6,7 +6,7 @@ import HomesTable from "./HomesTable";
 import FeesTable from "./FeesTable";
 import BillsTable from "./BillsTable";
 import RepairsTable from "./RepairsTable";
-import { getHomesGroup } from "../../api/services/managementService";
+import { getCondominium } from "../../api/services/managementService";
 import { useLoading } from "../../loader/LoadingContext";
 import errorHandler from "../errorHandling/errosHandler";
 import { useUser } from "../../user/UserContext";
@@ -25,7 +25,7 @@ const HomesGroup = () => {
             const fetchHomesGroup = async () => {
                   setIsLoading(true);
                   try {
-                        const data = await getHomesGroup(id);
+                        const data = await getCondominium(id);
                         setHomesGroup(data);
                   } catch (error) {
                         errorHandler(error, undefined, navigate, t, logout);

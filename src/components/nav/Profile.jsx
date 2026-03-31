@@ -9,6 +9,12 @@ const Profile = () => {
       const { t } = useTranslation(["common", "profile", "condo"]);
       const navigate = useNavigate();
 
+      const roleStyles = {
+            admin: "text-bg-primary bg-opacity-75",
+            manager: "text-bg-danger bg-opacity-50",
+            cashier: "text-bg-dark bg-opacity-50"
+      };
+
       return (
             <div className="container mt-4">
                   <div className="row justify-content-center">
@@ -25,11 +31,19 @@ const Profile = () => {
                                           <p className="mb-2"><strong>{t("email")}:</strong> {user.email}</p>
                                           <p className="mb-2">
                                                 <strong>{t("roles")}:</strong>{" "}
-                                                {user.roles.map(role => (
-                                                      <span key={role} className="fw-bold fst-italic mx-1">
-                                                            {t(`profile:${role.toLowerCase()}`)}
-                                                      </span>
-                                                ))}
+                                                {user.roles.map((role) => {
+                                                      const roleKey = role.toLowerCase();
+                                                      const style = roleStyles[roleKey] || roleStyles.default;
+
+                                                      return (
+                                                            <span
+                                                                  key={role}
+                                                                  className={`badge ${style} mx-1`}
+                                                            >
+                                                                  {t(`profile:${roleKey}`)}
+                                                            </span>
+                                                      );
+                                                })}
                                           </p>
 
                                           <div className="mt-3 d-flex justify-content-center">

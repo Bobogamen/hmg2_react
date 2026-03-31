@@ -60,11 +60,14 @@ export const UserProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         setToken(null);
+
         localStorage.removeItem('hmg_user');
         localStorage.removeItem('hmg_token');
         sessionStorage.removeItem('hmg_user');
         sessionStorage.removeItem('hmg_token');
+
         toast.info(t("auth:successfulLogout"), { transition: Bounce });
+
     };
 
     return (
