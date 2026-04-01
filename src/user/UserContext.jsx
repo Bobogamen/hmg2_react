@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Bounce, toast } from 'react-toastify';
 
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
@@ -8,8 +6,6 @@ export const useUser = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-
-    const { t } = useTranslation(["auth"])
 
     useEffect(() => {
         const storedUser =
@@ -65,9 +61,6 @@ export const UserProvider = ({ children }) => {
         localStorage.removeItem('hmg_token');
         sessionStorage.removeItem('hmg_user');
         sessionStorage.removeItem('hmg_token');
-
-        toast.info(t("auth:successfulLogout"), { transition: Bounce });
-
     };
 
     return (

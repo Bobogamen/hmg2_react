@@ -71,7 +71,10 @@ const Header = () => {
       navigate("/management");
 
     } catch (error) {
-
+      if (error.message === "invalidCredentials") {
+        toast.error(t("auth:invalidCredentials"));
+        return;
+      }
     } finally {
       setIsLoading(false);
       setEmail("");
@@ -81,6 +84,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
+    toast.info(t("auth:successfulLogout"));
     navigate("/");
   };
 

@@ -101,8 +101,6 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
         return;
       }
 
-      // ❌ no toast → handled globally by interceptor
-
     } finally {
       setIsLoading(false);
     }

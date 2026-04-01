@@ -1,89 +1,104 @@
 import { toast, Bounce } from "react-toastify";
 import i18n from "../locales/i18n";
 
-let isLoggingOut = false;
-
 export const setupInterceptors = (api, logout) => {
+  let isLoggingOut = false; // 🔥 prevent multiple triggers
+
   api.interceptors.response.use(
     (response) => response,
 
     (error) => {
-      const status = error.response?.status;
-      const url = error.config?.url;
+      const status = error?.response?.status;
+      const data = error?.response?.data;
+      const message = data?.message;
 
-      // -------------------------
-      // ❌ NETWORK ERROR
-      // -------------------------
-      if (!error.response && !error.isValidationError) {
-        toast.error(i18n.t("server:notResponding"), {
-          transition: Bounce,
-          toastId: "network-error",
+      // -----------------------------
+      // 🔴 VALIDATION (400)
+      // -----------------------------
+      if (status === 400) {
+        return Promise.reject({
+          ...error,
+          isValidationError: true,
+          validationErrors: data?.errors || {},
         });
-
-        return Promise.reject(error);
       }
 
-      // -------------------------
-      // ⚠️ VALIDATION ERROR
-      // -------------------------
-      if (status === 400 || status === 422) {
-        error.isValidationError = true;
-        error.validationErrors = error.response?.data?.errors;
+      // -----------------------------
+      // 🔐 SESSION EXPIRED (401)
+      // -----------------------------
+      if (status === 401 && message === "sessionExpired") {
 
-        return Promise.reject(error);
-      }
-
-      // -------------------------
-      // 🔑 LOGIN ERROR (MUST BE FIRST)
-      // -------------------------
-      if (url?.includes("/login")) {
-        if (status === 401) {
-          toast.error(i18n.t("auth:invalidCredentials"), {
-            transition: Bounce,
-            toastId: "invalid-credentials",
-          });
-        }
-
-        return Promise.reject(error);
-      }
-
-      // -------------------------
-      // 🔐 SESSION EXPIRED (ALL OTHER 401s)
-      // -------------------------
-      if (status === 401) {
-        toast.error(i18n.t("auth:sessionExpired"), {
-          transition: Bounce,
-          toastId: "session-expired",
-        });
-
-        if (!isLoggingOut && logout) {
+        // 🔁 prevent duplicate logout + toast
+        if (!isLoggingOut) {
           isLoggingOut = true;
-          logout();
+
+          toast.error(i18n.t("auth:sessionExpired"), {
+            transition: Bounce,
+            toastId: "session-expired",
+          });
+
+          logout(); // ✅ clean logout (NO redirect here)
         }
 
-        return Promise.reject(error);
+        return Promise.reject({
+          ...error,
+          isAuthError: true,
+        });
       }
 
-      // -------------------------
-      // ⛔ FORBIDDEN
-      // -------------------------
+      // -----------------------------
+      // 🔑 INVALID CREDENTIALS (LOGIN)
+      // -----------------------------
+      if (status === 401 && message === "invalidCredentials") {
+        return Promise.reject({
+          ...error,
+          isAuthError: true,
+          message: "invalidCredentials",
+        });
+      }
+
+      // -----------------------------
+      // ⛔ FORBIDDEN (403)
+      // -----------------------------
       if (status === 403) {
         toast.error(i18n.t("auth:accessDenied"), {
           transition: Bounce,
-          toastId: "forbidden",
+        });
+
+        return Promise.reject({
+          ...error,
+          isForbidden: true,
         });
       }
 
-      // -------------------------
-      // 💥 SERVER ERROR
-      // -------------------------
-      if (status >= 500) {
-        toast.error(i18n.t("server:serverError"), {
+      // -----------------------------
+      // 🌐 SERVER / NETWORK
+      // -----------------------------
+      if (!error.response) {
+        toast.error(i18n.t("server:notResponding"), {
           transition: Bounce,
-          toastId: "server-error",
+        });
+
+        return Promise.reject({
+          ...error,
+          isNetworkError: true,
         });
       }
 
+      if (status >= 500) {
+        toast.error(i18n.t("server:error"), {
+          transition: Bounce,
+        });
+
+        return Promise.reject({
+          ...error,
+          isServerError: true,
+        });
+      }
+
+      // -----------------------------
+      // ⚠️ FALLBACK
+      // -----------------------------
       return Promise.reject(error);
     }
   );

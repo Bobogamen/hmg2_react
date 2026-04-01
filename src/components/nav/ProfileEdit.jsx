@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../user/UserContext";
 import { useTranslation } from "react-i18next";
 import { editProfile } from "../../api/services/profileService";
-import { toast, Bounce } from "react-toastify";
+import { toast } from "react-toastify";
 import { useLoading } from "../../loader/LoadingContext";
 import renderFieldErrors from "../../utils/renderFieldErrors";
 
@@ -74,8 +74,6 @@ export default function ProfileEdit() {
                         setErrors(error.validationErrors || error.errors || {});
                         return;
                   }
-
-                  toast.error(t("error.message"), { transition: Bounce });
             } finally {
                   setIsLoading(false);
             }
