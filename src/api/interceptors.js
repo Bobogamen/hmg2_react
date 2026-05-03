@@ -26,7 +26,7 @@ export const setupInterceptors = (api, logout) => {
       // -----------------------------
       // 🔐 SESSION EXPIRED (401)
       // -----------------------------
-      if (status === 401 && message === "sessionExpired") {
+      if (status === 401 && (message === "sessionExpired" || message === "invalidToken")) {
 
         // 🔁 prevent duplicate logout + toast
         if (!isLoggingOut) {

@@ -13,8 +13,8 @@ const initialState = {
   city: "",
   address: "",
   size: "",
-  backgroundColor: "",
-  startPeriod: ""
+  backgroundColor: "#000000",
+  startDate: ""
 };
 
 const ModalCondominium = ({ show, handleClose, inputData }) => {
@@ -36,7 +36,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
         address: inputData.address || "",
         size: inputData.size || "",
         backgroundColor: inputData.backgroundColor || "",
-        startPeriod: inputData.startPeriod || ""
+        startDate: inputData.startDate || ""
       });
     } else {
       setCondominiumData(initialState);
@@ -112,7 +112,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
         <Modal.Title className="fw-bold">
           {isEditing
             ? inputData.name
-            : `${t("Create")} ${t("condominium")}`}
+            : `${t("create")} ${t("condo:title")}`}
         </Modal.Title>
       </Modal.Header>
 
@@ -123,46 +123,46 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
 
               {/* Name */}
               <div>
-                <label>{t("Name")}</label>
+                <label>{t("name")}</label>
                 <input
                   type="text"
                   name="name"
                   value={condominiumData.name}
                   onChange={handleChange}
-                  placeholder={t("placeholder_name_condominiums")}
+                  placeholder={t("condo:namePlaceholder")}
                 />
                 {renderFieldErrors(condominiumErrors, "name", t)}
               </div>
 
               {/* City */}
               <div>
-                <label>{t("City")}</label>
+                <label>{t("condo:city")}</label>
                 <input
                   type="text"
                   name="city"
                   value={condominiumData.city}
                   onChange={handleChange}
-                  placeholder={t("placeholder_city")}
+                  placeholder={t("condo:cityPlaceholder")}
                 />
                 {renderFieldErrors(condominiumErrors, "city", t)}
               </div>
 
               {/* Address */}
               <div>
-                <label>{t("Address")}</label>
+                <label>{t("condo:address")}</label>
                 <input
                   type="text"
                   name="address"
                   value={condominiumData.address}
                   onChange={handleChange}
-                  placeholder={t("placeholder_address")}
+                  placeholder={t("condo:addressPlaceholder")}
                 />
                 {renderFieldErrors(condominiumErrors, "address", t)}
               </div>
 
               {/* Size */}
               <div>
-                <label>{`${t("Number")} ${t("apartments")}/${t("homes")}`}</label>
+                <label>{`${t("number")} ${t("home:apartments")}/${t("home:homes")}`}</label>
                 <input
                   type="number"
                   name="size"
@@ -173,9 +173,9 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
                 {renderFieldErrors(condominiumErrors, "size", t)}
               </div>
 
-              {/* Start Period */}
+              {/* Start Date */}
               <div>
-                <label>{`${t("Select")} ${t("start date")}`}</label>
+                <label>{`${t("select")} ${t("condo:startDate")}`}</label>
                 {isEditing ? (
                   <p className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1">
                     {formatDate(condominiumData.startPeriod, i18n.language)}
@@ -184,18 +184,18 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
                   <>
                     <input
                       type="date"
-                      name="startPeriod"
-                      value={condominiumData.startPeriod}
+                      name="startDate"
+                      value={condominiumData.startDate}
                       onChange={handleChange}
                     />
-                    {renderFieldErrors(condominiumErrors, "startPeriod", t)}
+                    {renderFieldErrors(condominiumErrors, "startDate", t)}
                   </>
                 )}
               </div>
 
               {/* Background Color */}
               <div>
-                <label>{`${t("Select")} ${t("color")} ${t("for")} ${t("background")}`}</label>
+                <label>{`${t("select")} ${t("form:color")} ${t("for")} ${t("form:background")}`}</label>
                 <input
                   type="color"
                   name="backgroundColor"
@@ -207,7 +207,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
               </div>
 
               <button type="submit" className="authentication-button mt-3">
-                {isEditing ? t("Save") : t("Add")}
+                {isEditing ? t("save") : t("add")}
               </button>
 
             </form>

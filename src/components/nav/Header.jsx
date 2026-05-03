@@ -125,21 +125,21 @@ const Header = () => {
             </Dropdown.Item>
 
             <DropdownDivider />
+            <div id="language-menu">
+              <Dropdown.Item
+                active={i18n.language === "en"}
+                onClick={() => changeLanguage("en")}
+              >
+                🇬🇧 English
+              </Dropdown.Item>
 
-            <Dropdown.Item
-              active={i18n.language === "en"}
-              onClick={() => changeLanguage("en")}
-            >
-              🇬🇧 English
-            </Dropdown.Item>
-
-            <Dropdown.Item
-              active={i18n.language === "bg"}
-              onClick={() => changeLanguage("bg")}
-            >
-              🇧🇬 Български
-            </Dropdown.Item>
-
+              <Dropdown.Item
+                active={i18n.language === "bg"}
+                onClick={() => changeLanguage("bg")}
+              >
+                🇧🇬 Български
+              </Dropdown.Item>
+            </div>
             <DropdownDivider />
 
             <Dropdown.Item onClick={handleLogout} className="text-danger">
@@ -216,6 +216,7 @@ const Header = () => {
                   {t("auth:forgotPassword")}?
                 </Link>
                 <img
+                  id="language-menu"
                   src={languageImage}
                   alt={i18n.language}
                   className="i18-img"

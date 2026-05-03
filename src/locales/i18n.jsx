@@ -7,7 +7,9 @@ import bgValidation from "../locales/bg/validation.json";
 import bgHomepage from "../locales/bg/homepage.json"
 import bgDashboard from "../locales/bg/dashboard.json"
 import bgCondo from "../locales/bg/condominium.json"
+import bgHome from "../locales/bg/home.json"
 import bgProfile from "../locales/bg/profile.json"
+import bgForm from "../locales/bg/form.json"
 import bgServer from "../locales/bg/server.json"
 import bgFooter from "../locales/bg/footer.json"
 
@@ -17,7 +19,9 @@ import enValidation from "../locales/en/validation.json";
 import enHomepage from "../locales/en/homepage.json"
 import enDashboard from "../locales/en/dashboard.json"
 import enCondo from "../locales/en/condominium.json"
+import enHome from "../locales/en/home.json"
 import enProfile from "../locales/en/profile.json"
+import enForm from "../locales/en/form.json"
 import enServer from "../locales/en/server.json"
 import enFooter from "../locales/en/footer.json"
 
@@ -32,7 +36,9 @@ i18n
         homepage: bgHomepage,
         dashboard: bgDashboard,
         condo: bgCondo,
+        home: bgHome,
         profile: bgProfile,
+        form: bgForm,
         server: bgServer,
         footer: bgFooter,
       },
@@ -43,7 +49,9 @@ i18n
         homepage: enHomepage,
         dashboard: enDashboard,
         condo: enCondo,
+        home: enHome,
         profile: enProfile,
+        form: enForm,
         server: enServer,
         footer: enFooter
       }
