@@ -1,6 +1,12 @@
 import api from "../axios";
 
-export const getSettings = () => api.get("admin/settings");
+export const getSettings = async () => {
+  const { data } = await api.get("/admin/settings");
+  return data;
+};
 
-export const updateSetting = (id, value) =>
-  api.put(`admin/settings/${id}`, { value });
+export const updateSetting = async (settingData) => {
+
+  const { data } = await api.put("/admin/settings/update", settingData);
+  return data;
+};

@@ -10,19 +10,19 @@ const Admin = () => {
       return (
             <Container
                   fluid
-                  className="d-flex justify-content-center align-items-center py-4">
+                  className="justify-content-center align-items-center py-4">
                   <div>
 
                         {/* HEADER */}
-                        <div className="text-center mb-4">
-                              <h3 className="title mt-3 text-bg-primary bg-opacity-75">{t("dashboard:admin")}</h3>
+                        <div className="text-center">
+                              <h3 className="title my-3 text-bg-primary bg-opacity-75">{t("dashboard:admin")}</h3>
 
                               {showSettings && (
                                     <Button
                                           variant="secondary "
                                           size="sm"
                                           onClick={() => setShowSettings(false)}
-                                          className="mt-2"
+                                          className="my-2"
                                     >
                                           ← Back
                                     </Button>
@@ -32,10 +32,7 @@ const Admin = () => {
                         {/* DASHBOARD VIEW */}
                         {!showSettings && (
                               <div className="d-flex justify-content-center">
-                                    <Card
-                                          className="shadow-sm text-center p-4"
-                                          style={{ width: "320px" }}
-                                    >
+                                    <Card className="shadow-sm text-center p-4">
                                           <Card.Body>
 
                                                 <Card.Title>
@@ -60,11 +57,9 @@ const Admin = () => {
 
                         {/* SETTINGS VIEW */}
                         {showSettings && (
-                              <Card className="shadow-sm">
-                                    <Card.Body>
-                                          <ApplicationSettings />
-                                    </Card.Body>
-                              </Card>
+                              <div>
+                                    <ApplicationSettings />
+                              </div>
                         )}
 
                   </div>
