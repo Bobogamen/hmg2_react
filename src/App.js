@@ -35,6 +35,8 @@ import "./style/App.css";
 import "./style/Notification.css";
 import "./loader/Loader.css";
 import "react-toastify/dist/ReactToastify.css";
+import ApplicationSettings from "./components/admin/ApplicationSettings";
+import AdminLayout from "./components/admin/AdminLayout";
 
 /* =========================
    Role Groups
@@ -95,10 +97,13 @@ const App = () => {
             path="/admin"
             element={
               <ProtectedRoute allowedRoles={ADMIN_ONLY}>
-                <Admin />
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Admin />} />
+            <Route path="application-settings" element={<ApplicationSettings />} />
+          </Route>
 
           <Route
             path="/management"

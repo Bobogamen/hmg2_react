@@ -1,70 +1,33 @@
-import React, { useState } from "react";
-import { Button, Card, Container } from "react-bootstrap";
-import { useTranslation } from "react-i18next";
-import ApplicationSettings from "./ApplicationSettings";
+import React from "react";
+import { Card, Button, Container, Row, Col } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
-      const { t } = useTranslation();
-      const [showSettings, setShowSettings] = useState(false);
+    const navigate = useNavigate();
 
-      return (
-            <Container
-                  fluid
-                  className="justify-content-center align-items-center py-4">
-                  <div>
+    return (
+        <Container>
+            <Row className="justify-content-center">
 
-                        {/* HEADER */}
-                        <div className="text-center">
-                              <h3 className="title my-3 text-bg-primary bg-opacity-75">{t("dashboard:admin")}</h3>
+                <Col xs={12} md={6} lg={4}>
+                    <Card className="shadow-sm text-center p-3">
+                        <Card.Body>
+                            <Card.Title>Application Settings</Card.Title>
+                            <Card.Text>Manage application settings values</Card.Text>
 
-                              {showSettings && (
-                                    <Button
-                                          variant="secondary "
-                                          size="sm"
-                                          onClick={() => setShowSettings(false)}
-                                          className="my-2"
-                                    >
-                                          ← Back
-                                    </Button>
-                              )}
-                        </div>
+                            <Button
+                                className="w-100"
+                                onClick={() => navigate("application-settings")}
+                            >
+                                Open
+                            </Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
 
-                        {/* DASHBOARD VIEW */}
-                        {!showSettings && (
-                              <div className="d-flex justify-content-center">
-                                    <Card className="shadow-sm text-center p-4">
-                                          <Card.Body>
-
-                                                <Card.Title>
-                                                      Application Settings
-                                                </Card.Title>
-
-                                                <Card.Text className="text-muted">
-                                                      Manage system configuration values
-                                                </Card.Text>
-
-                                                <Button
-                                                      className="mt-3 w-100"
-                                                      onClick={() => setShowSettings(true)}
-                                                >
-                                                      Open Settings
-                                                </Button>
-
-                                          </Card.Body>
-                                    </Card>
-                              </div>
-                        )}
-
-                        {/* SETTINGS VIEW */}
-                        {showSettings && (
-                              <div>
-                                    <ApplicationSettings />
-                              </div>
-                        )}
-
-                  </div>
-            </Container>
-      );
+            </Row>
+        </Container>
+    );
 };
 
 export default Admin;

@@ -7,6 +7,9 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
 
+    // 🔥 NEW: auth loading state
+    const [loadingUser, setLoadingUser] = useState(true);
+
     useEffect(() => {
         const storedUser =
             localStorage.getItem('hmg_user') ||
@@ -20,6 +23,9 @@ export const UserProvider = ({ children }) => {
             setUser(JSON.parse(storedUser));
             setToken(storedToken);
         }
+
+        // 🔥 IMPORTANT: finish loading
+        setLoadingUser(false);
     }, []);
 
     const saveUser = (userData, jwtToken, rememberMe = false) => {
@@ -65,7 +71,14 @@ export const UserProvider = ({ children }) => {
 
     return (
         <UserContext.Provider
-            value={{ user, token, saveUser, updateUser, logout }}
+            value={{
+                user,
+                token,
+                loadingUser,   // 🔥 ADD THIS
+                saveUser,
+                updateUser,
+                logout
+            }}
         >
             {children}
         </UserContext.Provider>
