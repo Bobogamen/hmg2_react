@@ -81,6 +81,11 @@ const ResetPassword = () => {
       navigate("/");
 
     } catch (error) {
+      
+      if (error?.isAuthError) {
+        return; // 🔥 STOP HERE
+      }
+
       // -------------------------
       // ⚠️ VALIDATION ERROR
       // -------------------------

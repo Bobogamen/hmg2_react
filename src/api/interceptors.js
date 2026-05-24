@@ -27,8 +27,6 @@ export const setupInterceptors = (api, logout) => {
       // 🔐 SESSION EXPIRED (401)
       // -----------------------------
       if (status === 401 && (message === "sessionExpired" || message === "invalidToken")) {
-
-        // 🔁 prevent duplicate logout + toast
         if (!isLoggingOut) {
           isLoggingOut = true;
 
@@ -37,12 +35,13 @@ export const setupInterceptors = (api, logout) => {
             toastId: "session-expired",
           });
 
-          logout(); // ✅ clean logout (NO redirect here)
+          logout();
         }
 
         return Promise.reject({
           ...error,
           isAuthError: true,
+          handled: true, // 🔥 IMPORTANT FLAG
         });
       }
 
@@ -86,9 +85,11 @@ export const setupInterceptors = (api, logout) => {
       }
 
       if (status >= 500) {
-        toast.error(i18n.t("server:error"), {
-          transition: Bounce,
-        });
+        if (!error?.handled) {
+          toast.error(i18n.t("server:error"), {
+            transition: Bounce,
+          });
+        }
 
         return Promise.reject({
           ...error,

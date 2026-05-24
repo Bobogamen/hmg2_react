@@ -61,7 +61,6 @@ const Register = () => {
         return;
       }
 
-      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
