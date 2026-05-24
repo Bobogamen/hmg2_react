@@ -54,9 +54,14 @@ const Register = () => {
 
     } catch (error) {
 
-      if (error.isValidationError) {
-        setRegisterErrors(error.validationErrors);
+      const backendErrors = error?.response?.data?.errors;
+
+      if (backendErrors) {
+        setRegisterErrors(backendErrors);
+        return;
       }
+
+      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }

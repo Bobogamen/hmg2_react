@@ -166,6 +166,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
                 <input
                   type="number"
                   name="size"
+                  step="1"
                   value={condominiumData.size}
                   onChange={handleChange}
                   placeholder="23"
@@ -217,7 +218,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
 
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          {t("Close")}
+          {t("close")}
         </Button>
       </Modal.Footer>
     </Modal>
