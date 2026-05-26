@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../user/UserContext";
 import { useTranslation } from "react-i18next";
 import profile_edit from "../../assets/images/app/profile_edit.png"
+import { formatDate } from "../../utils/formatDate";
 
 const Profile = () => {
       const { user } = useUser();
-      const { t } = useTranslation(["common", "profile", "condo"]);
+      const { t, i18n } = useTranslation(["common", "profile", "condo"]);
       const navigate = useNavigate();
 
       const roleStyles = {
@@ -29,6 +30,7 @@ const Profile = () => {
                                     <div className="card-body text-center">
                                           <p className="mb-2"><strong>{t("name")}:</strong> {user.name}</p>
                                           <p className="mb-2"><strong>{t("email")}:</strong> {user.email}</p>
+                                          <p className="mb-2"><strong>{t("profile:registeredOn")}:</strong> {formatDate(user.registeredOn, i18n.language)}</p>
                                           <p className="mb-2">
                                                 <strong>{t("roles")}:</strong>{" "}
                                                 {user.roles.map((role) => {
@@ -60,8 +62,18 @@ const Profile = () => {
                         {/* CONDOMINIUM CARD */}
                         <div className="col-12 col-md-10 col-lg-8">
                               <div className="card my-4 shadow border-0 rounded-4">
-                                    <div className="card-header bg-success bg-opacity-75 text-white text-center fw-bold rounded-top-4">
-                                          {t("condo:title")}
+                                    <div className="card-header bg-success bg-opacity-75 text-white rounded-top-4">
+                                          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                                                <span className="fw-bold text-center flex-grow-1">
+                                                      {t("condo:title")}
+                                                </span>
+                                                <span className="badge bg-light text-success fs-6 px-3 py-2 shadow-sm">
+                                                      {user.condominiumLimit === -1
+                                                            ? t("profile:unlimited")
+                                                            : `${user.condominiums?.length || 0} / ${user.condominiumLimit}`}
+                                                </span>
+                                          </div>
                                     </div>
 
                                     {user.condominiums.length === 0 ? (

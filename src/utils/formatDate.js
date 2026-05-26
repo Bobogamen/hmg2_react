@@ -1,15 +1,21 @@
-import { format } from 'date-fns';
-import { bg, enGB } from 'date-fns/locale';
+export const formatDate = (date, language = "en") => {
 
-const formatDate = (date, language) => {
-  const parsedDate = new Date(date);
+  if (!date) return "";
 
-  if (isNaN(parsedDate)) {
-    return null;
-  }
+  const locale = language === "bg" ? "bg-BG" : "en-GB";
 
-  const locale = language === 'bg' ? bg : enGB;
-  return format(parsedDate, 'dd-MMM-yyyy', { locale });
+  const parts = new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: language === "bg" ? "long" : "short",
+    year: "numeric",
+  }).formatToParts(new Date(date));
+
+  const day = parts.find(p => p.type === "day")?.value;
+  const month = parts.find(p => p.type === "month")?.value;
+  const year = parts.find(p => p.type === "year")?.value;
+
+  const capitalizedMonth =
+    month.charAt(0).toUpperCase() + month.slice(1);
+
+  return `${day} ${capitalizedMonth} ${year}`;
 };
-
-export default formatDate;

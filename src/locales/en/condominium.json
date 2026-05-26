@@ -2,17 +2,29 @@
   "title": "Condominium",
   "typeApartmentBuilding": "Apartment Building",
   "typeCondominium": "Condominium",
-  "created": "The condominium was successfully created",
+  "created": "Condominium successfully created",
+  "updated": "Condominium successfully updated",
   "noneAddedCondo": "No condominium has been added",
-
   "city": "City",
   "address": "Address",
   "startDate": "start date",
-
   "namePlaceholder": "Condominium name",
   "cityPlaceholder": "City",
   "addressPlaceholder": "Address",
-
   "startDateWarning": "After creation, it cannot be changed because accounting starts from this date.",
-  "example": "Example: May 2020"
+  "example": "Example: May 2020",
+  "months": {
+    "jan": "January",
+    "feb": "February",
+    "mar": "March",
+    "apr": "April",
+    "may": "May",
+    "jun": "June",
+    "jul": "July",
+    "aug": "August",
+    "sep": "September",
+    "oct": "October",
+    "nov": "November",
+    "dec": "December"
+  }
 }

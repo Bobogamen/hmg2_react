@@ -5,6 +5,11 @@ export const addCondominium = async (condominiumData) => {
     return data;
 };
 
+export const getCondominiumStartDateYear = async () => {
+    const { data } = await api.get("/management/get-condominium-start-date-year");
+    return Number(data);
+};
+
 export const getCondominium = async (condominiumId) => {
     const { data } = await api.get(`/management/condominium/${condominiumId}`);
     return data;

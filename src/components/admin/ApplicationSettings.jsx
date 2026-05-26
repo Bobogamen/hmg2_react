@@ -36,6 +36,8 @@ const ApplicationSettings = () => {
 
             const data = await getSettings(); // ✅ already array now
 
+            console.log(data)
+
             setSettings(Array.isArray(data) ? data : []);
 
         } catch (error) {
@@ -105,21 +107,28 @@ const ApplicationSettings = () => {
 
         switch (setting.type) {
 
+            // =====================
+            // BOOLEAN
+            // =====================
             case "BOOLEAN":
                 return (
                     <Form.Check
                         type="switch"
-                        checked={setting.value === "true"}
+                        checked={String(setting.value) === "true"}
                         onChange={(e) =>
                             handleChange(setting.id, e.target.checked.toString())
                         }
                     />
                 );
 
-            case "NUMBER":
+            // =====================
+            // INTEGER
+            // =====================
+            case "INTEGER":
                 return (
                     <Form.Control
                         type="number"
+                        step="1"
                         value={setting.value ?? ""}
                         onChange={(e) =>
                             handleChange(setting.id, e.target.value)
@@ -127,6 +136,24 @@ const ApplicationSettings = () => {
                     />
                 );
 
+            // =====================
+            // DOUBLE
+            // =====================
+            case "DOUBLE":
+                return (
+                    <Form.Control
+                        type="number"
+                        step="0.01"
+                        value={setting.value ?? ""}
+                        onChange={(e) =>
+                            handleChange(setting.id, e.target.value)
+                        }
+                    />
+                );
+
+            // =====================
+            // COLOR
+            // =====================
             case "COLOR":
                 return (
                     <div className="d-flex align-items-center gap-2">
@@ -147,6 +174,9 @@ const ApplicationSettings = () => {
                     </div>
                 );
 
+            // =====================
+            // DATE (expects YYYY-MM-DD)
+            // =====================
             case "DATE":
                 return (
                     <Form.Control
@@ -158,6 +188,10 @@ const ApplicationSettings = () => {
                     />
                 );
 
+            // =====================
+            // STRING (default)
+            // =====================
+            case "STRING":
             default:
                 return (
                     <Form.Control
@@ -209,6 +243,8 @@ const ApplicationSettings = () => {
                         <table className="table table-hover align-middle text-center">
                             <thead className="table-dark">
                                 <tr>
+                                    <th>Id</th>
+                                    <th>Created</th>
                                     <th>Key</th>
                                     <th>Value</th>
                                     <th>Type</th>
@@ -220,25 +256,49 @@ const ApplicationSettings = () => {
                             <tbody>
                                 {(settings ?? []).map((setting) => (
                                     <tr key={setting.id}>
+
+                                        {/* Id */}
+                                        <td className="fw-bold">
+                                            {setting.id}
+                                        </td>
+
+                                        {/* Created */}
+                                        <td className="small text-muted">
+                                            {setting.createdAt
+                                                ? new Date(setting.createdAt).toLocaleString()
+                                                : "-"}
+                                        </td>
+
+                                        {/* Key */}
                                         <td className="fw-bold">
                                             {setting.settingKey}
                                         </td>
+
+                                        {/* Value */}
                                         <td>
                                             {renderInput(setting)}
                                         </td>
+
+                                        {/* Type */}
                                         <td>
                                             <Badge bg="primary">
                                                 {setting.type}
                                             </Badge>
                                         </td>
+
+                                        {/* Description */}
                                         <td>
                                             {setting.description || "-"}
                                         </td>
+
+                                        {/* Updated */}
                                         <td className="small text-muted">
                                             {setting.updatedAt
                                                 ? new Date(setting.updatedAt).toLocaleString()
                                                 : "-"}
                                         </td>
+
+                                        {/* Action */}
                                         <td>
                                             <Button
                                                 size="sm"
@@ -252,6 +312,7 @@ const ApplicationSettings = () => {
                                                 )}
                                             </Button>
                                         </td>
+
                                     </tr>
                                 ))}
                             </tbody>
@@ -262,20 +323,43 @@ const ApplicationSettings = () => {
                         {(settings ?? []).map((setting) => (
                             <Card key={setting.id} className="mb-2">
                                 <Card.Body>
+
+                                    {/* ID + timestamps */}
+                                    <div className="small text-muted mb-2">
+                                        <div>
+                                            <span className="fw-bold">ID:</span> {setting.id}</div>
+                                        <div>
+                                            <span className="fw-bold">Created:{" "}</span>
+                                            {setting.createdAt
+                                                ? new Date(setting.createdAt).toLocaleString()
+                                                : "-"}
+                                        </div>
+                                        <div>
+                                            <span className="fw-bold">Updated:{" "}</span>
+                                            {setting.updatedAt
+                                                ? new Date(setting.updatedAt).toLocaleString()
+                                                : "-"}
+                                        </div>
+                                    </div>
+
+                                    {/* Type */}
                                     <div className="mb-2">
                                         <Badge bg="secondary">
                                             {setting.type}
                                         </Badge>
                                     </div>
 
+                                    {/* Key */}
                                     <div className="fw-bold mb-2">
                                         {setting.settingKey}
                                     </div>
 
+                                    {/* Input */}
                                     <div className="mb-2">
                                         {renderInput(setting)}
                                     </div>
 
+                                    {/* Save button */}
                                     <Button
                                         size="sm"
                                         className="w-100"
@@ -288,6 +372,7 @@ const ApplicationSettings = () => {
                                             "Save"
                                         )}
                                     </Button>
+
                                 </Card.Body>
                             </Card>
                         ))}

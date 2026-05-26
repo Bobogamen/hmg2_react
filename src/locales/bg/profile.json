@@ -10,5 +10,7 @@
   "newPassword": "Нова парола",
   "admin": "Админ",
   "manager": "Домоуправител",
-  "cashier": "Касиер"
+  "cashier": "Касиер",
+  "registeredOn": "Регистрация:",
+  "unlimited": "Неограничени"
 }

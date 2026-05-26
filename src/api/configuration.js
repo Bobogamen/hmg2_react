@@ -1,6 +1,6 @@
 const config = Object.freeze({
   api: {
-    baseURL: process.env.REACT_APP_API_URL || "http://localhost:8080",
+    baseURL: "http://192.168.1.84:8080",
   },
   app: {
     baseURL: window.location.origin,

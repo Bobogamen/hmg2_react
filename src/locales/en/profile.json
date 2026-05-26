@@ -10,5 +10,7 @@
   "newPassword": "New Password",
   "admin": "Admin",
   "manager": "Manager",
-  "cashier": "Cashier"
+  "cashier": "Cashier",
+  "registeredOn": "Registered:",
+  "unlimited": "Unlimited"
 }

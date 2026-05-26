@@ -15,5 +15,6 @@
   "currentPasswordIncorrect": "Current password is incorrect",
   "newPasswordDifferent": "New password must be different",
   "lengthBetween": "Length must be between {{min}} and {{max}} characters",
-  "startDateAfter": "Start date must be in or after {{year}}"
+  "startDateAfter": "Start date must be in or after {{year}}",
+  "pastOrPresent": "Start date cannot be in the future"
 }

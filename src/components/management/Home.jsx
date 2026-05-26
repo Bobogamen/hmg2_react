@@ -20,6 +20,8 @@ const Home = () => {
             setHome();
       }, [])
 
+      console.log(id, home, t);
+
       return (
             <div>
                   <ModalHome show={editHome} handleClose={handleClose} action={'edit'} data={''} />

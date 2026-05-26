@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { addCondominium, editCondominium } from "../../api/services/managementService";
+import { addCondominium, editCondominium, getCondominiumStartDateYear } from "../../api/services/managementService";
 import { useLoading } from "../../loader/LoadingContext";
-import { toast } from "react-toastify";
-import formatDate from "../../utils/formatDate";
+import { Bounce, toast } from "react-toastify";
 import renderFieldErrors from "../../utils/renderFieldErrors";
+import '../management/Management.css';
 
 // ✅ moved outside → stable reference
 const initialState = {
@@ -20,34 +20,40 @@ const initialState = {
 const ModalCondominium = ({ show, handleClose, inputData }) => {
   const { t, i18n } = useTranslation();
   const { setIsLoading } = useLoading();
-
   const [condominiumData, setCondominiumData] = useState(initialState);
   const [condominiumErrors, setCondominiumError] = useState({});
+  const [minYear, setMinYear] = useState(null);
 
   const isEditing = !!inputData?.id;
 
-  // ✅ FIXED: no infinite loop
   useEffect(() => {
 
-    if (inputData?.id) {
-      setCondominiumData({
-        name: inputData.name || "",
-        city: inputData.city || "",
-        address: inputData.address || "",
-        size: inputData.size || "",
-        backgroundColor: inputData.backgroundColor || "",
-        startDate: inputData.startDate || ""
-      });
-    } else {
-      setCondominiumData(initialState);
+    const isEditing = !!inputData?.id;
+
+    // =========================
+    // LOAD DATA (EDIT / CREATE)
+    // =========================
+    if (show) {
+
+      if (isEditing) {
+        setCondominiumData({
+          name: inputData.name || "",
+          city: inputData.city || "",
+          address: inputData.address || "",
+          size: inputData.size || "",
+          backgroundColor: inputData.backgroundColor || "",
+          startDate: inputData.startDate ? new Date(inputData.startDate) : null
+        });
+      } else {
+        setCondominiumData(initialState);
+        loadMinYear();
+      }
+
+      setCondominiumError({});
     }
-
-    // also reset errors when switching mode
-    setCondominiumError({});
-
     // 👇 disable ONLY this warning
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputData?.id]);
+  }, [show, inputData?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,36 +77,90 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
     setCondominiumError({});
   };
 
+  const loadMinYear = async () => {
+    try {
+      const year = await getCondominiumStartDateYear();
+
+      setMinYear(year);
+
+    } catch (error) {
+
+      const serverMessage =
+        error?.response?.data?.message;
+
+      if (serverMessage) {
+        toast.error(i18n.t(`server:${serverMessage}`), {
+          transition: Bounce,
+        });
+      } else {
+        toast.error(i18n.t("server:error"), {
+          transition: Bounce,
+        });
+      }
+
+      setMinYear(null);
+    }
+  };
+
+  const buildStartDate = () => {
+    if (!condominiumData.startMonth || !condominiumData.startYear) {
+      return null;
+    }
+
+    const month = monthMap[condominiumData.startMonth];
+    const year = condominiumData.startYear;
+
+    return `${year}-${month}-01`;
+  };
+
+  const monthMap = {
+    jan: "01",
+    feb: "02",
+    mar: "03",
+    apr: "04",
+    may: "05",
+    jun: "06",
+    jul: "07",
+    aug: "08",
+    sep: "09",
+    oct: "10",
+    nov: "11",
+    dec: "12"
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
+      const payload = {
+        name: condominiumData.name,
+        city: condominiumData.city,
+        address: condominiumData.address,
+        size: condominiumData.size,
+        backgroundColor: condominiumData.backgroundColor,
+        startDate: buildStartDate()
+      };
+
       if (isEditing) {
         await editCondominium({
           id: inputData.id,
-          ...condominiumData
+          ...payload
         });
       } else {
-        await addCondominium(condominiumData);
+        await addCondominium(payload);
       }
 
       resetForm();
       handleClose();
 
       toast.success(
-        isEditing
-          ? t("Condominium successfully updated")
-          : t("Condominium successfully created")
+        isEditing ? t("condo:updated") : t("condo:created")
       );
-
     } catch (error) {
-
       if (error.isValidationError) {
         setCondominiumError(error.validationErrors || error.errors || {});
-        return;
       }
-
     } finally {
       setIsLoading(false);
     }
@@ -117,102 +177,194 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
       </Modal.Header>
 
       <Modal.Body>
-        <div className="d-flex justify-content-center">
-          <div>
-            <form className="registrationForm" onSubmit={handleSubmit}>
+        <div className="container-fluid">
+          <form className="registrationForm" onSubmit={handleSubmit}>
 
-              {/* Name */}
-              <div>
-                <label>{t("name")}</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={condominiumData.name}
-                  onChange={handleChange}
-                  placeholder={t("condo:namePlaceholder")}
-                />
-                {renderFieldErrors(condominiumErrors, "name", t)}
-              </div>
+            {/* Name */}
+            <div>
+              <label>{t("name")}</label>
+              <input
+                type="text"
+                name="name"
+                value={condominiumData.name}
+                onChange={handleChange}
+                placeholder={t("condo:namePlaceholder")}
+              />
+              {renderFieldErrors(condominiumErrors, "name", t)}
+            </div>
 
-              {/* City */}
-              <div>
-                <label>{t("condo:city")}</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={condominiumData.city}
-                  onChange={handleChange}
-                  placeholder={t("condo:cityPlaceholder")}
-                />
-                {renderFieldErrors(condominiumErrors, "city", t)}
-              </div>
+            {/* City */}
+            <div>
+              <label>{t("condo:city")}</label>
+              <input
+                type="text"
+                name="city"
+                value={condominiumData.city}
+                onChange={handleChange}
+                placeholder={t("condo:cityPlaceholder")}
+              />
+              {renderFieldErrors(condominiumErrors, "city", t)}
+            </div>
 
-              {/* Address */}
-              <div>
-                <label>{t("condo:address")}</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={condominiumData.address}
-                  onChange={handleChange}
-                  placeholder={t("condo:addressPlaceholder")}
-                />
-                {renderFieldErrors(condominiumErrors, "address", t)}
-              </div>
+            {/* Address */}
+            <div>
+              <label>{t("condo:address")}</label>
+              <input
+                type="text"
+                name="address"
+                value={condominiumData.address}
+                onChange={handleChange}
+                placeholder={t("condo:addressPlaceholder")}
+              />
+              {renderFieldErrors(condominiumErrors, "address", t)}
+            </div>
 
-              {/* Size */}
-              <div>
-                <label>{`${t("number")} ${t("home:apartments")}/${t("home:homes")}`}</label>
-                <input
-                  type="number"
-                  name="size"
-                  step="1"
-                  value={condominiumData.size}
-                  onChange={handleChange}
-                  placeholder="23"
-                />
-                {renderFieldErrors(condominiumErrors, "size", t)}
-              </div>
+            {/* Size */}
+            <div>
+              <label>{`${t("number")} ${t("home:apartments")}/${t("home:homes")}`}</label>
+              <input
+                type="number"
+                name="size"
+                step="1"
+                value={condominiumData.size}
+                onChange={handleChange}
+                placeholder="23"
+              />
+              {renderFieldErrors(condominiumErrors, "size", t)}
+            </div>
 
-              {/* Start Date */}
-              <div>
-                <label>{`${t("select")} ${t("condo:startDate")}`}</label>
-                {isEditing ? (
-                  <p className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1">
-                    {formatDate(condominiumData.startPeriod, i18n.language)}
-                  </p>
-                ) : (
-                  <>
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={condominiumData.startDate}
-                      onChange={handleChange}
-                    />
-                    {renderFieldErrors(condominiumErrors, "startDate", t)}
-                  </>
-                )}
-              </div>
+            {/* Start Date */}
+            <div>
+              <label>{`${t("select")} ${t("condo:startDate")}`}</label>
+              {isEditing ? (
+                <p className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1">
+                  {condominiumData.startDate
+                    ? condominiumData.startDate.toLocaleDateString("en-US", {
+                      month: "short",
+                      year: "numeric"
+                    })
+                    : ""}
+                </p>
+              ) : (
+                <>
+                  {/* Start Date */}
+                  <div>
+                    {isEditing ? (
+                      <p className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1">
+                        {condominiumData.startMonth && condominiumData.startYear
+                          ? `${t(`condo:months.${condominiumData.startMonth}`)} ${condominiumData.startYear}`
+                          : ""}
+                      </p>
+                    ) : (
+                      <>
+                        <div className="d-flex gap-2 mt-1 justify-content-center">
+                          {/* Month */}
+                          <select
+                            className="width-fit-content"
+                            value={condominiumData.startMonth}
+                            onChange={(e) =>
+                              setCondominiumData((prev) => ({
+                                ...prev,
+                                startMonth: e.target.value
+                              }))
+                            }
+                          >
+                            <option value="">{t("month")}</option>
 
-              {/* Background Color */}
-              <div>
-                <label>{`${t("select")} ${t("form:color")} ${t("for")} ${t("form:background")}`}</label>
-                <input
-                  type="color"
-                  name="backgroundColor"
-                  value={condominiumData.backgroundColor}
-                  onChange={handleChange}
-                  style={{ width: "3em", margin: "auto" }}
-                />
-                {renderFieldErrors(condominiumErrors, "backgroundColor", t)}
-              </div>
+                            {[
+                              "jan", "feb", "mar", "apr", "may", "jun",
+                              "jul", "aug", "sep", "oct", "nov", "dec"
+                            ].map((key, index) => {
+                              const current = new Date();
+                              const currentYear = current.getFullYear();
+                              const currentMonth = current.getMonth();
+                              const selectedYear = Number(condominiumData.startYear);
 
-              <button type="submit" className="authentication-button mt-3">
-                {isEditing ? t("save") : t("add")}
-              </button>
+                              // 🔥 only block future months for CURRENT year
+                              const isFutureMonth =
+                                selectedYear === currentYear &&
+                                index > currentMonth;
 
-            </form>
-          </div>
+                              // IMPORTANT: ALWAYS show selected value
+                              const isSelected = condominiumData.startMonth === key;
+
+                              if (isFutureMonth && !isSelected) {
+                                return null;
+                              }
+
+                              return (
+                                <option key={key} value={key}>
+                                  {t(`condo:months.${key}`)}
+                                </option>
+                              );
+                            })}
+                          </select>
+
+                          {/* Year */}
+                          <select
+                            className="width-fit-content"
+                            value={condominiumData.startYear}
+                            onChange={(e) => {
+                              const newYear = Number(e.target.value);
+                              const current = new Date();
+
+                              const monthIndex = [
+                                "jan", "feb", "mar", "apr", "may", "jun",
+                                "jul", "aug", "sep", "oct", "nov", "dec"
+                              ].indexOf(condominiumData.startMonth);
+
+                              const shouldResetMonth =
+                                newYear === current.getFullYear() &&
+                                monthIndex > current.getMonth();
+
+                              setCondominiumData((prev) => ({
+                                ...prev,
+                                startYear: newYear,
+                                startMonth: shouldResetMonth ? "" : prev.startMonth
+                              }));
+                            }}
+                          >
+                            <option value="">{t("year")}</option>
+
+                            {minYear &&
+                              Array.from(
+                                { length: new Date().getFullYear() - minYear + 1 },
+                                (_, i) => minYear + i
+                              )
+                                .filter((year) => year <= new Date().getFullYear())
+                                .map((year) => (
+                                  <option key={year} value={year}>
+                                    {year}
+                                  </option>
+                                ))}
+                          </select>
+                        </div>
+                        {renderFieldErrors(condominiumErrors, "startDate", t)}
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Background Color */}
+            <div>
+              <label>{`${t("select")} ${t("form:color")} ${t("for")} ${t("form:background")}`}</label>
+              <input
+                type="color"
+                name="backgroundColor"
+                value={condominiumData.backgroundColor}
+                onChange={handleChange}
+                style={{ width: "3em", margin: "auto" }}
+              />
+              {renderFieldErrors(condominiumErrors, "backgroundColor", t)}
+            </div>
+
+            <button type="submit" className="authentication-button mt-3">
+              {isEditing ? t("save") : t("add")}
+            </button>
+
+          </form>
         </div>
       </Modal.Body>
 

@@ -26,12 +26,22 @@ const Management = () => {
   return (
     <div>
       <div className="management">
-        <h3 className="title mt-3 text-bg-danger bg-opacity-50">{t("dashboard:management")}</h3>
+        <h3 className="title mt-3 text-bg-danger bg-opacity-50">
+          {t("dashboard:management")}
+        </h3>
+
         {condominiums.length > 0 ? (
           <ul>
-            {condominiums.map(condo => (
-              <Link to={`/management/condominium/${condo.id}`} className="text-decoration-none text-dark" key={condo.id}>
-                <li id={condo.id} style={{ backgroundColor: condo.backgroundColor }}>
+            {condominiums.map((condo) => (
+              <Link
+                to={`/management/condominium/${condo.id}`}
+                className="text-decoration-none text-dark"
+                key={condo.id}
+              >
+                <li
+                  id={condo.id}
+                  style={{ backgroundColor: condo.backgroundColor }}
+                >
                   <img src={apartments} className="big-icon" alt="apartments" />
                   <span>{condo.name}</span>
                 </li>
@@ -41,16 +51,20 @@ const Management = () => {
         ) : (
           <h5 className="text-muted">{t("condo:noneAddedCondo")}</h5>
         )}
-        {condominiums.length <= 2 ? (
-          <>
-            <ModalCondominium show={openModal} handleClose={handleClose} />
-            <div className="img-button pointer" onClick={handleOpen}>
-              <img src={add} className="icon" alt="add" />
-              <span className="ms-2">{`${t("common:create")}`}</span>
-            </div>
-          </>
-        ) : null}
+
+        {condominiums.length <= 2 && (
+          <div className="img-button pointer" onClick={handleOpen}>
+            <img src={add} className="icon" alt="add" />
+            <span className="ms-2">{t("common:create")}</span>
+          </div>
+        )}
       </div>
+
+      {/* ✅ ALWAYS OUTSIDE */}
+      <ModalCondominium
+        show={openModal}
+        handleClose={handleClose}
+      />
     </div>
   );
 };

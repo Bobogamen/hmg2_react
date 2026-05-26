@@ -14,6 +14,7 @@
   margin-top: 0.1em;
   text-align: center;
   padding: 1.6em 1em 1.6em 1em;
+  justify-content: center;
 }
 
 .registrationForm div {
@@ -24,11 +25,16 @@
 }
 
 .registrationForm input {
-  width: 18em;
+  width: 16em;
 }
 
 .registrationForm small {
   display: flex;
+  font-size: smaller;
+}
+
+.registrationForm select {
+  font-size: smaller;
 }
 
 .width-fit-content {

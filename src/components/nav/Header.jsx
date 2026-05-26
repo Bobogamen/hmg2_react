@@ -174,7 +174,7 @@ const Header = () => {
                     placeholder="Email"
                     className="my-3"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value.trim())}
                   />
 
                   <input
