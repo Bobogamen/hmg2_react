@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { addCondominium, editCondominium, getCondominiumStartDateYear } from "../../api/services/managementService";
 import { useLoading } from "../../loader/LoadingContext";
 import { Bounce, toast } from "react-toastify";
@@ -23,6 +23,12 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
   const [condominiumData, setCondominiumData] = useState(initialState);
   const [condominiumErrors, setCondominiumError] = useState({});
   const [minYear, setMinYear] = useState(null);
+
+  const [openInfo, setOpenInfo] = useState(false);
+  const [openWarning, setOpenWarning] = useState(false);
+
+  const infoRef = useRef(null);
+  const warningRef = useRef(null);
 
   const isEditing = !!inputData?.id;
 
@@ -161,6 +167,11 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
       if (error.isValidationError) {
         setCondominiumError(error.validationErrors || error.errors || {});
       }
+
+      if (error.errors === "maxLimitReached") {
+        toast.warning(t("condo:maxLimitReached"));
+      }
+
     } finally {
       setIsLoading(false);
     }
@@ -235,7 +246,45 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
 
             {/* Start Date */}
             <div>
-              <label>{`${t("select")} ${t("condo:startDate")}`}</label>
+              <label>
+                {`${t("select")} ${t("condo:startDate")}`}
+
+                {/* WARNING ICON */}
+                <span
+                  ref={warningRef}
+                  style={{ cursor: "pointer", marginLeft: 6 }}
+                  onClick={() => {
+                    setOpenWarning((v) => !v);
+                    setOpenInfo(false);
+                  }}
+                >
+                  ⚠️
+                </span>
+                {/* INFO ICON */}
+                <span
+                  ref={infoRef}
+                  style={{ cursor: "pointer", marginLeft: 8 }}
+                  onClick={() => {
+                    setOpenInfo((v) => !v);
+                    setOpenWarning(false);
+                  }}
+                >
+                  ℹ️
+                </span>
+              </label>
+
+              {openWarning && (
+                <div className="border border-3 border-warning rounded p-1 bg-warning-subtle mt-1">
+                  <Trans i18nKey="condo:startDateWarning" />
+                </div>
+              )}
+
+              {openInfo && (
+                <div className="border border-3 border-info rounded p-1 bg-info-subtle mt-1">
+                  <Trans i18nKey="condo:startDateInfo" />
+                </div>
+              )}
+
               {isEditing ? (
                 <p className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1">
                   {condominiumData.startDate
