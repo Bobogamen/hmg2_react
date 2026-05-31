@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import '../management/Management.css';
 import add from '../../assets/images/app/add.png';
@@ -10,15 +10,10 @@ import { useUser } from "../../user/UserContext";
 
 const Management = () => {
   const { user } = useUser();
-  const [condominiums, setCondominiums] = useState([]);
+  const condominiums = user?.condominiums || [];
+
   const [openModal, setOpenModal] = useState(false);
   const { t } = useTranslation(["common", "dashboard", "condominium", "server"]);
-
-  useEffect(() => {
-    if (user) {
-      setCondominiums(user.condominiums);
-    }
-  }, [user]);
 
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
@@ -26,19 +21,16 @@ const Management = () => {
   return (
     <div>
       <div className="management">
-        <h3 className="title mt-3 text-bg-danger bg-opacity-50">
-          {t("dashboard:management")}
-        </h3>
 
         {condominiums.length > 0 ? (
           <ul>
             {condominiums.map((condo) => (
               <Link
-                to={`/management/condominium/${condo.id}`}
-                className="text-decoration-none text-dark"
                 key={condo.id}
+                to={`/management/condominiums/${condo.id}`}
+                className="text-decoration-none text-dark"
               >
-                <li id={condo.id} style={{ backgroundColor: condo.backgroundColor }} >
+                <li style={{ backgroundColor: condo.backgroundColor }}>
                   <img src={apartments} className="big-icon" alt="apartments" />
                   <span>{condo.name}</span>
                 </li>
@@ -46,7 +38,9 @@ const Management = () => {
             ))}
           </ul>
         ) : (
-          <h5 className="text-muted">{t("condo:noneAddedCondo")}</h5>
+          <h5 className="text-muted">
+            {t("condo:noneAddedCondo")}
+          </h5>
         )}
 
         {user?.condominiumLimit > condominiums.length && (
@@ -55,13 +49,14 @@ const Management = () => {
             <span className="ms-2">{t("common:create")}</span>
           </div>
         )}
+
       </div>
 
-      {/* ✅ ALWAYS OUTSIDE */}
       <ModalCondominium
         show={openModal}
         handleClose={handleClose}
       />
+
     </div>
   );
 };

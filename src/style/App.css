@@ -93,6 +93,10 @@
   display: block;
 }
 
+.smaller-text {
+  font-size: 12px;
+}
+
 @media (min-width: 1145px) {
   .img-button {
     font-size: larger;

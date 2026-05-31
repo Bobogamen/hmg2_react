@@ -1,17 +1,17 @@
 import api from "../axios";
 
 export const addCondominium = async (condominiumData) => {
-    const { data } = await api.post("/management/add-condominium", condominiumData);
+    const { data } = await api.post("/management/condominiums/create", condominiumData);
     return data;
 };
 
 export const getCondominiumStartDateYear = async () => {
-    const { data } = await api.get("/management/get-condominium-start-date-year");
+    const { data } = await api.get("/management/get-condominiums-start-date-year");
     return Number(data);
 };
 
 export const getCondominium = async (condominiumId) => {
-    const { data } = await api.get(`/management/condominium/${condominiumId}`);
+    const { data } = await api.get(`/management/condominiums/${condominiumId}`);
     return data;
 };
 

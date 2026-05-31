@@ -10,7 +10,7 @@ import ModalHome from "./ModalHome";
 import ModalResident from "./ModalResident";
 
 
-const HomesTable = ({ homesGroup }) => {
+const HomesTable = ({ condominium }) => {
       const [openHomeModal, setOpenHomeModal] = useState(false);
       const [openResidentModal, setOpenResidentModal] = useState(false);
 
@@ -27,10 +27,10 @@ const HomesTable = ({ homesGroup }) => {
 
                   <div className="d-flex justify-content-center align-items-center">
                         <h4 className="text-capitalize fw-bold">{t('homes')}&nbsp;</h4>
-                        <h4>{homesGroup?.homes?.length || 0}{t('pcs.')}</h4>
+                        <h4>{condominium?.homes?.length || 0}{t('pcs.')}</h4>
                   </div>
 
-                  {homesGroup.homes ? (
+                  {condominium.homes ? (
                         <Table bordered striped hover size="sm">
                               <thead className="align-middle">
                                     <tr className="fw-bold">
@@ -43,7 +43,7 @@ const HomesTable = ({ homesGroup }) => {
                                     </tr>
                               </thead>
                               <tbody className="align-middle">
-                                    {homesGroup?.homes?.map(h => (
+                                    {condominium?.homes?.map(h => (
                                           <tr key={`h${h.id}`} id={h.id}>
                                                 <td>{h.floor}</td>
                                                 <td>{h.name}</td>
@@ -52,7 +52,7 @@ const HomesTable = ({ homesGroup }) => {
                                                 <td>{h.totalForMonth}</td>
                                                 <td>
                                                       <div className="d-flex justify-content-evenly">
-                                                            <Link to={`/management/homesGroup/${homesGroup.id}/home/${h.id}`} className="text-decoration-none text-dark" key={h.id}>
+                                                            <Link to={`/management/homesGroup/${condominium.id}/home/${h.id}`} className="text-decoration-none text-dark" key={h.id}>
                                                                   <img src={home} alt="home" className="icon" />
                                                             </Link>
                                                             <img src={addResident} alt="add_resident" className="icon pointer" onClick={handleOpenResidentModal} />
@@ -67,7 +67,7 @@ const HomesTable = ({ homesGroup }) => {
                         </div>
                   )}
                   <ModalResident show={openResidentModal} handleClose={handleCloseResidentModal} input={false} />
-                  <ModalHome show={openHomeModal} handleClose={handleCloseHomeModal} action={'add'} data={homesGroup} />
+                  <ModalHome show={openHomeModal} handleClose={handleCloseHomeModal} action={'add'} data={condominium} />
                   <div className="img-button pointer m-auto mt-3" onClick={handleOpenHomeModal}>
                         <img src={addHome} className="icon" alt="add" />
                         <span className="ms-1">{`${t('Add')} ${t('home')}`}</span>

@@ -8,7 +8,6 @@ import ResetPassword from "./components/homepage/ResetPassword";
 
 import Admin from "./components/admin/Admin";
 import Management from "./components/management/Management";
-import HomesGroup from "./components/management/HomesGroup";
 import Home from "./components/management/Home";
 
 import Finance from "./components/finance/Finance";
@@ -38,6 +37,8 @@ import "react-toastify/dist/ReactToastify.css";
 import ApplicationSettings from "./components/admin/ApplicationSettings";
 import Logs from "./components/admin/Logs";
 import AdminLayout from "./components/admin/AdminLayout";
+import Condominium from "./components/management/Condominium";
+import ManagementLayout from "./components/management/ManagementLayout";
 
 /* =========================
    Role Groups
@@ -111,27 +112,32 @@ const App = () => {
             path="/management"
             element={
               <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
-                <Management />
+                <ManagementLayout />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="/management/homesGroup/:id"
-            element={
-              <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
-                <HomesGroup />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/management/homesGroup/:id/home/:id"
-            element={
-              <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+          >
 
+            <Route index element={<Management />} />
+            {/* CONDOMINIUM */}
+            <Route
+              path="condominiums/:condominiumId"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
+                  <Condominium />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* HOME */}
+            <Route
+              path="condominiums/:condominiumId/homes/:homeId"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
           {[
             { path: "/finance", component: <Finance /> },
             { path: "/fund", component: <Fund /> },

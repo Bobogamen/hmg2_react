@@ -188,9 +188,15 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title className="fw-bold">
-          {isEditing
-            ? inputData.name
-            : `${t("create")} ${t("condo:title")}`}
+          <div className="fw-bold fs-5">
+            {isEditing ? inputData.name : `${t("create")} ${t("condo:title")}`}
+          </div>
+
+          {isEditing && (
+            <div className="text-muted fs-6">
+              {inputData.city}, {inputData.address}
+            </div>
+          )}
         </Modal.Title>
       </Modal.Header>
 
@@ -247,6 +253,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
                 value={condominiumData.size}
                 onChange={handleChange}
                 placeholder="23"
+                min={condominiumData.size}
               />
               {renderFieldErrors(condominiumErrors, "size", t)}
             </div>
@@ -295,8 +302,8 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
               {isEditing ? (
                 <p className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1">
                   {condominiumData.startDate
-                    ? condominiumData.startDate.toLocaleDateString("en-US", {
-                      month: "short",
+                    ? condominiumData.startDate.toLocaleDateString(i18n.language, {
+                      month: "long",
                       year: "numeric"
                     })
                     : ""}

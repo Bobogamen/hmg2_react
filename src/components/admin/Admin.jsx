@@ -11,7 +11,7 @@ const Admin = () => {
 
         {/* SETTINGS */}
         <Col xs={12} md={6} lg={4}>
-          <Card className="shadow-sm text-center h-100">
+          <Card className="shadow-sm text-center h-100 p-3">
             <Card.Body className="d-flex flex-column">
               <Card.Title>Application Settings</Card.Title>
 
@@ -31,7 +31,7 @@ const Admin = () => {
 
         {/* LOGS */}
         <Col xs={12} md={6} lg={4}>
-          <Card className="shadow-sm text-center h-100">
+          <Card className="shadow-sm text-center h-100 p-3">
             <Card.Body className="d-flex flex-column">
               <Card.Title>Logs</Card.Title>
 

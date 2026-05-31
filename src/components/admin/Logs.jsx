@@ -45,13 +45,13 @@ const Logs = () => {
       const getLevelBadge = (level) => {
             switch (level) {
                   case "ERROR":
-                        return <Badge bg="danger">{level}</Badge>;
+                        return <Badge bg="danger" className="smaller-text">{level}</Badge>;
                   case "WARN":
-                        return <Badge bg="warning">{level}</Badge>;
+                        return <Badge bg="warning" className="smaller-text">{level}</Badge>;
                   case "INFO":
-                        return <Badge bg="info">{level}</Badge>;
+                        return <Badge bg="info" className="smaller-text">{level}</Badge>;
                   default:
-                        return <Badge bg="secondary">{level}</Badge>;
+                        return <Badge bg="secondary" className="smaller-text">{level}</Badge>;
             }
       };
 
@@ -74,7 +74,7 @@ const Logs = () => {
 
                         <Card.Body className="bg-light">
 
-                              <Row className="g-3 align-items-center">
+                              <Row className="g-3 align-items-center p-2">
 
                                     {/* EMAIL */}
                                     <Col lg={4} md={6}>
@@ -84,6 +84,7 @@ const Logs = () => {
                                                 </Form.Label>
 
                                                 <Form.Control
+                                                      className="border-secondary"
                                                       placeholder="Search by email..."
                                                       value={emailFilter}
                                                       onChange={(e) => setEmailFilter(e.target.value)}
@@ -99,6 +100,7 @@ const Logs = () => {
                                                 </Form.Label>
 
                                                 <Form.Control
+                                                      className="border-secondary"
                                                       placeholder="Search by action..."
                                                       value={actionFilter}
                                                       onChange={(e) => setActionFilter(e.target.value)}
@@ -234,12 +236,12 @@ const Logs = () => {
 
                                                             <td>{getLevelBadge(log.level)}</td>
 
-                                                            <td className="fw-semibold">
+                                                            <td className="">
                                                                   {log.action}
                                                             </td>
 
                                                             <td>
-                                                                  <span className="badge bg-dark">
+                                                                  <span className="fw-bold">
                                                                         {log.userEmail || "-"}
                                                                   </span>
                                                             </td>
