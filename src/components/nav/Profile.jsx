@@ -89,18 +89,43 @@ const Profile = () => {
                                                             <thead className="table-light">
                                                                   <tr>
                                                                         <th>{t("name")}</th>
-                                                                        <th>{t("homes")}</th>
-                                                                        <th>{t("start date")}</th>
-                                                                        <th>{t("background")}</th>
+                                                                        <th>{t("home:homes")}</th>
+                                                                        <th>{t("condo:startDate")}</th>
+                                                                        <th>{t("form:background")}</th>
                                                                   </tr>
                                                             </thead>
                                                             <tbody>
                                                                   {user.condominiums.map((condo) => (
                                                                         <tr key={condo.id}>
-                                                                              <td>{condo.name}</td>
-                                                                              <td>{condo.type}</td>
-                                                                              <td>{condo.size}</td>
-                                                                              <td>{condo.startPeriod}</td>
+                                                                              <td className="fw-bold">{condo.name}</td>
+
+                                                                              <td>
+                                                                                    <span className="badge bg-primary">
+                                                                                          {condo.homes?.length || 0}
+                                                                                    </span>
+                                                                              </td>
+
+                                                                              <td>
+                                                                                    {new Date(condo.startDate).toLocaleDateString(i18n.language, {
+                                                                                          year: "numeric",
+                                                                                          month: "long"
+                                                                                    })}
+                                                                              </td>
+
+                                                                              <td>
+                                                                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                                                                          <div
+                                                                                                style={{
+                                                                                                      width: "18px",
+                                                                                                      height: "18px",
+                                                                                                      borderRadius: "4px",
+                                                                                                      backgroundColor: condo.backgroundColor,
+                                                                                                      border: "1px solid #ccc"
+                                                                                                }}
+                                                                                          />
+                                                                                          <span>{condo.backgroundColor}</span>
+                                                                                    </div>
+                                                                              </td>
                                                                         </tr>
                                                                   ))}
                                                             </tbody>

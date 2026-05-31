@@ -36,6 +36,7 @@ import "./style/Notification.css";
 import "./loader/Loader.css";
 import "react-toastify/dist/ReactToastify.css";
 import ApplicationSettings from "./components/admin/ApplicationSettings";
+import Logs from "./components/admin/Logs";
 import AdminLayout from "./components/admin/AdminLayout";
 
 /* =========================
@@ -103,6 +104,7 @@ const App = () => {
           >
             <Route index element={<Admin />} />
             <Route path="application-settings" element={<ApplicationSettings />} />
+            <Route path="application-logs" element={<Logs />} />
           </Route>
 
           <Route

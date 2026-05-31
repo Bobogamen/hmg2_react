@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { apiUpdateUser } from '../api/services/userService';
 
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
@@ -43,20 +44,18 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    const updateUser = (updatedData) => {
-        setUser((prev) => {
-            const updatedUser = { ...prev, ...updatedData };
+    const updateUser = async () => {
+        const freshUser = await apiUpdateUser();
 
-            if (localStorage.getItem('hmg_user')) {
-                localStorage.setItem('hmg_user', JSON.stringify(updatedUser));
-            }
+        setUser(freshUser);
 
-            if (sessionStorage.getItem('hmg_user')) {
-                sessionStorage.setItem('hmg_user', JSON.stringify(updatedUser));
-            }
+        const storage = localStorage.getItem('hmg_user')
+            ? localStorage
+            : sessionStorage;
 
-            return updatedUser;
-        });
+        storage.setItem('hmg_user', JSON.stringify(freshUser));
+
+        return freshUser;
     };
 
     const logout = () => {

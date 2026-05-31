@@ -6,6 +6,7 @@ import { useLoading } from "../../loader/LoadingContext";
 import { Bounce, toast } from "react-toastify";
 import renderFieldErrors from "../../utils/renderFieldErrors";
 import '../management/Management.css';
+import { useUser } from "../../user/UserContext";
 
 // ✅ moved outside → stable reference
 const initialState = {
@@ -13,11 +14,12 @@ const initialState = {
   city: "",
   address: "",
   size: "",
-  backgroundColor: "#000000",
+  backgroundColor: "#909090",
   startDate: ""
 };
 
 const ModalCondominium = ({ show, handleClose, inputData }) => {
+  const { updateUser } = useUser();
   const { t, i18n } = useTranslation();
   const { setIsLoading } = useLoading();
   const [condominiumData, setCondominiumData] = useState(initialState);
@@ -159,19 +161,24 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
 
       resetForm();
       handleClose();
+      updateUser();
 
       toast.success(
         isEditing ? t("condo:updated") : t("condo:created")
       );
     } catch (error) {
+
+
       if (error.isValidationError) {
-        setCondominiumError(error.validationErrors || error.errors || {});
+
+        setCondominiumError(
+          error.validationErrors || error.errors || {}
+        );
       }
 
-      if (error.errors === "maxLimitReached") {
+      if (error.response.data.errors === "maxLimitReached") {
         toast.warning(t("condo:maxLimitReached"));
       }
-
     } finally {
       setIsLoading(false);
     }

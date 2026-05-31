@@ -38,10 +38,7 @@ const Management = () => {
                 className="text-decoration-none text-dark"
                 key={condo.id}
               >
-                <li
-                  id={condo.id}
-                  style={{ backgroundColor: condo.backgroundColor }}
-                >
+                <li id={condo.id} style={{ backgroundColor: condo.backgroundColor }} >
                   <img src={apartments} className="big-icon" alt="apartments" />
                   <span>{condo.name}</span>
                 </li>
@@ -52,7 +49,7 @@ const Management = () => {
           <h5 className="text-muted">{t("condo:noneAddedCondo")}</h5>
         )}
 
-        {condominiums.length <= 2 && (
+        {user?.condominiumLimit > condominiums.length && (
           <div className="img-button pointer" onClick={handleOpen}>
             <img src={add} className="icon" alt="add" />
             <span className="ms-2">{t("common:create")}</span>
