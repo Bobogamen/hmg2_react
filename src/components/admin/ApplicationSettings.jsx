@@ -34,9 +34,7 @@ const ApplicationSettings = () => {
         try {
             setIsLoading(true);
 
-            const data = await getSettings(); // ✅ already array now
-
-            console.log(data)
+            const data = await getSettings();
 
             setSettings(Array.isArray(data) ? data : []);
 

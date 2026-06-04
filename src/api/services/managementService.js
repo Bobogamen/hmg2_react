@@ -17,13 +17,17 @@ export const getCondominium = async (condominiumId) => {
 
 export const editCondominium = async (condominiumData) => {
     if (!condominiumData.id) {
-        throw new Error("Missing group ID for update");
+        throw new Error("Missing condo ID for update");
     }
 
-    const { data } = await api.put(
-        `/management/edit-condominium/${condominiumData.id}`,
+    const { data } = await api.put(`/management/condominiums/${condominiumData.id}`,
         condominiumData
     );
 
+    return data;
+};
+
+export const deleteCondominium = async (id) => {
+    const { data } = await api.delete(`/management/condominiums/${id}`);
     return data;
 };

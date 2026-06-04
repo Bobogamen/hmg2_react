@@ -6,6 +6,7 @@
   "add": "Add",
   "select": "Select",
   "create": "Create",
+  "delete": "Delete",
   "send": "Send",
   "confirm": "Confirm",
   "total": "Total",
@@ -18,5 +19,6 @@
   "is": "is",
   "in": "in",
   "name": "name",
-  "roles": "Roles"
+  "roles": "Roles",
+  "warning": "WARNING!"
 }

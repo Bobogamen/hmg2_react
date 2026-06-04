@@ -4,6 +4,7 @@
   "typeCondominium": "Condominium",
   "created": "Condominium successfully created",
   "updated": "Condominium successfully updated",
+  "deleted": "Condominium successfully DELETED",
   "noneAddedCondo": "No condominium has been added",
   "city": "City",
   "address": "Address",
@@ -26,5 +27,7 @@
     "oct": "October",
     "nov": "November",
     "dec": "December"
-  }
+  },
+  "confirmDeleteTitle": "Delete condominium",
+  "deleteWarning": "This condominium will no longer be accessible. All related data, also become unavailable."
 }
