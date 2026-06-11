@@ -8,7 +8,7 @@ import ResetPassword from "./components/homepage/ResetPassword";
 
 import Admin from "./components/admin/Admin";
 import Management from "./components/management/Management";
-import Home from "./components/management/Home";
+import Home from "./components/management/home/Home";
 
 import Finance from "./components/finance/Finance";
 import Fund from "./components/fund/Fund";

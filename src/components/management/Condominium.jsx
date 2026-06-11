@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apartments from '../../assets/images/app/apartment_building.png';
 import ModalCondominium from "./ModalCondominium";
-import HomesTable from "./HomesTable";
+import HomesTable from "./home/HomesTable";
 import FeesTable from "./FeesTable";
 import BillsTable from "./BillsTable";
 import RepairsTable from "./RepairsTable";
@@ -20,7 +20,7 @@ const Condominium = () => {
       const { t } = useTranslation();
 
       const initCondominium = {
-            id: null,
+            condominiumId: null,
             name: "",
             homes: [],
             fees: [],
@@ -31,21 +31,21 @@ const Condominium = () => {
       const [condominium, setCondominium] = useState(initCondominium);
       const [editCondominium, setEditCondominium] = useState(false);
 
-      useEffect(() => {
-            const fetchCondominium = async () => {
-                  setIsLoading(true);
-                  try {
-                        const data = await getCondominium(condominiumId);
-                        setCondominium(data);
-                  } catch (error) {
-                        errorHandler(error, undefined, navigate, t, logout);
-                  } finally {
-                        setIsLoading(false);
-                  }
-            };
-
-            fetchCondominium();
+      const fetchCondominium = useCallback(async () => {
+            setIsLoading(true);
+            try {
+                  const data = await getCondominium(condominiumId);
+                  setCondominium(data);
+            } catch (error) {
+                  errorHandler(error, undefined, navigate, t, logout);
+            } finally {
+                  setIsLoading(false);
+            }
       }, [condominiumId, setIsLoading, navigate, t, logout]);
+
+      useEffect(() => {
+            fetchCondominium();
+      }, [fetchCondominium]);
 
 
       const handleOpen = () => setEditCondominium(true);
@@ -53,7 +53,7 @@ const Condominium = () => {
 
       return (
             <>
-                  <ModalCondominium show={editCondominium} handleClose={handleClose} inputData={condominium} />
+                  <ModalCondominium show={editCondominium} handleClose={handleClose} condominium={condominium} />
                   <button className="hg-title my-2" onClick={handleOpen}>
                         <div className="d-flex justify-content-center align-items-center gap-3">
                               <div className="text-center">
@@ -70,7 +70,7 @@ const Condominium = () => {
                   </button>
                   <div className="layout">
                         <section className="homes-section">
-                              <HomesTable condominium={condominium.homes || []} />
+                              <HomesTable condominium={condominium || []} onSaved={fetchCondominium} />
                         </section>
                         <section className="utility-section">
                               <FeesTable fees={condominium.fees || []} />

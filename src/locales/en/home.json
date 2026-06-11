@@ -7,5 +7,9 @@
   "owner": "owner",
   "resident": "resident",
   "group": "group",
-  "added": "added"
+  "added": "added",
+  "pcs": "pcs",
+  "noHomes": "No homes added",
+  "created": "Home successfully created",
+  "updated": "Home successfully updated"
 }

@@ -16,18 +16,18 @@ export const getCondominium = async (condominiumId) => {
 };
 
 export const editCondominium = async (condominiumData) => {
-    if (!condominiumData.id) {
+    if (!condominiumData.condominiumId) {
         throw new Error("Missing condo ID for update");
     }
 
-    const { data } = await api.put(`/management/condominiums/${condominiumData.id}`,
+    const { data } = await api.put(`/management/condominiums/${condominiumData.condominiumId}`,
         condominiumData
     );
 
     return data;
 };
 
-export const deleteCondominium = async (id) => {
-    const { data } = await api.delete(`/management/condominiums/${id}`);
+export const deleteCondominium = async (condominiumId) => {
+    const { data } = await api.delete(`/management/condominiums/${condominiumId}`);
     return data;
 };

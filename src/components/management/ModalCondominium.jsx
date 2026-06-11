@@ -19,7 +19,7 @@ const initialState = {
   startDate: ""
 };
 
-const ModalCondominium = ({ show, handleClose, inputData }) => {
+const ModalCondominium = ({ show, handleClose, condominium }) => {
   const { updateUser } = useUser();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -36,11 +36,11 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
   const infoRef = useRef(null);
   const warningRef = useRef(null);
 
-  const isEditing = !!inputData?.id;
+  const isEditing = !!condominium?.id;
 
   useEffect(() => {
 
-    const isEditing = !!inputData?.id;
+    const isEditing = !!condominium?.id;
 
     // =========================
     // LOAD DATA (EDIT / CREATE)
@@ -48,16 +48,16 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
     if (show) {
 
       if (isEditing) {
-        const parsedDate = inputData.startDate
-          ? new Date(inputData.startDate)
+        const parsedDate = condominium.startDate
+          ? new Date(condominium.startDate)
           : null;
 
         setCondominiumData({
-          name: inputData.name || "",
-          city: inputData.city || "",
-          address: inputData.address || "",
-          size: inputData.size || "",
-          backgroundColor: inputData.backgroundColor || "",
+          name: condominium.name || "",
+          city: condominium.city || "",
+          address: condominium.address || "",
+          size: condominium.size || "",
+          backgroundColor: condominium.backgroundColor || "",
           startDate: parsedDate,
 
           // 🔥 IMPORTANT
@@ -81,7 +81,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
     }
     // 👇 disable ONLY this warning
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [show, inputData?.id]);
+  }, [show, condominium?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -172,7 +172,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
 
       if (isEditing) {
         await editCondominium({
-          id: inputData.id,
+          condominiumId: condominium.id,
           ...payload
         });
       } else {
@@ -208,7 +208,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
     try {
       setIsLoading(true);
 
-      await deleteCondominium(inputData.id);
+      await deleteCondominium(condominium.id);
 
       toast.error(t("condo:deleted"));
 
@@ -229,12 +229,12 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">
             <div className="fw-bold fs-5">
-              {isEditing ? inputData.name : `${t("create")} ${t("condo:title")}`}
+              {isEditing ? condominium.name : `${t("create")} ${t("condo:title")}`}
             </div>
 
             {isEditing && (
               <div className="text-muted fs-6">
-                {inputData.city}, {inputData.address}
+                {condominium.city}, {condominium.address}
               </div>
             )}
           </Modal.Title>
@@ -290,7 +290,7 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
                   type="number"
                   name="size"
                   step="1"
-                  min={isEditing ? (inputData?.homes?.length || 1) : 1}
+                  min={isEditing ? (condominium?.homes?.length || 1) : 1}
                   value={condominiumData.size}
                   onChange={handleChange}
                   placeholder="23"
@@ -496,10 +496,10 @@ const ModalCondominium = ({ show, handleClose, inputData }) => {
         <Modal.Body>
           <div className="text-center">
             <h5 className="fw-bold mb-1">
-              {inputData?.name}
+              {condominium?.name}
             </h5>
             <div className="text-muted mb-3">
-              {inputData?.city}, {inputData?.address}
+              {condominium?.city}, {condominium?.address}
             </div>
             <div className="border border-danger rounded p-2 bg-danger-subtle">
               <div className="fw-bold text-danger mb-2">

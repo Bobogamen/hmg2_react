@@ -24,15 +24,15 @@ const Management = () => {
 
         {condominiums.length > 0 ? (
           <ul>
-            {condominiums.map((condo) => (
+            {condominiums.map((condominium) => (
               <Link
-                key={condo.id}
-                to={`/management/condominiums/${condo.id}`}
+                key={condominium.id}
+                to={`/management/condominiums/${condominium.id}`}
                 className="text-decoration-none text-dark"
               >
-                <li style={{ backgroundColor: condo.backgroundColor }}>
+                <li style={{ backgroundColor: condominium.backgroundColor }}>
                   <img src={apartments} className="big-icon" alt="apartments" />
-                  <span>{condo.name}</span>
+                  <span>{condominium.name}</span>
                 </li>
               </Link>
             ))}
