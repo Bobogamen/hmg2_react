@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { Trans, useTranslation } from "react-i18next";
-import { addCondominium, deleteCondominium, editCondominium, getCondominiumStartDateYear } from "../../api/services/managementService";
+import { addCondominium, deleteCondominium, editCondominium, getCondominium, getCondominiumStartDateYear } from "../../api/services/managementService";
 import { useLoading } from "../../loader/LoadingContext";
 import { Bounce, toast } from "react-toastify";
 import renderFieldErrors from "../../utils/renderFieldErrors";
@@ -39,28 +39,34 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
   const isEditing = !!condominium?.id;
 
   useEffect(() => {
+    const loadData = async () => {
+      if (!show) return;
 
-    const isEditing = !!condominium?.id;
+      setCondominiumError({});
 
-    // =========================
-    // LOAD DATA (EDIT / CREATE)
-    // =========================
-    if (show) {
+      if (!condominium?.id) {
+        setCondominiumData(initialState);
+        loadMinYear();
+        return;
+      }
 
-      if (isEditing) {
-        const parsedDate = condominium.startDate
-          ? new Date(condominium.startDate)
+      try {
+
+        // 🔥 FETCH FRESH DATA FROM BACKEND
+        const fresh = await getCondominium(condominium.id);
+
+        const parsedDate = fresh.startDate
+          ? new Date(fresh.startDate)
           : null;
 
         setCondominiumData({
-          name: condominium.name || "",
-          city: condominium.city || "",
-          address: condominium.address || "",
-          size: condominium.size || "",
-          backgroundColor: condominium.backgroundColor || "",
+          name: fresh.name || "",
+          city: fresh.city || "",
+          address: fresh.address || "",
+          size: fresh.size || "",
+          backgroundColor: fresh.backgroundColor || "",
           startDate: parsedDate,
 
-          // 🔥 IMPORTANT
           startMonth: parsedDate
             ? [
               "jan", "feb", "mar", "apr", "may", "jun",
@@ -72,14 +78,13 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
             ? parsedDate.getFullYear()
             : ""
         });
-      } else {
-        setCondominiumData(initialState);
-        loadMinYear();
-      }
 
-      setCondominiumError({});
-    }
-    // 👇 disable ONLY this warning
+      } catch (error) {
+        toast.error(t("server:error"));
+      }
+    };
+
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, condominium?.id]);
 
@@ -290,7 +295,7 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
                   type="number"
                   name="size"
                   step="1"
-                  min={isEditing ? (condominium?.homes?.length || 1) : 1}
+                  min={isEditing ? condominiumData.size : 1}
                   value={condominiumData.size}
                   onChange={handleChange}
                   placeholder="23"
@@ -462,7 +467,7 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
                 />
                 {renderFieldErrors(condominiumErrors, "backgroundColor", t)}
               </div>
-              <hr className="mt-0 w-100 border-1"/>
+              <hr className="mt-0 w-100 border-1" />
               <button type="submit" className="authentication-button">
                 {isEditing ? t("save") : t("add")}
               </button>

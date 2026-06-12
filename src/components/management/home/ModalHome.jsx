@@ -5,10 +5,16 @@ import { Bounce, toast } from "react-toastify";
 import { addHome, editHome } from "../../../api/services/homeService";
 import { useLoading } from "../../../loader/LoadingContext";
 import renderFieldErrors from "../../../utils/renderFieldErrors";
+import Resident from "../Resident";
 
 const initialState = {
     floor: "",
-    name: ""
+    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: ""
 };
 
 const ModalHome = ({
@@ -32,7 +38,12 @@ const ModalHome = ({
         if (isEditing) {
             setHomeData({
                 floor: inputData.floor || "",
-                name: inputData.name || ""
+                name: inputData.name || "",
+                firstName: "",
+                middleName: "",
+                lastName: "",
+                phoneNumber: "",
+                email: ""
             });
         } else {
             setHomeData(initialState);
@@ -75,12 +86,19 @@ const ModalHome = ({
                     homeId: inputData.id
                 });
             } else {
-                await addHome(payload);
+                await addHome({
+                    ...payload,
+                    firstName: homeData.firstName,
+                    middleName: homeData.middleName,
+                    lastName: homeData.lastName,
+                    phoneNumber: homeData.phoneNumber,
+                    email: homeData.email
+                });
             }
 
             resetForm();
             handleClose();
-            onSaved?.();
+            await onSaved?.();
 
             toast.success(
                 isEditing ? t("home:updated") : t("home:created")
@@ -124,36 +142,48 @@ const ModalHome = ({
             <Modal.Body>
                 <div className="container-fluid">
                     <form
-                        className="registrationForm"
+                        className=""
                         onSubmit={handleSubmit}
                     >
-                        <div>
-                            <label>{t("home:floor")}</label>
-                            <input
-                                type="text"
-                                name="floor"
-                                value={homeData.floor}
-                                onChange={handleChange}
-                                placeholder={t("home:floor")}
-                            />
-                            {renderFieldErrors(errors, "floor", t)}
+                        <div className="registrationForm mb-3 bg-info bg-opacity-50">
+                            <div>
+                                <label>{t("home:floor")}</label>
+                                <input
+                                    type="text"
+                                    name="floor"
+                                    value={homeData.floor}
+                                    onChange={handleChange}
+                                    placeholder={t("home:floor")}
+                                />
+                                {renderFieldErrors(errors, "floor", t)}
+                            </div>
+
+                            <div>
+                                <label>{t("name")}</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={homeData.name}
+                                    onChange={handleChange}
+                                    placeholder={t("name")}
+                                />
+                                {renderFieldErrors(errors, "name", t)}
+                            </div>
                         </div>
 
-                        <div>
-                            <label>{t("name")}</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={homeData.name}
+                        {!isEditing && (
+                            <Resident
+                                data={homeData}
+                                errors={errors}
                                 onChange={handleChange}
-                                placeholder={t("name")}
+                                showTitle
+                                titleKey="home:owner"
                             />
-                            {renderFieldErrors(errors, "name", t)}
-                        </div>
+                        )}
 
                         <button
                             type="submit"
-                            className="authentication-button mt-3"
+                            className="authentication-button mt-3 m-auto"
                         >
                             {isEditing ? t("save") : t("add")}
                         </button>

@@ -1,51 +1,76 @@
 import api from "../axios";
 
-const buildHomeForm = ({ floor, name }) => {
-    const form = new URLSearchParams();
-
-    form.append("floor", floor);
-    form.append("name", name);
-
-    return form;
-};
-
-export const addHome = async ({ condominiumId, floor, name }) => {
+/**
+ * CREATE HOME
+ */
+export const addHome = async ({
+    condominiumId,
+    floor,
+    name,
+    firstName,
+    middleName,
+    lastName,
+    phoneNumber,
+    email
+}) => {
     if (!condominiumId) {
         throw new Error("Missing condominium ID for home create");
     }
 
+    const payload = {
+        floor,
+        name,
+        firstName,
+        middleName,
+        lastName,
+        phoneNumber,
+        email
+    };
+
     const { data } = await api.post(
         `/management/condominiums/${condominiumId}/homes/create`,
-        buildHomeForm({ floor, name }),
-        {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }
+        payload
     );
 
     return data;
 };
 
-export const editHome = async ({ condominiumId, homeId, floor, name }) => {
+/**
+ * UPDATE HOME
+ */
+export const editHome = async ({
+    condominiumId,
+    homeId,
+    floor,
+    name,
+    firstName,
+    middleName,
+    lastName,
+    phoneNumber,
+    email
+}) => {
     if (!condominiumId) {
-        throw new Error("Missing condominium ID for home update");
+        throw new Error("Missing condominium ID for update");
     }
 
     if (!homeId) {
         throw new Error("Missing home ID for update");
     }
 
+    const payload = {
+        floor,
+        name,
+        firstName,
+        middleName,
+        lastName,
+        phoneNumber,
+        email
+    };
+
     const { data } = await api.put(
         `/management/condominiums/${condominiumId}/homes/${homeId}`,
-        buildHomeForm({ floor, name }),
-        {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }
+        payload
     );
 
     return data;
 };
-

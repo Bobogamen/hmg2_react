@@ -42,11 +42,11 @@ const HomesTable = ({ condominium, onSaved }) => {
                         <Table bordered striped hover size="sm">
                               <thead className="align-middle">
                                     <tr className="fw-bold">
-                                          <td>{t('fl')}</td>
-                                          <td>{t('apt')}</td>
-                                          <td className="w-50">{t('Owner')}</td>
-                                          <td>{t('Residents')}</td>
-                                          <td>{t('Total')}(лв.)</td>
+                                          <td>{t('home:fl')}</td>
+                                          <td>{t('home:apt')}</td>
+                                          <td className="w-50">{t('home:owner')}</td>
+                                          <td>{t('home:residents')}</td>
+                                          <td>{t('home:total')} €</td>
                                           <td><img src={settings} alt="settings" className="icon" /></td>
                                     </tr>
                               </thead>
