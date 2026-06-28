@@ -74,3 +74,22 @@ export const editHome = async ({
 
     return data;
 };
+
+/**
+ * UPDATE HOME ORDER
+ */
+export const saveHomeOrder = async ({
+    condominiumId,
+    homeIds
+}) => {
+    if (!condominiumId) {
+        throw new Error("Missing condominium ID for home order update");
+    }
+
+    const { data } = await api.put(
+        `/management/condominiums/${condominiumId}/homes/order`,
+        { homeIds }
+    );
+
+    return data;
+};

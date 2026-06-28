@@ -146,6 +146,7 @@ const ModalHome = ({
                         onSubmit={handleSubmit}
                     >
                         <div className="registrationForm mb-3 bg-info bg-opacity-50">
+                            <h4 className="fw-bold mb-0">{t("home:home")}</h4>
                             <div>
                                 <label>{t("home:floor")}</label>
                                 <input
@@ -159,7 +160,7 @@ const ModalHome = ({
                             </div>
 
                             <div>
-                                <label>{t("name")}</label>
+                                <label>{`${t("home:apartment")}/${t("name")}`}</label>
                                 <input
                                     type="text"
                                     name="name"

@@ -295,7 +295,7 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
                   type="number"
                   name="size"
                   step="1"
-                  min={isEditing ? condominiumData.size : 1}
+                  min={isEditing ? condominium?.homes?.length : 1}
                   value={condominiumData.size}
                   onChange={handleChange}
                   placeholder="23"

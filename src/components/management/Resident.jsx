@@ -42,7 +42,7 @@ const Resident = ({
     return (
         <div>
             <Wrapper className="registrationForm mt-0 bg-danger bg-opacity-50 border-3 border-dark" onSubmit={onSubmit}>
-                {showTitle && <h3>{t(titleKey)}</h3>}
+                {showTitle && <h4 className="fw-bold mb-0">{t(titleKey)}</h4>}
                 <div>
                     <label>{t("form:firstName")}</label>
                     <input
@@ -91,7 +91,7 @@ const Resident = ({
                     />
                     {renderFieldErrors(errors, "email", t)}
                 </div>
-                <div>
+                <div className="mb-2">
                     <label>{t("form:telephone")}</label>
                     <input
                         type="text"
