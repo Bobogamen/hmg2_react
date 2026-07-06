@@ -6,6 +6,7 @@ import { addHome, editHome } from "../../../api/services/homeService";
 import { useLoading } from "../../../loader/LoadingContext";
 import renderFieldErrors from "../../../utils/renderFieldErrors";
 import Resident from "../Resident";
+import { useUser } from "../../../user/UserContext";
 
 const initialState = {
     floor: "",
@@ -24,6 +25,7 @@ const ModalHome = ({
     inputData,
     onSaved
 }) => {
+    const { updateUser } = useUser();
     const { t, i18n } = useTranslation();
     const { setIsLoading } = useLoading();
 
@@ -98,6 +100,7 @@ const ModalHome = ({
 
             resetForm();
             handleClose();
+            updateUser();
             await onSaved?.();
 
             toast.success(

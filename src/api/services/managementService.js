@@ -17,7 +17,7 @@ export const getCondominium = async (condominiumId) => {
 
 export const editCondominium = async (condominiumData) => {
     if (!condominiumData.condominiumId) {
-        throw new Error("Missing condo ID for update");
+        throw new Error(console.log("Missing condo ID for update"));
     }
 
     const { data } = await api.put(`/management/condominiums/${condominiumData.condominiumId}`,

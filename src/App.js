@@ -78,7 +78,7 @@ const App = () => {
           position="bottom-right"
           autoClose={3200}
           theme="colored"
-          hideProgressBar
+          progressStyle={{ background: "white" }}
           closeOnClick={false}
           rtl={false}
           pauseOnFocusLoss

@@ -14,7 +14,8 @@ export const addHome = async ({
     email
 }) => {
     if (!condominiumId) {
-        throw new Error("Missing condominium ID for home create");
+        console.log("Missing condominium ID for home create");
+        throw new Error();
     }
 
     const payload = {
@@ -50,11 +51,13 @@ export const editHome = async ({
     email
 }) => {
     if (!condominiumId) {
-        throw new Error("Missing condominium ID for update");
+        console.log("Missing condominium ID for update");
+        throw new Error();
     }
 
     if (!homeId) {
-        throw new Error("Missing home ID for update");
+        console.log("Missing home ID for update");
+        throw new Error();
     }
 
     const payload = {
@@ -76,6 +79,28 @@ export const editHome = async ({
 };
 
 /**
+ * GET HOME
+ */
+export const getHome = async ({ condominiumId, homeId }) => {
+
+    if (!condominiumId) {
+        console.log("Missing condominium ID for getHome");
+        throw new Error();
+    }
+
+    if (!homeId) {
+        console.log("Missing home ID for getHome");
+        throw new Error();
+    }
+
+    const { data } = await api.get(
+        `/management/condominiums/${condominiumId}/homes/${homeId}`
+    );
+
+    return data;
+};
+
+/**
  * UPDATE HOME ORDER
  */
 export const saveHomeOrder = async ({
@@ -83,7 +108,8 @@ export const saveHomeOrder = async ({
     homeIds
 }) => {
     if (!condominiumId) {
-        throw new Error("Missing condominium ID for home order update");
+        console.log("Missing condominium ID for home order update");
+        throw new Error();
     }
 
     const { data } = await api.put(

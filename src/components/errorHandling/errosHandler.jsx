@@ -8,9 +8,9 @@ const errorHandler = (error, handleClose = () => {}, navigate, t, logout) => {
             handleClose();
             logout();
             navigate('/');
-            toast.warning(t('Please, log in again'), { transition: Zoom });
+            toast.warning(t("auth:pleaseLoginAgain"), { transition: Zoom });
       } else {
-            toast.error(t('Server error'), { transition: Bounce });
+            toast.error(t("server:error"), { transition: Bounce });
       }
 }
 

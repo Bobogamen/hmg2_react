@@ -36,7 +36,7 @@ const SortableRow = ({
         >
             <td>{home.floor}</td>
             <td>{home.name}</td>
-            <td>{home.owner}</td>
+            <td>{`${home.owner.firstName} ${home.owner.lastName}`}</td>
             <td>{home.residentsSize}</td>
             <td>{home.totalForMonth}</td>
             <td>
