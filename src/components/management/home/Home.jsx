@@ -11,8 +11,11 @@ import { getHome } from "../../../api/services/homeService";
 import { useLoading } from "../../../loader/LoadingContext";
 import { useUser } from "../../../user/UserContext";
 import errorHandler from "../../errorHandling/errosHandler";
+import { useBreadcrumb } from "../../breadcrumb/BreadcrumpContext";
 
 const Home = () => {
+    const { setBreadcrumbs } = useBreadcrumb();
+
     const { condominiumId, homeId } = useParams();
 
     const { t } = useTranslation();
@@ -25,11 +28,13 @@ const Home = () => {
         floor: "",
         name: "",
         residents: [],
-        fees: []
+        fees: [],
+        condominium: null
     };
 
     const [home, setHome] = useState(initHome);
     const [editHome, setEditHome] = useState(false);
+
 
     const fetchHome = useCallback(async () => {
         setIsLoading(true);
@@ -37,11 +42,14 @@ const Home = () => {
         try {
             const data = await getHome({ condominiumId, homeId });
             setHome(data);
+
         } catch (error) {
             errorHandler(error, undefined, navigate, t, logout);
+
         } finally {
             setIsLoading(false);
         }
+
     }, [
         condominiumId,
         homeId,
@@ -51,40 +59,73 @@ const Home = () => {
         t
     ]);
 
+
     useEffect(() => {
         fetchHome();
     }, [fetchHome]);
 
+
+    const homeTitle = [
+        home.floor && `${t("home:floor")} ${home.floor}`,
+        home.name && `${t("home:apt")} ${home.name}`
+    ]
+        .filter(Boolean)
+        .join(" • ");
+
+
+    // Breadcrumbs
+    useEffect(() => {
+        if (!home.id) return;
+
+        setBreadcrumbs([
+            {
+                label: t("management"),
+                path: "/management"
+            },
+            {
+                label: home.condominium?.name || t("condominium"),
+                path: `/management/condominiums/${condominiumId}`
+            },
+            {
+                label: homeTitle
+            }
+        ]);
+
+        return () => {
+            setBreadcrumbs([]);
+        };
+
+    }, [
+        home,
+        homeTitle,
+        condominiumId,
+        setBreadcrumbs,
+        t
+    ]);
+
+
     const handleOpen = () => setEditHome(true);
     const handleClose = () => setEditHome(false);
 
-    const homeTitle = [home.floor && `${t("floor")} ${home.floor}`, home.name]
-        .filter(Boolean)
-        .join(" • ");
 
     return (
         <>
             <ModalHome
                 show={editHome}
                 handleClose={handleClose}
-                condominium={{ id: condominiumId }}
-                inputData={home}
+                condominium={home.condominium}
+                home={home}
                 onSaved={fetchHome}
             />
+
 
             <button className="hg-title my-2" onClick={handleOpen}>
                 <div className="d-flex justify-content-center align-items-center gap-3">
 
                     <div className="text-center">
-
                         <div className="fw-bold fs-4">
-                            {homeTitle || t("home")}
+                            {homeTitle || null}
                         </div>
-
-                        <div className="text-muted small">
-                            {t("clickToEdit")}
-                        </div>
-
                     </div>
 
                     <img
@@ -96,27 +137,37 @@ const Home = () => {
                 </div>
             </button>
 
+
             <div className="layout">
+
 
                 {/* LEFT COLUMN */}
                 <section className="homes-section">
 
-                    {home.residents.length === 0 ? (
+                    {home.residents?.length === 0 ? (
+
                         <div className="text-center text-muted py-4">
                             {t("resident.noResidents")}
                         </div>
+
                     ) : (
+
                         home.residents.map((resident) => (
+
                             <Resident
                                 key={resident.id}
                                 resident={resident}
                                 homeId={home.id}
                                 onSaved={fetchHome}
                             />
+
                         ))
+
                     )}
 
                 </section>
+
+
 
                 {/* RIGHT COLUMN */}
                 <section className="utility-section">
@@ -134,6 +185,7 @@ const Home = () => {
                     </div>
 
                 </section>
+
 
             </div>
         </>

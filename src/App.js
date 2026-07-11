@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BreadcrumbProvider } from "./components/breadcrumb/BreadcrumpContext";
 
 import Homepage from "./components/homepage/Homepage";
 import Register from "./components/homepage/Register";
@@ -72,96 +73,96 @@ const App = () => {
       )}
 
       <Router>
-        <TitleChanger />
+        <BreadcrumbProvider>
+          <TitleChanger />
+          <ToastContainer
+            position="bottom-right"
+            autoClose={3200}
+            theme="colored"
+            progressStyle={{ background: "black" }}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            transition={Slide}
+          />
 
-        <ToastContainer
-          position="bottom-right"
-          autoClose={3200}
-          theme="colored"
-          progressStyle={{ background: "white" }}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          transition={Slide}
-        />
+          <Header />
 
-        <Header />
+          <Routes>
+            <Route path="/" element={getHomePage()} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Routes>
-          <Route path="/" element={getHomePage()} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={ADMIN_ONLY}>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Admin />} />
-            <Route path="application-settings" element={<ApplicationSettings />} />
-            <Route path="application-logs" element={<Logs />} />
-          </Route>
-
-          <Route
-            path="/management"
-            element={
-              <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
-                <ManagementLayout />
-              </ProtectedRoute>
-            }
-          >
-
-            <Route index element={<Management />} />
-            {/* CONDOMINIUM */}
             <Route
-              path="condominiums/:condominiumId"
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_ONLY}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Admin />} />
+              <Route path="application-settings" element={<ApplicationSettings />} />
+              <Route path="application-logs" element={<Logs />} />
+            </Route>
+
+            <Route
+              path="/management"
               element={
                 <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
-                  <Condominium />
+                  <ManagementLayout />
                 </ProtectedRoute>
               }
-            />
+            >
 
-            {/* HOME */}
-            <Route
-              path="condominiums/:condominiumId/homes/:homeId"
-              element={
-                <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-          {[
-            { path: "/finance", component: <Finance /> },
-            { path: "/fund", component: <Fund /> },
-            { path: "/repair", component: <Repair /> },
-            { path: "/statistics", component: <Statistics /> },
-            { path: "/cashier", component: <Cashier /> },
-            { path: "/profile", component: <Profile /> },
-            { path: "/profile/edit", component: <ProfileEdit /> },
-          ].map(({ path, component }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <ProtectedRoute allowedRoles={ALL_AUTH}>
-                  {component}
-                </ProtectedRoute>
-              }
-            />
-          ))}
+              <Route index element={<Management />} />
+              {/* CONDOMINIUM */}
+              <Route
+                path="condominiums/:condominiumId"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
+                    <Condominium />
+                  </ProtectedRoute>
+                }
+              />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+              {/* HOME */}
+              <Route
+                path="condominiums/:condominiumId/homes/:homeId"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+            {[
+              { path: "/finance", component: <Finance /> },
+              { path: "/fund", component: <Fund /> },
+              { path: "/repair", component: <Repair /> },
+              { path: "/statistics", component: <Statistics /> },
+              { path: "/cashier", component: <Cashier /> },
+              { path: "/profile", component: <Profile /> },
+              { path: "/profile/edit", component: <ProfileEdit /> },
+            ].map(({ path, component }) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  <ProtectedRoute allowedRoles={ALL_AUTH}>
+                    {component}
+                  </ProtectedRoute>
+                }
+              />
+            ))}
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BreadcrumbProvider>
       </Router>
-
       <Footer />
     </div>
   );

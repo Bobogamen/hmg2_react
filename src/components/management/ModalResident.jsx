@@ -3,25 +3,26 @@ import { Button, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import Resident from "./Resident";
 
-const ModalResident = ({ show, handleClose, home }) => {
+const ModalResident = ({ show, handleClose, home, condominium }) => {
     const { t } = useTranslation();
 
     const isEditing = false;
 
-    
+
 
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title className="fw-bold">
                     <div className="fw-bold fs-5">
-                        {`${t("add")} ${t("home:resident")} ${t("in")}`}
+                        <span>{t("add")} </span> 
+                        <span className="bg-danger bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 py-0 rounded">{t("home:resident")}</span>
+                        <span> {t("in")} </span> 
+                        <span className="fst-italic text-danger border border-3 rounded mx-2 px-1"> {t("home:apt")} {home?.name} {"•"} {t("home:fl")} {home?.floor}</span>
                     </div>
-                    {home && (
-                        <div className="text-muted fs-5">
-                            {`${t("home:apt")} ${home.name}`}
-                        </div>
-                    )}
+                    <div className="text-muted fs-5 fst-italic">
+                        {condominium.name ? condominium.name : ""}
+                    </div>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>

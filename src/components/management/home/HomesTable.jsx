@@ -180,13 +180,14 @@ const HomesTable = ({ condominium, onSaved }) => {
                 show={openResidentModal}
                 handleClose={() => setOpenResidentModal(false)}
                 home={selectedHome}
+                condominium={condominium}
             />
 
             <ModalHome
                 show={openHomeModal}
                 handleClose={handleCloseHomeModal}
                 condominium={condominium}
-                inputData={selectedHome}
+                home={selectedHome}
                 onSaved={onSaved}
             />
 

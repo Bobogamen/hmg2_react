@@ -1,5 +1,5 @@
 .title-cutter {
-    border: 1em solid #00e3ae;
+    border: 1em solid #86b8ac;
 }
 
 .title {
@@ -16,7 +16,6 @@
     transform: translate3d(-50%, -50%, 0) scale(0);
     animation: showingTitle 1.5s forwards;
     opacity: 0;
-
 }
 
 .main {

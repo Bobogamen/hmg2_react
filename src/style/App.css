@@ -3,6 +3,36 @@
   font-size: medium;
 }
 
+.breadcrumb-item + .breadcrumb-item::before {
+    display: none;
+}
+
+.breadcrumb {
+    --bs-breadcrumb-divider: "";
+    font-size: 1em;
+    margin-bottom: 0;
+}
+
+.breadcrumb-path {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0.5rem auto;
+    font-size: 0.8em;
+    font-weight: bold;
+    font-family: 'Lucida Sans', sans-serif;
+}
+
+
+.breadcrumb-item {
+    background-color: #8bcbe7;
+    padding: 0.15em 0.6em;
+    border: 0.08em solid black;
+    border-radius: 0.3em;
+    text-decoration: none;
+    color: black;
+}
+
 .registrationForm {
   background-color: ivory;
   display: grid;
@@ -115,4 +145,10 @@
   .modal {
     transform: scale(1);
   }
+
+  .breadcrumb {
+    --bs-breadcrumb-divider: "";
+    font-size: 1.3em;
+    margin-bottom: 1em;
+}
 }

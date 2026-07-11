@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import '../management/Management.css';
 import add from '../../assets/images/app/add.png';
@@ -7,8 +7,12 @@ import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ModalCondominium from "./ModalCondominium";
 import { useUser } from "../../user/UserContext";
+import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 
 const Management = () => {
+
+  const { setBreadcrumbs } = useBreadcrumb();
+
   const { user } = useUser();
   const condominiums = user?.condominiums || [];
 
@@ -17,6 +21,14 @@ const Management = () => {
 
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
+
+  useEffect(() => {
+    setBreadcrumbs([
+      {
+        label: t("dashboard:management")
+      }
+    ]);
+  }, [setBreadcrumbs, t]);
 
   return (
     <div>
@@ -28,7 +40,7 @@ const Management = () => {
               <Link
                 key={condominium.id}
                 to={`/management/condominiums/${condominium.id}`}
-                className="text-decoration-none text-dark"
+                className="text-decoration-none text-dark mt-3"
               >
                 <li style={{ backgroundColor: condominium.backgroundColor }}>
                   <img src={apartments} className="big-icon" alt="apartments" />

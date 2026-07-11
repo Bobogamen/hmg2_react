@@ -22,7 +22,7 @@ const ModalHome = ({
     show,
     handleClose,
     condominium,
-    inputData,
+    home,
     onSaved
 }) => {
     const { updateUser } = useUser();
@@ -32,15 +32,17 @@ const ModalHome = ({
     const [homeData, setHomeData] = useState(initialState);
     const [errors, setErrors] = useState({});
 
-    const isEditing = !!inputData?.id;
+    const condominiumData = home?.condominium || condominium;
+
+    const isEditing = !!home?.id;
 
     useEffect(() => {
         if (!show) return;
 
         if (isEditing) {
             setHomeData({
-                floor: inputData.floor || "",
-                name: inputData.name || "",
+                floor: home.floor || "",
+                name: home.name || "",
                 firstName: "",
                 middleName: "",
                 lastName: "",
@@ -53,7 +55,7 @@ const ModalHome = ({
 
         setErrors({});
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [show, inputData?.id]);
+    }, [show, home?.id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -77,7 +79,7 @@ const ModalHome = ({
 
         try {
             const payload = {
-                condominiumId: condominium?.id,
+                condominiumId: condominiumData?.id,
                 floor: homeData.floor,
                 name: homeData.name
             };
@@ -85,7 +87,7 @@ const ModalHome = ({
             if (isEditing) {
                 await editHome({
                     ...payload,
-                    homeId: inputData.id
+                    homeId: home.id
                 });
             } else {
                 await addHome({
@@ -135,9 +137,30 @@ const ModalHome = ({
             <Modal.Header closeButton>
                 <Modal.Title className="fw-bold">
                     <div className="fw-bold fs-5">
-                        {isEditing
-                            ? homeData.name
-                            : `${t("add")} ${t("home:home")} ${t("in")} ${condominium?.name || ""}`}
+                        {isEditing ? (
+                            <>
+                                <span>{t("edit")} </span>
+                                <span className="bg-info bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 py-0 rounded">
+                                    {t("home:home")}
+                                </span>
+                                <span className="fst-italic text-danger border border-3 rounded mx-2 pe-1"> {t("home:apt")} {home?.name} {"•"} {t("home:fl")} {home?.floor}</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>{t("add")} </span>
+                                <span className="bg-info bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 py-0 rounded">
+                                    {t("home:home")}
+                                </span>
+                                <span> {t("and")} </span>
+                                <span className="bg-danger bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 py-0 rounded">{t("home:owner")}</span>
+                            </>
+                        )}
+                        <div className="mt-2">
+                            {t("in")}{" "}
+                            <span className="text-muted fst-italic border border-3 border-secondary rounded px-1 py-0">
+                                {condominium?.name || ""}
+                            </span>
+                        </div>
                     </div>
                 </Modal.Title>
             </Modal.Header>
@@ -149,7 +172,7 @@ const ModalHome = ({
                         onSubmit={handleSubmit}
                     >
                         <div className="registrationForm mb-3 bg-info bg-opacity-50">
-                            <h4 className="fw-bold mb-0">{t("home:home")}</h4>
+                            {isEditing ? null : <h4 className="fw-bold mb-0">{t("home:home")}</h4>}
                             <div>
                                 <label>{t("home:floor")}</label>
                                 <input

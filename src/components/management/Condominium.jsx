@@ -11,6 +11,7 @@ import { useLoading } from "../../loader/LoadingContext";
 import errorHandler from "../errorHandling/errosHandler";
 import { useUser } from "../../user/UserContext";
 import { useTranslation } from "react-i18next";
+import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 
 const Condominium = () => {
       const { condominiumId } = useParams();
@@ -18,6 +19,8 @@ const Condominium = () => {
       const { logout } = useUser();
       const navigate = useNavigate();
       const { t } = useTranslation();
+
+      const { setBreadcrumbs } = useBreadcrumb();
 
       const initCondominium = {
             condominiumId: null,
@@ -47,6 +50,14 @@ const Condominium = () => {
             fetchCondominium();
       }, [fetchCondominium]);
 
+      useEffect(() => {
+            setBreadcrumbs([
+                  { label: t("dashboard:management"), path: "/management" },
+                  { label: condominium.name },
+            ]);
+      }, [condominium.name, t, setBreadcrumbs]);
+
+
 
       const handleOpen = () => setEditCondominium(true);
       const handleClose = () => setEditCondominium(false);
@@ -54,7 +65,7 @@ const Condominium = () => {
       return (
             <>
                   <ModalCondominium show={editCondominium} handleClose={handleClose} condominium={condominium} />
-                  <button className="hg-title my-2" onClick={handleOpen}>
+                  <button className="hg-title mb-lg-4" onClick={handleOpen}>
                         <div className="d-flex justify-content-center align-items-center gap-3">
                               <div className="text-center">
                                     <div className="fw-bold fs-4">
@@ -62,7 +73,7 @@ const Condominium = () => {
                                     </div>
 
                                     <div className="text-muted small">
-                                          {condominium.city}, {condominium.address}
+                                          {t("condo:cityShort")} {condominium.city}, {condominium.address}
                                     </div>
                               </div>
                               <img src={apartments} className="medium-icon" alt="apartments" />

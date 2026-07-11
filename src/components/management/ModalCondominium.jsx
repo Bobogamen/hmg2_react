@@ -234,12 +234,22 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">
             <div className="fw-bold fs-5">
-              {isEditing ? condominium.name : `${t("create")} ${t("condo:title")}`}
+              {isEditing ?
+                <div>
+                  <span>{t("edit")} </span>
+                  <span className="text-muted fst-italic border border-3 border-secondary rounded px-1 py-0">{condominium.name}</span>
+                </div>
+                :
+                <div>
+                  <span>{t("create")} </span>
+                  <span className="text-muted fst-italic border border-3 border-secondary rounded px-1 py-0">{t("condo:title")}</span>
+                </div>
+              }
             </div>
 
             {isEditing && (
-              <div className="text-muted fs-6">
-                {condominium.city}, {condominium.address}
+              <div className="text-muted fst-italic fs-6">
+                {t("condo:cityShort")} {condominium.city}, {condominium.address}
               </div>
             )}
           </Modal.Title>
@@ -494,23 +504,23 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
         centered
         className="bg-dark">
         <Modal.Header closeButton>
-          <Modal.Title className="text-danger fw-bold">
+          <Modal.Title className="text-danger fw-bold fs-5">
             {t("condo:confirmDeleteTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="text-center">
-            <h5 className="fw-bold mb-1">
+            <h4 className="fw-bold mb-1">
               {condominium?.name}
-            </h5>
+            </h4>
             <div className="text-muted mb-3">
-              {condominium?.city}, {condominium?.address}
+              {t("condo:cityShort")} {condominium?.city}, {condominium?.address}
             </div>
             <div className="border border-danger rounded p-2 bg-danger-subtle">
-              <div className="fw-bold text-danger mb-2">
+              <div className="fw-bold text-danger mb-2 fs-4">
                 ⚠️ {t("warning")}
               </div>
-              <div>
+              <div className="small">
                 <Trans i18nKey="condo:deleteWarning" />
               </div>
             </div>
