@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import homeIcon from "../../../assets/images/app/home.png";
 
 import ModalHome from "./ModalHome";
-import Resident from "../Resident";
+import Resident from "./resident/Resident";
 
 import { getHome } from "../../../api/services/homeService";
 import { useLoading } from "../../../loader/LoadingContext";
@@ -75,16 +75,17 @@ const Home = () => {
 
     // Breadcrumbs
     useEffect(() => {
-        if (!home.id) return;
+        if (!home.id || !home.condominium) return;
 
         setBreadcrumbs([
             {
-                label: t("management"),
+                label: t("dashboard:management"),
                 path: "/management"
             },
             {
                 label: home.condominium?.name || t("condominium"),
-                path: `/management/condominiums/${condominiumId}`
+                path: `/management/condominiums/${condominiumId}`,
+                color: home.condominium.backgroundColor
             },
             {
                 label: homeTitle
@@ -103,10 +104,8 @@ const Home = () => {
         t
     ]);
 
-
     const handleOpen = () => setEditHome(true);
     const handleClose = () => setEditHome(false);
-
 
     return (
         <>
@@ -117,8 +116,6 @@ const Home = () => {
                 home={home}
                 onSaved={fetchHome}
             />
-
-
             <button className="hg-title my-2" onClick={handleOpen}>
                 <div className="d-flex justify-content-center align-items-center gap-3">
 
@@ -136,13 +133,11 @@ const Home = () => {
 
                 </div>
             </button>
-
-
             <div className="layout">
-
-
                 {/* LEFT COLUMN */}
                 <section className="homes-section">
+
+                    <Resident key={home?.owner?.id} />
 
                     {home.residents?.length === 0 ? (
 
@@ -160,15 +155,10 @@ const Home = () => {
                                 homeId={home.id}
                                 onSaved={fetchHome}
                             />
-
                         ))
-
                     )}
 
                 </section>
-
-
-
                 {/* RIGHT COLUMN */}
                 <section className="utility-section">
 
@@ -183,10 +173,7 @@ const Home = () => {
                         </div>
 
                     </div>
-
                 </section>
-
-
             </div>
         </>
     );

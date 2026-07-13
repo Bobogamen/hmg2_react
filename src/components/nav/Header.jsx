@@ -91,7 +91,7 @@ const Header = () => {
   return (
     <nav>
       <div>
-        <Link to="/">
+        <Link to={user? "/management" : "/"}>
           <img src={logo} alt="logo" className="logo" />
         </Link>
         {user && (

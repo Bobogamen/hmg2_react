@@ -51,13 +51,25 @@ const Condominium = () => {
       }, [fetchCondominium]);
 
       useEffect(() => {
+            if (!condominium.name) return;
+
             setBreadcrumbs([
-                  { label: t("dashboard:management"), path: "/management" },
-                  { label: condominium.name },
+                  {
+                        label: t("dashboard:management"),
+                        path: "/management"
+                  },
+                  {
+                        label: condominium.name,
+                        color: condominium.backgroundColor,
+                  }
             ]);
-      }, [condominium.name, t, setBreadcrumbs]);
 
-
+      }, [
+            condominium.name,
+            condominium.backgroundColor,
+            t,
+            setBreadcrumbs
+      ]);
 
       const handleOpen = () => setEditCondominium(true);
       const handleClose = () => setEditCondominium(false);

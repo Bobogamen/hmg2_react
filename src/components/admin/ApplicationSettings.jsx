@@ -1,20 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-    Card,
-    Form,
-    Button,
-    Spinner,
-    Alert,
-    Badge,
-    Container
-} from "react-bootstrap";
-
-import {
-    getSettings,
-    updateSetting
-} from "../../api/services/appSettingService";
-
+import { Card, Form, Button, Spinner, Alert, Badge, Container } from "react-bootstrap";
+import { getSettings, updateSetting } from "../../api/services/appSettingService";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const ApplicationSettings = () => {
 
@@ -22,6 +10,8 @@ const ApplicationSettings = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [loadingId, setLoadingId] = useState(null);
     const [error, setError] = useState("");
+
+    const { t } = useTranslation();
 
     useEffect(() => {
         loadSettings();
@@ -74,7 +64,6 @@ const ApplicationSettings = () => {
 
             toast.success(`${setting.settingKey} updated`);
 
-            // always reload fresh values from backend
             await loadSettings();
 
         } catch (error) {
@@ -82,19 +71,29 @@ const ApplicationSettings = () => {
             const errors = error?.response?.data?.errors;
 
             if (errors?.value?.length) {
+
+                const validationError = errors.value[0];
+
                 toast.error(
-                    `${setting.settingKey}: ${errors.value[0]}`
+                    `${setting.settingKey}: ${t(`validation:${validationError.code}`)}`
                 );
+
             } else {
-                toast.error(`Failed to update ${setting.settingKey}`);
+
+                toast.error(
+                    `${setting.settingKey}: ${t("server:error")}`
+                );
             }
+
 
             console.log(error);
 
-            loadSettings();
+            await loadSettings();
 
         } finally {
+
             setLoadingId(null);
+
         }
     };
 

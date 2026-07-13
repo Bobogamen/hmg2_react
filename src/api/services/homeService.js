@@ -29,7 +29,7 @@ export const addHome = async ({
     };
 
     const { data } = await api.post(
-        `/management/condominiums/${condominiumId}/homes/create`,
+        `/management/condominiums/${condominiumId}/homes`,
         payload
     );
 

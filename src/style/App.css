@@ -9,7 +9,7 @@
 
 .breadcrumb {
     --bs-breadcrumb-divider: "";
-    font-size: 1em;
+    font-size: 0.7em;
     margin-bottom: 0;
 }
 
@@ -17,8 +17,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0.5rem auto;
-    font-size: 0.8em;
+    margin: 0.3rem auto;
+    font-size: 0.6em;
     font-weight: bold;
     font-family: 'Lucida Sans', sans-serif;
 }
@@ -26,11 +26,18 @@
 
 .breadcrumb-item {
     background-color: #8bcbe7;
-    padding: 0.15em 0.6em;
+    padding: 0.1em 0.3em;
     border: 0.08em solid black;
-    border-radius: 0.3em;
+    border-radius: 0.2em;
     text-decoration: none;
     color: black;
+}
+
+.breadcrumb-item-text {
+      margin: 0 0.3em;
+      border: 0.2em solid lightgray;
+      border-radius: 0.3em;
+      background-color: lightgray;
 }
 
 .registrationForm {
@@ -148,7 +155,7 @@
 
   .breadcrumb {
     --bs-breadcrumb-divider: "";
-    font-size: 1.3em;
+    font-size: 0.9em;
     margin-bottom: 1em;
 }
 }

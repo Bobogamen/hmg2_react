@@ -31,9 +31,9 @@
       display: grid;
       place-items: center;
       margin-top: 0.5em;
-      border: 0.2em solid whitesmoke;
+      border: 0.2em solid lightgray;
       border-radius: 0.3em;
-      background-color: whitesmoke;
+      background-color: lightgray;
       grid-template-rows: 1fr;
       font-weight: bold;
 }

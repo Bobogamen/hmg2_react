@@ -1,6 +1,7 @@
 import React from "react";
 import { useBreadcrumb } from "./BreadcrumpContext";
 import { Link, useLocation } from "react-router-dom";
+import { BsArrowRightSquareFill } from "react-icons/bs";
 
 const PATH_COLORS = [
     { path: "/admin", color: "text-bg-primary bg-opacity-75" },
@@ -12,43 +13,73 @@ const PATH_COLORS = [
     { path: "/cashier", color: "text-bg-dark bg-opacity-50" },
 ];
 
+
 const getSectionColor = (pathname) =>
-    PATH_COLORS.find((p) => pathname.startsWith(p.path))?.color ?? "text-bg-light";
+    PATH_COLORS.find((item) =>
+        pathname.startsWith(item.path)
+    )?.color ?? "text-bg-light";
+
+
 
 const Breadcrumbs = () => {
+
     const { breadcrumbs } = useBreadcrumb();
     const { pathname } = useLocation();
-    const color = getSectionColor(pathname);
+
+    const sectionColor = getSectionColor(pathname);
+
 
     return (
         <div aria-label="breadcrumb" className="p-1">
-            <div className="breadcrumb d-flex justify-content-center">
-                {breadcrumbs.map((crumb, i) => (
-                    <React.Fragment key={i}>
-                        {i > 0 && (
-                            <span className="d-flex align-items-center mx-2 fw-bold">➤</span>
-                        )}
+            <div className="breadcrumb d-flex align-items-center">
+                {breadcrumbs.map((crumb, i) => {
 
-                        <li
-                            className={`${color} breadcrumb-item ${i === breadcrumbs.length - 1 ? "active fw-bold" : ""}`}
-                            aria-current={i === breadcrumbs.length - 1 ? "page" : undefined}
-                        >
-                            {crumb.path && i !== breadcrumbs.length - 1 ? (
-                                <Link
-                                    to={crumb.path}
-                                    className="text-reset text-decoration-none"
-                                >
-                                    {crumb.label}
-                                </Link>
-                            ) : (
-                                crumb.label
+                    const isLast = i === breadcrumbs.length - 1;
+                    const useCustomColor = !!crumb.color;
+
+                    return (
+                        <React.Fragment key={i}>
+
+                            {i > 0 && (
+                                <span className="d-flex mx-1">
+                                    <BsArrowRightSquareFill />
+                                </span>
                             )}
-                        </li>
-                    </React.Fragment>
-                ))}
+
+                            <li
+                                className={`
+                                    breadcrumb-item
+                                    px-2
+                                    py-1
+                                    rounded
+                                    ${isLast ? "fw-bold" : ""}
+                                    ${!useCustomColor ? sectionColor : ""}
+                                    ${crumb.className || ""}
+                                `}
+                                style={{
+                                    backgroundColor: crumb.color || undefined,
+                                    color: crumb.textColor || undefined
+                                }}
+                                aria-current={isLast ? "page" : undefined}
+                            >
+                                {crumb.path && !isLast ? (
+                                    <Link
+                                        to={crumb.path}
+                                        className="text-reset text-decoration-none"
+                                    >
+                                        <span className={useCustomColor? "breadcrumb-item-text" : null}>{crumb.label}</span>
+                                    </Link>
+                                ) : (
+                                    <span className={useCustomColor? "breadcrumb-item-text" : null}>{crumb.label}</span>
+                                )}
+                            </li>
+                        </React.Fragment>
+                    );
+                })}
             </div>
         </div>
     );
 };
+
 
 export default Breadcrumbs;

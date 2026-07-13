@@ -5,7 +5,7 @@ import { Bounce, toast } from "react-toastify";
 import { addHome, editHome } from "../../../api/services/homeService";
 import { useLoading } from "../../../loader/LoadingContext";
 import renderFieldErrors from "../../../utils/renderFieldErrors";
-import Resident from "../Resident";
+import Resident from "./resident/Resident";
 import { useUser } from "../../../user/UserContext";
 
 const initialState = {
@@ -143,7 +143,6 @@ const ModalHome = ({
                                 <span className="bg-info bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 py-0 rounded">
                                     {t("home:home")}
                                 </span>
-                                <span className="fst-italic text-danger border border-3 rounded mx-2 pe-1"> {t("home:apt")} {home?.name} {"•"} {t("home:fl")} {home?.floor}</span>
                             </>
                         ) : (
                             <>

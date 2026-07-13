@@ -7,7 +7,7 @@ import settings from "../../../assets/images/app/settings.png";
 import addHome from "../../../assets/images/app/add_home.png";
 import saveIcon from "../../../assets/images/app/tick.png";
 import ModalHome from "./ModalHome";
-import ModalResident from "../ModalResident";
+import ModalResident from "./resident/ModalResident";
 import SortableRow from "../../../utils/SortableRow";
 import { saveHomeOrder } from "../../../api/services/homeService";
 

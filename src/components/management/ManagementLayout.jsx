@@ -5,7 +5,7 @@ import Breadcrumbs from "../breadcrumb/Breadcrumbs"
 
 const ManagementLayout = () => {
       return (
-            <Container fluid className="py-3">
+            <Container fluid className="py-1">
                   <Breadcrumbs />
                   <Outlet />
             </Container>
