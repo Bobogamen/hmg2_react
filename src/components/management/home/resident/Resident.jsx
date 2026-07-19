@@ -1,118 +1,81 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import renderFieldErrors from "../../../../utils/renderFieldErrors";
-
-const initialState = {
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: ""
-};
 
 const Resident = ({
     data,
     errors = {},
     onChange,
-    onSubmit,
     showTitle = true,
     showSubmit = false,
-    titleKey = "home:resident"
-} = {}) => {
-    const [localData, setLocalData] = useState(initialState);
-    const residentData = data || localData;
-    const Wrapper = onSubmit || showSubmit ? "form" : "div";
+    titleKey = "home:resident",
+    onSubmit,
+    isEditing = false
+}) => {
 
     const { t } = useTranslation();
 
-    const handleChange = (e) => {
-        if (onChange) {
-            onChange(e);
-            return;
-        }
+    const handleSubmit = (e) => {
 
-        const { name, value } = e.target;
-
-        setLocalData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+        e.preventDefault();
+        onSubmit?.(data);
     };
 
+    const Wrapper = showSubmit || onSubmit ? "form" : "div";
+
     return (
-        <div>
-            <Wrapper className="registrationForm mt-0 bg-danger bg-opacity-50 border-3 border-dark" onSubmit={onSubmit}>
-                {showTitle && <h4 className="fw-bold mb-0">{t(titleKey)}</h4>}
-                <div>
-                    <label>{t("form:firstName")}</label>
+        <Wrapper
+            className={`registrationForm mt-0 ${showSubmit ? "bg-success" : "bg-danger"} bg-opacity-50 border-3 border-dark`}
+            onSubmit={Wrapper === "form" ? handleSubmit : undefined}
+        >
+
+            {showTitle && (
+                <h4 className="fw-bold mb-0 text-decoration-underline">
+                    {t(titleKey)}
+                </h4>
+            )}
+
+            {[
+                { name: "firstName", labelKey: "form:firstName" },
+                { name: "middleName", labelKey: "form:middleName" },
+                { name: "lastName", labelKey: "form:lastName" },
+                { name: "email", labelKey: "email" },
+                { name: "phoneNumber", labelKey: "form:telephone", className: "mb-3" }
+
+            ].map(({ name, labelKey, className }) => (
+
+                <div
+                    key={name}
+                    className={className || ""}
+                >
+
+                    <label htmlFor={name}>
+                        {t(labelKey)}
+                    </label>
+
                     <input
+                        id={name}
+                        name={name}
                         type="text"
-                        placeholder={t("form:firstName")}
-                        name="firstName"
-                        id="firstName"
-                        value={residentData.firstName || ""}
-                        onChange={handleChange}
+                        value={data?.[name] || ""}
+                        placeholder={t(labelKey)}
+                        onChange={onChange}
                     />
-                    {renderFieldErrors(errors, "firstName", t)}
+                    {renderFieldErrors(errors, name, t)}
                 </div>
-                <div>
-                    <label>{t("form:middleName")}</label>
-                    <input
-                        type="text"
-                        placeholder={t("form:middleName")}
-                        name="middleName"
-                        id="middleName"
-                        value={residentData.middleName || ""}
-                        onChange={handleChange}
-                    />
-                    {renderFieldErrors(errors, "middleName", t)}
-                </div>
-                <div>
-                    <label>{t("form:lastName")}</label>
-                    <input
-                        type="text"
-                        placeholder={t("form:lastName")}
-                        name="lastName"
-                        id="lastName"
-                        value={residentData.lastName || ""}
-                        onChange={handleChange}
-                    />
-                    {renderFieldErrors(errors, "lastName", t)}
-                </div>
-                <div>
-                    <label>{t("email")}</label>
-                    <input
-                        type="text"
-                        placeholder={t("email")}
-                        name="email"
-                        id="email"
-                        value={residentData.email || ""}
-                        onChange={handleChange}
-                    />
-                    {renderFieldErrors(errors, "email", t)}
-                </div>
-                <div className="mb-2">
-                    <label>{t("form:telephone")}</label>
-                    <input
-                        type="text"
-                        placeholder={t("form:telephone")}
-                        name="phoneNumber"
-                        id="phoneNumber"
-                        value={residentData.phoneNumber || ""}
-                        onChange={handleChange}
-                    />
-                    {renderFieldErrors(errors, "phoneNumber", t)}
-                </div>
-                {showSubmit && (
-                    <div className="modal-footer border-0 justify-content-center">
-                        <button type="submit" id="modal-button" className="button mx-3">
-                            {t("add")}
-                        </button>
-                    </div>
-                )}
-            </Wrapper>
-        </div>
-    )
-}
+            ))}
+
+            {showSubmit && (
+                <button
+                    type="submit"
+                    className="authentication-button mb-1 m-auto"
+                >
+                    {t(isEditing ? "save" : "add")}
+                </button>
+            )}
+        </Wrapper>
+    );
+};
+
 
 export default Resident;

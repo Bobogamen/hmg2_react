@@ -9,6 +9,7 @@ import bgDashboard from "../locales/bg/dashboard.json"
 import bgCondo from "../locales/bg/condominium.json"
 import bgHome from "../locales/bg/home.json"
 import bgProfile from "../locales/bg/profile.json"
+import bgResident from "../locales/bg/resident.json"
 import bgForm from "../locales/bg/form.json"
 import bgServer from "../locales/bg/server.json"
 import bgFooter from "../locales/bg/footer.json"
@@ -21,6 +22,7 @@ import enDashboard from "../locales/en/dashboard.json"
 import enCondo from "../locales/en/condominium.json"
 import enHome from "../locales/en/home.json"
 import enProfile from "../locales/en/profile.json"
+import enResident from "../locales/en/resident.json"
 import enForm from "../locales/en/form.json"
 import enServer from "../locales/en/server.json"
 import enFooter from "../locales/en/footer.json"
@@ -38,6 +40,7 @@ i18n
         condo: bgCondo,
         home: bgHome,
         profile: bgProfile,
+        resident: bgResident,
         form: bgForm,
         server: bgServer,
         footer: bgFooter,
@@ -51,6 +54,7 @@ i18n
         condo: enCondo,
         home: enHome,
         profile: enProfile,
+        resident: enResident,
         form: enForm,
         server: enServer,
         footer: enFooter

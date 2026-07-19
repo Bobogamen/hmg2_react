@@ -2,11 +2,14 @@
   "save": "Save",
   "cancel": "Cancel",
   "edit": "Edit",
+  "recover": "Recover",
   "close": "Close",
   "add": "Add",
   "select": "Select",
   "create": "Create",
   "delete": "Delete",
+  "deactivate": "Deactivate",
+  "activate": "Activate",
   "send": "Send",
   "confirm": "Confirm",
   "total": "Total",
@@ -20,5 +23,6 @@
   "in": "in",
   "name": "name",
   "roles": "Roles",
-  "warning": "WARNING!"
+  "warning": "WARNING!",
+  "noInfo": "no info"
 }

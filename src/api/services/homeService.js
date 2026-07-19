@@ -119,3 +119,17 @@ export const saveHomeOrder = async ({
 
     return data;
 };
+
+/**
+ * DELETE HOME
+ */
+export const deleteHome = async ({ condominiumId, homeId }) => {
+
+    if (!condominiumId || !homeId) {
+        throw new Error("Missing IDs");
+    }
+
+    await api.delete(
+        `/management/condominiums/${condominiumId}/homes/${homeId}`
+    );
+};

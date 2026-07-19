@@ -33,7 +33,6 @@ const Management = () => {
   return (
     <div>
       <div className="management">
-
         {condominiums.length > 0 ? (
           <ul>
             {condominiums.map((condominium) => (
@@ -61,14 +60,13 @@ const Management = () => {
             <span className="ms-2">{t("common:create")}</span>
           </div>
         )}
-
       </div>
 
       <ModalCondominium
         show={openModal}
         handleClose={handleClose}
       />
-
+      
     </div>
   );
 };

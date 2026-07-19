@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
+import { useTranslation } from "react-i18next";
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { setBreadcrumbs } = useBreadcrumb();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      {
+        label: t("dashboard:admin")
+      }
+    ]);
+  }, [setBreadcrumbs, t]);
+
 
   return (
     <Container>

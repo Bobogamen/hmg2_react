@@ -63,6 +63,7 @@
 
 .registrationForm input {
   width: 16em;
+  border-radius: 0.5em;
 }
 
 .registrationForm small {

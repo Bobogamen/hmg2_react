@@ -1,0 +1,11 @@
+{
+  "created": "Resident successfully added",
+  "updated": "Resident successfully updated",
+  "updatedOwner": "Owner successfully updated",
+  "deleted": "Resident successfully DEACTIVATED",
+  "activated": "Resident successfully ACTIVATED",
+  "inactive": "INACTIVE",
+  "confirmResidentDeleteTitle": "Delete RESIDENT",
+  "deleteWarning": "<strong>RESIDENT</strong> will be <strong>DEACTIVATED</strong> and will no longer be included in the current management. It will not be considered in active reports and operations. <br>The data will be preserved, and <strong>RESIDENT</strong> can be <strong>ACTIVATED</strong> again at any time.",
+  "activateWarning": "<strong>THE RESIDENT</strong> will be <strong>ACTIVATED</strong> and will be included in current management. It will be considered in active reports and operations. <br>All preserved data will be used, and <strong>THE RESIDENT</strong> will be available."
+}

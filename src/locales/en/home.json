@@ -7,7 +7,7 @@
   "fl": "fl",
   "apt": "apt",
   "owner": "Owner",
-  "resident": "resident",
+  "resident": "Resident",
   "residents": "residents",
   "total": "Total",
   "group": "group",
@@ -15,5 +15,8 @@
   "pcs": "pcs",
   "noHomes": "No homes added",
   "created": "Home successfully created",
-  "updated": "Home successfully updated"
+  "updated": "Home successfully updated",
+  "deleted": "Home successfully DELETED",
+  "confirmDeleteTitle": "Delete HOME",
+  "deleteWarning": "The <strong>HOME</strong> will <i>no</i> longer be accessible. All related data, also become <strong>unavailable.</strong>"
 }

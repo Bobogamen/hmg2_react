@@ -5,13 +5,14 @@ import { useTranslation } from "react-i18next";
 import homeIcon from "../../../assets/images/app/home.png";
 
 import ModalHome from "./ModalHome";
-import Resident from "./resident/Resident";
 
 import { getHome } from "../../../api/services/homeService";
 import { useLoading } from "../../../loader/LoadingContext";
 import { useUser } from "../../../user/UserContext";
 import errorHandler from "../../errorHandling/errosHandler";
 import { useBreadcrumb } from "../../breadcrumb/BreadcrumpContext";
+import OwnerCard from "./resident/OwnerCard";
+import CardResident from "./resident/CardResident";
 
 const Home = () => {
     const { setBreadcrumbs } = useBreadcrumb();
@@ -34,7 +35,6 @@ const Home = () => {
 
     const [home, setHome] = useState(initHome);
     const [editHome, setEditHome] = useState(false);
-
 
     const fetchHome = useCallback(async () => {
         setIsLoading(true);
@@ -107,6 +107,14 @@ const Home = () => {
     const handleOpen = () => setEditHome(true);
     const handleClose = () => setEditHome(false);
 
+    const activeResidents = home.residents.filter(
+        resident => !resident.deleted
+    );
+
+    const inactiveResidents = home.residents.filter(
+        resident => resident.deleted
+    );
+
     return (
         <>
             <ModalHome
@@ -136,28 +144,37 @@ const Home = () => {
             <div className="layout">
                 {/* LEFT COLUMN */}
                 <section className="homes-section">
+                    <OwnerCard
+                        home={home}
+                        condominium={home.condominium}
+                        onSaved={fetchHome}
+                    />
 
-                    <Resident key={home?.owner?.id} />
+                    {activeResidents.map((resident) => (
+                        <CardResident
+                            key={`${resident.id}-${resident.deleted}`}
+                            resident={resident}
+                            home={home}
+                            condominium={home.condominium}
+                            onSaved={fetchHome}
+                        />
+                    ))}
 
-                    {home.residents?.length === 0 ? (
+                    {inactiveResidents.length > 0 && (
+                        <>
+                            <hr className="my-3" />
 
-                        <div className="text-center text-muted py-4">
-                            {t("resident.noResidents")}
-                        </div>
-
-                    ) : (
-
-                        home.residents.map((resident) => (
-
-                            <Resident
-                                key={resident.id}
-                                resident={resident}
-                                homeId={home.id}
-                                onSaved={fetchHome}
-                            />
-                        ))
+                            {inactiveResidents.map((resident) => (
+                                <CardResident
+                                    key={`${resident.id}-${resident.deleted}`}
+                                    resident={resident}
+                                    home={home}
+                                    condominium={home.condominium}
+                                    onSaved={fetchHome}
+                                />
+                            ))}
+                        </>
                     )}
-
                 </section>
                 {/* RIGHT COLUMN */}
                 <section className="utility-section">

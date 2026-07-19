@@ -28,6 +28,6 @@
     "nov": "November",
     "dec": "December"
   },
-  "confirmDeleteTitle": "Delete condominium",
-  "deleteWarning": "This condominium will no longer be accessible. All related data, also become unavailable."
+  "confirmDeleteTitle": "Delete CONDOMINIUM",
+  "deleteWarning": "The <strong>condominium</strong> will <i>no</i> longer be accessible. All related data, also become <strong>unavailable.</strong>"
 }

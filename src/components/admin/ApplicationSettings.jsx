@@ -3,6 +3,7 @@ import { Card, Form, Button, Spinner, Alert, Badge, Container } from "react-boot
 import { getSettings, updateSetting } from "../../api/services/appSettingService";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 
 const ApplicationSettings = () => {
 
@@ -11,11 +12,26 @@ const ApplicationSettings = () => {
     const [loadingId, setLoadingId] = useState(null);
     const [error, setError] = useState("");
 
+    const { setBreadcrumbs } = useBreadcrumb();
+
     const { t } = useTranslation();
 
     useEffect(() => {
         loadSettings();
     }, []);
+
+    useEffect(() => {
+        setBreadcrumbs([
+            {
+                label: t("dashboard:admin"),
+                path: "/admin"
+            },
+            {
+                label: "Application Settings",
+                color: "#0d6efd"
+            }
+        ]);
+    }, [setBreadcrumbs, t]);
 
     // =========================
     // LOAD SETTINGS

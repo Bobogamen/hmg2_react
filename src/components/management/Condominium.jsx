@@ -18,7 +18,7 @@ const Condominium = () => {
       const { setIsLoading } = useLoading();
       const { logout } = useUser();
       const navigate = useNavigate();
-      const { t } = useTranslation();
+      const { t, i18n } = useTranslation();
 
       const { setBreadcrumbs } = useBreadcrumb();
 
@@ -85,7 +85,8 @@ const Condominium = () => {
                                     </div>
 
                                     <div className="text-muted small">
-                                          {t("condo:cityShort")} {condominium.city}, {condominium.address}
+                                          {i18n.language === "bg" ? `${t("condo:cityShort")} ` : ""}
+                                          {condominium.city}, {condominium.address}
                                     </div>
                               </div>
                               <img src={apartments} className="medium-icon" alt="apartments" />

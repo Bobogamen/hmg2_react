@@ -85,7 +85,6 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
     };
 
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, condominium?.id]);
 
   const handleChange = (e) => {
@@ -249,7 +248,8 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
 
             {isEditing && (
               <div className="text-muted fst-italic fs-6">
-                {t("condo:cityShort")} {condominium.city}, {condominium.address}
+                {i18n.language === "bg" ? `${t("condo:cityShort")} ` : ""}
+                {condominium.city}, {condominium.address}
               </div>
             )}
           </Modal.Title>
@@ -514,7 +514,8 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
               {condominium?.name}
             </h4>
             <div className="text-muted mb-3">
-              {t("condo:cityShort")} {condominium?.city}, {condominium?.address}
+              {i18n.language === "bg" ? `${t("condo:cityShort")} ` : ""}
+              {condominium?.city}, {condominium?.address}
             </div>
             <div className="border border-danger rounded p-2 bg-danger-subtle">
               <div className="fw-bold text-danger mb-2 fs-4">
