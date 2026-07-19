@@ -1,6 +1,8 @@
 {
   "admin": "Administration",
   "management": "Management",
+  "managementTitle": "Your condominiums",
+  "managementDescription": "Easily manage your buildings",
   "finance": "Finance",
   "funds": "Funds",
   "repairs": "Repairs",

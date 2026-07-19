@@ -6,10 +6,10 @@ import Breadcrumbs from "../breadcrumb/Breadcrumbs"
 const AdminLayout = () => {
 
     return (
-        <Container fluid className="py-3">
+        <div fluid className="py-3">
             <Breadcrumbs />
             <Outlet />
-        </Container>
+        </div>
     );
 };
 

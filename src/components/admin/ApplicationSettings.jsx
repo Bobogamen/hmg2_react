@@ -177,7 +177,7 @@ const ApplicationSettings = () => {
                                 handleChange(setting.id, e.target.value)
                             }
                             style={{
-                                width: "60px",
+                                width: "40px",
                                 height: "40px"
                             }}
                         />
@@ -233,7 +233,7 @@ const ApplicationSettings = () => {
     // UI
     // =========================
     return (
-        <div className="p-1">
+        <div className="p-1 mt-4">
 
             <div className="shadow border-0">
 
@@ -332,7 +332,7 @@ const ApplicationSettings = () => {
                         </table>
                     </div>
                     {/* MOBILE CARDS (< 768px) */}
-                    <div className="d-md-none">
+                    <div className="d-md-none bg-black">
                         {(settings ?? []).map((setting) => (
                             <Card key={setting.id} className="mb-2">
                                 <Card.Body>

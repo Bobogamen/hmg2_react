@@ -266,9 +266,9 @@ const ModalResident = ({
 
                 <Modal.Footer
                     className={
-                        isEditing && isOwner
-                            ? "justify-content-end"
-                            : "justify-content-between"
+                        isEditing && !isOwner
+                            ? "justify-content-between"
+                            : ""
                     }
                 >
                     {

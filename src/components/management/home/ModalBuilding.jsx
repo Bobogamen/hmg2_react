@@ -127,11 +127,11 @@ const ModalBuilding = ({
                                     {t("home:home")}
                                 </th>
 
-                                <th>
+                                <th className="text-center">
                                     {t("home:floor")}
                                 </th>
 
-                                <th>
+                                <th className="text-center">
                                     {t("home:owner")}
                                 </th>
 
@@ -165,11 +165,11 @@ const ModalBuilding = ({
 
                                     </td>
 
-                                    <td>
+                                    <td className="text-center">
                                         {home.floor}
                                     </td>
 
-                                    <td>
+                                    <td className="text-center">
 
                                         {home.ownerName || (
                                             <span className="text-muted">

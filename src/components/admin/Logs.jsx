@@ -3,6 +3,8 @@ import { Card, Container, Spinner, Table, Badge, Row, Col, Form, Dropdown } from
 import { getLogs } from "../../api/services/logService";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 import { useTranslation } from "react-i18next";
+import { formatTimestamp } from "../../utils/formatDate";
+import "./Logs.css"
 
 const Logs = () => {
       const [logs, setLogs] = useState([]);
@@ -72,9 +74,6 @@ const Logs = () => {
                         return <Badge bg="secondary" className="smaller-text">{level}</Badge>;
             }
       };
-
-      const formatDate = (timestamp) =>
-            timestamp ? new Date(timestamp).toLocaleString() : "-";
 
       return (
             <Container className="mt-3">
@@ -213,58 +212,91 @@ const Logs = () => {
                                           striped
                                           hover
                                           responsive
-                                          className="align-middle mb-0"
+                                          className="align-middle mb-0 logs-table"
                                     >
 
-                                          <thead className="table-light">
-                                                <tr>
-                                                      <th className="text-uppercase small text-muted" style={{ width: "180px" }}>
-                                                            🕒 Time
-                                                      </th>
+                                          <colgroup>
+                                                <col className="action-column" />
+                                                <col className="time-column" />
+                                                <col className="user-column" />
+                                                <col className="level-column" />
+                                          </colgroup>
 
-                                                      <th className="text-uppercase small text-muted" style={{ width: "120px" }}>
-                                                            ⚡ Level
-                                                      </th>
+                                          <thead className="table-light">
+
+                                                <tr>
 
                                                       <th className="text-uppercase small text-muted">
                                                             📌 Action
                                                       </th>
 
-                                                      <th className="text-uppercase small text-muted" style={{ width: "250px" }}>
+                                                      <th className="text-uppercase small text-muted">
+                                                            🕒 Time
+                                                      </th>
+
+                                                      <th className="text-uppercase small text-muted">
                                                             👤 User
                                                       </th>
+
+                                                      <th className="text-uppercase small text-muted">
+                                                            ⚡ Level
+                                                      </th>
+
                                                 </tr>
+
                                           </thead>
 
                                           <tbody>
-                                                {filteredLogs.map((log) => (
-                                                      <tr
-                                                            key={log.id}
-                                                            className={
-                                                                  log.level === "ERROR"
-                                                                        ? "table-danger"
-                                                                        : log.level === "WARN"
-                                                                              ? "table-warning"
-                                                                              : ""
-                                                            }
-                                                      >
-                                                            <td className="text-muted small">
-                                                                  {formatDate(log.timestamp)}
-                                                            </td>
 
-                                                            <td>{getLevelBadge(log.level)}</td>
+                                                {filteredLogs.map((log) => {
 
-                                                            <td className="">
-                                                                  {log.action}
-                                                            </td>
+                                                      const timestamp = formatTimestamp(log.timestamp);
 
-                                                            <td>
-                                                                  <span className="fw-bold">
-                                                                        {log.userEmail || "-"}
-                                                                  </span>
-                                                            </td>
-                                                      </tr>
-                                                ))}
+                                                      return (
+
+                                                            <tr
+                                                                  key={log.id}
+                                                                  className={
+                                                                        log.level === "ERROR"
+                                                                              ? "table-danger"
+                                                                              : log.level === "WARN"
+                                                                                    ? "table-warning"
+                                                                                    : ""
+                                                                  }
+                                                            >
+
+                                                                  <td className="fw-semibold">
+                                                                        {log.action}
+                                                                  </td>
+
+                                                                  <td className="text-muted small">
+
+                                                                        <div className="fw-semibold">
+                                                                              {timestamp.date}
+                                                                        </div>
+
+                                                                        <div>
+                                                                              {timestamp.time}
+                                                                        </div>
+
+                                                                  </td>
+
+                                                                  <td>
+                                                                        <span className="fw-bold small">
+                                                                              {log.userEmail || "-"}
+                                                                        </span>
+                                                                  </td>
+
+                                                                  <td className="text-center">
+                                                                        {getLevelBadge(log.level)}
+                                                                  </td>
+
+                                                            </tr>
+
+                                                      );
+
+                                                })}
+
                                           </tbody>
 
                                     </Table>

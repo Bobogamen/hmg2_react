@@ -1,0 +1,32 @@
+.logs-table {
+    table-layout: fixed;
+}
+
+
+.logs-table .action-column {
+    width: 35%;
+}
+
+
+.logs-table .time-column {
+    width: 15%;
+}
+
+
+.logs-table .user-column {
+    width: 25%;
+}
+
+
+.logs-table .level-column {
+    width: 15%;
+
+}
+
+
+.logs-table th,
+.logs-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

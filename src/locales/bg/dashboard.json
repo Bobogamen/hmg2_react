@@ -1,6 +1,8 @@
 {
   "admin": "Админ",
   "management": "Управление",
+  "managementTitle": "Вашите етажни собствености",
+  "managementDescription": "Управлявайте с лекота своите сгради",
   "finance": "Финанси",
   "funds": "Фондове",
   "repairs": "Ремонти",

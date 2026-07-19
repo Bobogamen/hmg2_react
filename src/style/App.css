@@ -68,11 +68,11 @@
 
 .registrationForm small {
   display: flex;
-  font-size: x-small;
+  font-size: small;
 }
 
 .registrationForm select {
-  font-size: x-small;
+  font-size: small;
 }
 
 .width-fit-content {
