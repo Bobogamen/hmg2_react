@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
 import homeIcon from "../../../assets/images/app/home.png";
-
+import aptBuilding from "../../../assets/images/app/apartment_building.png";
 import ModalHome from "./ModalHome";
 
 import { getHome } from "../../../api/services/homeService";
@@ -13,6 +12,7 @@ import errorHandler from "../../errorHandling/errosHandler";
 import { useBreadcrumb } from "../../breadcrumb/BreadcrumpContext";
 import OwnerCard from "./resident/OwnerCard";
 import CardResident from "./resident/CardResident";
+import ModalBuilding from "./ModalBuilding";
 
 const Home = () => {
     const { setBreadcrumbs } = useBreadcrumb();
@@ -35,6 +35,7 @@ const Home = () => {
 
     const [home, setHome] = useState(initHome);
     const [editHome, setEditHome] = useState(false);
+    const [buildingOpen, setBuildingOpen] = useState(false);
 
     const fetchHome = useCallback(async () => {
         setIsLoading(true);
@@ -59,11 +60,9 @@ const Home = () => {
         t
     ]);
 
-
     useEffect(() => {
         fetchHome();
     }, [fetchHome]);
-
 
     const homeTitle = [
         home.floor && `${t("home:floor")} ${home.floor}`,
@@ -71,7 +70,6 @@ const Home = () => {
     ]
         .filter(Boolean)
         .join(" • ");
-
 
     // Breadcrumbs
     useEffect(() => {
@@ -106,6 +104,14 @@ const Home = () => {
 
     const handleOpen = () => setEditHome(true);
     const handleClose = () => setEditHome(false);
+    
+    const handleBuildingOpen = () => {
+
+        if (!home.condominium)
+            return;
+
+        setBuildingOpen(true);
+    };
 
     const activeResidents = home.residents.filter(
         resident => !resident.deleted
@@ -124,23 +130,29 @@ const Home = () => {
                 home={home}
                 onSaved={fetchHome}
             />
-            <button className="hg-title my-2" onClick={handleOpen}>
-                <div className="d-flex justify-content-center align-items-center gap-3">
+            <div className="d-flex justify-content-center">
+                <button className="hg-title my-2" onClick={handleOpen}>
+                    <div className="d-flex justify-content-center align-items-center gap-3">
 
-                    <div className="text-center">
-                        <div className="fw-bold fs-4">
-                            {homeTitle || null}
+                        <div className="text-center">
+                            <div className="fw-bold fs-4">
+                                {homeTitle || null}
+                            </div>
                         </div>
+
+                        <img
+                            src={homeIcon}
+                            className="medium-icon"
+                            alt="home"
+                        />
                     </div>
-
-                    <img
-                        src={homeIcon}
-                        className="medium-icon"
-                        alt="home"
-                    />
-
-                </div>
-            </button>
+                </button>
+                <button className="hg-title my-2" onClick={handleBuildingOpen}>
+                    <div className="d-flex justify-content-center align-items-center gap-3">
+                        <img src={aptBuilding} className="medium-icon" alt="home" />
+                    </div>
+                </button>
+            </div>
             <div className="layout">
                 {/* LEFT COLUMN */}
                 <section className="homes-section">
@@ -192,6 +204,12 @@ const Home = () => {
                     </div>
                 </section>
             </div>
+
+            <ModalBuilding
+                show={buildingOpen}
+                handleClose={() => setBuildingOpen(false)}
+                condominium={home.condominium}
+            />
         </>
     );
 };

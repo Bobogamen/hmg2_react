@@ -101,6 +101,18 @@ export const getHome = async ({ condominiumId, homeId }) => {
 };
 
 /**
+ * GET HOMES
+ */
+export const getHomes = async (condominiumId) => {
+
+    const response = await api.get(
+        `/management/condominiums/${condominiumId}/homes`
+    );
+
+    return response.data;
+};
+
+/**
  * UPDATE HOME ORDER
  */
 export const saveHomeOrder = async ({
