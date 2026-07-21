@@ -1,4 +1,6 @@
 {
   "notResponding": "Server not responding",
-  "error": "Server error"
+  "error": "Server error",
+  "title404": "Status code: 404 Not found",
+  "404": "The resource you were trying to reach couldn't be found."
 }

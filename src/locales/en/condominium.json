@@ -12,8 +12,8 @@
   "namePlaceholder": "Condominium name",
   "cityPlaceholder": "City",
   "addressPlaceholder": "Address",
-  "startDateWarning": "<strong>WARNING!</strong> Once the start date is created, it cannot be changed!",
-  "startDateInfo": "<strong>The start date</strong> is the month and year from which the reporting begins. <strong>Example: January 2026.</strong>",
+  "startDateWarning": "<strong>WARNING!</strong><br> Please choose the <strong>start date</strong> carefully.<br> It defines the <u>beginning of the accounting period</u> and after creation, <strong><u>cannot be changed</u></strong>.",
+  "startDateInfo": "<strong>Start date</strong><br> is the <i><u>month</u></i> and <i><u>year</u></i><br> from which the <u>accounting</u> begins.<br><strong>Example: <i><u>January 2026</u></i></strong>",
   "months": {
     "jan": "January",
     "feb": "February",

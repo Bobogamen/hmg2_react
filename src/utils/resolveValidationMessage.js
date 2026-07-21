@@ -1,49 +1,50 @@
-const parseCode = (code) => {
-  if (!code) return { code: "", args: {} };
+const parseCode = (code, args) => {
+    if (!code) {
+        return {
+            code: "",
+            args: {}
+        };
+    }
 
-  // lengthBetween6and20 → extract min/max
-  const lengthMatch = code.match(/^lengthBetween(\d+)and(\d+)$/);
+    // Backward compatibility with old format:
+    // lengthBetween6and20
+    const lengthMatch = code.match(/^lengthBetween(\d+)and(\d+)$/);
 
-  if (lengthMatch) {
+    if (lengthMatch) {
+        return {
+            code: "lengthBetween",
+            args: {
+                min: Number(lengthMatch[1]),
+                max: Number(lengthMatch[2])
+            }
+        };
+    }
+
     return {
-      code: "lengthBetween",
-      args: {
-        min: lengthMatch[1],
-        max: lengthMatch[2],
-      },
+        code,
+        args: args || {}
     };
-  }
-
-  return {
-    code,
-    args: {},
-  };
 };
 
 const resolveValidationMessage = (error, t) => {
-  const rawCode = error?.code;
-  const rawArgs = error?.args || {};
 
-  if (!rawCode) return "";
+    if (!error?.code) {
+        return "";
+    }
 
-  // transform backend code into base key + args
-  const parsed = parseCode(rawCode);
+    const { code, args } = parseCode(
+        error.code,
+        error.args
+    );
 
-  // merge args (parsed takes priority for computed values)
-  const args = {
-    ...rawArgs,
-    ...parsed.args,
-  };
+    const translated = t(
+        `validation:${code}`,
+        args
+    );
 
-  const translated = t(`validation:${parsed.code}`, args);
-
-  // if translation exists, use it
-  if (translated && translated !== `validation:${parsed.code}`) {
-    return translated;
-  }
-
-  // fallback
-  return parsed.code;
+    return translated !== `validation:${code}`
+        ? translated
+        : code;
 };
 
 export default resolveValidationMessage;

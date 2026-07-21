@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import { FaPhone, FaEnvelope, FaPencilAlt, FaExclamationTriangle } from "react-icons/fa";
+import { FaPhone, FaEnvelope, FaPencilAlt, FaExclamationTriangle, FaTrashRestore } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import ModalResident from "./ModalResident";
+import ModalActivateResident from "./ModalActivateResident";
+import { useLoading } from "../../../../loader/LoadingContext";
+import { activateResident } from "../../../../api/services/residentService";
+import { Bounce, toast } from "react-toastify";
 
 const OwnerCard = ({
     home,
@@ -11,6 +15,8 @@ const OwnerCard = ({
 
     const { t } = useTranslation();
     const [showEdit, setShowEdit] = useState(false);
+    const [showActivate, setShowActivate] = useState(false);
+    const { setIsLoading } = useLoading();
 
     if (!home.owner) return null;
 
@@ -23,43 +29,100 @@ const OwnerCard = ({
         .filter(Boolean)
         .join(" ");
 
+    const handleActivate = async (residentId) => {
+
+        try {
+
+            setIsLoading(true);
+
+            await activateResident(
+                condominium.id,
+                home.id,
+                residentId
+            );
+
+            toast.success(
+                t("resident:activated"),
+                {
+                    transition: Bounce
+                }
+            );
+
+            setShowActivate(false);
+            await onSaved?.();
+
+        } catch (error) {
+
+            toast.error(
+                t("server:error"),
+                {
+                    transition: Bounce
+                }
+            );
+
+            console.error(
+                "Failed to activate resident:",
+                error
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <>
             <div className="card shadow-sm mb-2 border-danger">
-                <div className="
+                <div className={`
                     card-header
-                    bg-danger
+                    ${home?.owner?.deleted ? "bg-secondary bg-opacity-75" : "bg-danger"}
                     text-white
                     d-flex
                     justify-content-between
                     align-items-center
                     py-2
-                ">
+                `}>
 
                     <div className="text-start">
                         <div className="fw-bold fs-4">
                             {fullName || t("common:noInfo")}
                         </div>
-                        <div className="
-                            text-start
-                            fs-6
-                            fw-bold
-                            text-bg-warning
-                            rounded
-                            d-inline-block
-                            px-2
-                        ">
+
+                        {home?.owner?.deleted && (
+                            <>
+                                <div className="text-start fs-6 fw-bold text-bg-danger opacity-100 rounded d-inline-block px-2 me-2">
+                                    {t("resident:inactive")}
+                                </div>
+                            </>
+                        )}
+
+                        <div className="text-start fs-6 fw-bold text-bg-warning rounded d-inline-block px-2">
                             {t("home:owner")}
                         </div>
                     </div>
 
                     <button
                         className="btn btn-sm btn-light"
-                        onClick={() => setShowEdit(true)}
+                        onClick={() =>
+                            home?.owner?.deleted
+                                ? setShowActivate(true)
+                                : setShowEdit(true)
+                        }
                     >
-                        <FaPencilAlt size={16} />
-                        {" "}
-                        {t("common:edit")}
+                        {
+                            home?.owner?.deleted ? (
+                                <>
+                                    <FaTrashRestore size={16} />
+                                    {" "}
+                                    {t("common:activate")}
+                                </>
+                            ) : (
+                                <>
+                                    <FaPencilAlt size={16} />
+                                    {" "}
+                                    {t("common:edit")}
+                                </>
+                            )
+                        }
                     </button>
                 </div>
 
@@ -98,16 +161,29 @@ const OwnerCard = ({
                 </div>
             </div>
 
-            <ModalResident
-                show={showEdit}
-                handleClose={() => setShowEdit(false)}
-                home={home}
-                condominium={condominium}
-                resident={home.owner}
-                isEditing={true}
-                isOwner={true}
-                onSaved={onSaved}
-            />
+            {
+                home?.owner?.deleted ?
+
+                    <ModalActivateResident
+                        show={showActivate}
+                        handleClose={() => setShowActivate(false)}
+                        home={home}
+                        resident={home.owner}
+                        onActivate={handleActivate}
+                    />
+                    :
+                    <ModalResident
+                        show={showEdit}
+                        handleClose={() => setShowEdit(false)}
+                        home={home}
+                        condominium={condominium}
+                        resident={home.owner}
+                        isEditing={true}
+                        isOwner={true}
+                        onSaved={onSaved}
+                    />
+            }
+
         </>
     );
 };

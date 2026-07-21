@@ -16,6 +16,7 @@ const ModalActivateResident = ({
     if (!resident)
         return null;
 
+    const isOwner = home?.owner?.id === resident?.id
 
     const fullName = [
         resident.firstName,
@@ -39,7 +40,7 @@ const ModalActivateResident = ({
             >
                 <Modal.Title className="d-flex align-items-center gap-2">
                     <FaUserCheck />
-                    {t("resident:confirmActiveTitle")}
+                    {t(isOwner? "resident:ownerConfirmActiveTitle" : "resident:confirmActiveTitle")}
                 </Modal.Title>
             </Modal.Header>
 
@@ -92,7 +93,7 @@ const ModalActivateResident = ({
                             bg-danger-subtle
                         ">
                     <div className="small text-center">
-                        <Trans i18nKey="resident:activateWarning" />
+                        <Trans i18nKey="resident:activateOwnerWarning" />
                     </div>
                 </div>
 

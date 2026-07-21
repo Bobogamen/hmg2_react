@@ -85,6 +85,7 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
     };
 
     loadData();
+    // eslint-disable-next-line
   }, [show, condominium?.id]);
 
   const handleChange = (e) => {
@@ -343,14 +344,27 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
                 </label>
 
                 {openWarning && (
-                  <div className="border border-3 border-warning rounded p-1 bg-warning-subtle mt-1">
-                    <Trans i18nKey="condo:startDateWarning" />
+                  <div className="d-inline border border-3 border-warning rounded p-1 bg-warning-subtle mt-1">
+                    <Trans className="d-inline"
+                      i18nKey="condo:startDateWarning"
+                      components={{
+                        strong: <strong />,
+                        i: <i />,
+                        u: <u />
+                      }} />
                   </div>
                 )}
 
                 {openInfo && (
-                  <div className="border border-3 border-info rounded p-1 bg-info-subtle mt-1">
-                    <Trans i18nKey="condo:startDateInfo" />
+                  <div className="d-inline border border-3 border-info rounded p-1 bg-info-subtle mt-1">
+                    <Trans
+                      i18nKey="condo:startDateInfo"
+                      components={{
+                        strong: <strong />,
+                        i: <i />,
+                        u: <u />
+                      }}
+                    />
                   </div>
                 )}
 

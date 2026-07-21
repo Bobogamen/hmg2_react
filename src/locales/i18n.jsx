@@ -7,6 +7,7 @@ import bgValidation from "../locales/bg/validation.json";
 import bgHomepage from "../locales/bg/homepage.json"
 import bgDashboard from "../locales/bg/dashboard.json"
 import bgCondo from "../locales/bg/condominium.json"
+import bgFinance from "../locales/bg/finance.json"
 import bgHome from "../locales/bg/home.json"
 import bgProfile from "../locales/bg/profile.json"
 import bgResident from "../locales/bg/resident.json"
@@ -20,6 +21,7 @@ import enValidation from "../locales/en/validation.json";
 import enHomepage from "../locales/en/homepage.json"
 import enDashboard from "../locales/en/dashboard.json"
 import enCondo from "../locales/en/condominium.json"
+import enFinance from "../locales/en/finance.json"
 import enHome from "../locales/en/home.json"
 import enProfile from "../locales/en/profile.json"
 import enResident from "../locales/en/resident.json"
@@ -38,6 +40,7 @@ i18n
         homepage: bgHomepage,
         dashboard: bgDashboard,
         condo: bgCondo,
+        finance: bgFinance,
         home: bgHome,
         profile: bgProfile,
         resident: bgResident,
@@ -52,6 +55,7 @@ i18n
         homepage: enHomepage,
         dashboard: enDashboard,
         condo: enCondo,
+        finance: enFinance,
         home: enHome,
         profile: enProfile,
         resident: enResident,

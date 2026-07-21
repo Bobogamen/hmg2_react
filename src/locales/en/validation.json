@@ -2,6 +2,7 @@
   "required": "This field is required",
   "notBlank": "Cannot be blank or contain only spaces",
   "positiveWholeNumber": "Must be a positive whole number",
+  "positiveNumber": "Must be a positive number",
   "invalidColor": "Invalid color code",
   "invalidEmail": "Invalid email address",
   "emailInUse": "Email address is already in use",
@@ -18,5 +19,6 @@
   "startDateAfter": "Start date must be in or after {{year}}",
   "pastOrPresent": "Start date cannot be in the future",
   "notMoreThan200": "Not more than 200",
+  "notMoreThan100 000": "Not more than 100 000",
   "sizeIsLess": "The number of homes is greater than the specified size"
 }

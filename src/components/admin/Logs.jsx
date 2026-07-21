@@ -7,13 +7,12 @@ import { formatTimestamp } from "../../utils/formatDate";
 import "./Logs.css"
 
 const Logs = () => {
+
       const [logs, setLogs] = useState([]);
       const [loading, setLoading] = useState(true);
-
       const [emailFilter, setEmailFilter] = useState("");
       const [actionFilter, setActionFilter] = useState("");
       const [levelFilter, setLevelFilter] = useState("ALL");
-
       const { setBreadcrumbs } = useBreadcrumb();
       const { t } = useTranslation();
 
@@ -28,7 +27,6 @@ const Logs = () => {
                         setLoading(false);
                   }
             };
-
             loadLogs();
       }, []);
 
@@ -50,14 +48,11 @@ const Logs = () => {
                   const emailMatch =
                         !emailFilter ||
                         log.userEmail?.toLowerCase().includes(emailFilter.toLowerCase());
-
                   const actionMatch =
                         !actionFilter ||
                         log.action?.toLowerCase().includes(actionFilter.toLowerCase());
-
                   const levelMatch =
                         levelFilter === "ALL" || log.level === levelFilter;
-
                   return emailMatch && actionMatch && levelMatch;
             });
       }, [logs, emailFilter, actionFilter, levelFilter]);
@@ -77,29 +72,22 @@ const Logs = () => {
 
       return (
             <Container className="mt-3">
-
                   {/* FILTER CARD */}
                   <Card className="shadow-sm mb-3 border-0">
-
                         <Card.Header className="fw-bold fs-5 bg-secondary text-white d-flex justify-content-between align-items-center">
                               <span>📋 Application Logs</span>
-
                               <span className="badge bg-light text-dark">
                                     {filteredLogs.length} Results
                               </span>
                         </Card.Header>
-
                         <Card.Body className="bg-light">
-
                               <Row className="g-3 align-items-center p-2">
-
                                     {/* EMAIL */}
                                     <Col lg={4} md={6}>
                                           <Form.Group>
                                                 <Form.Label className="small text-muted fw-semibold">
                                                       👤 User Email
                                                 </Form.Label>
-
                                                 <Form.Control
                                                       className="border-secondary"
                                                       placeholder="Search by email..."
@@ -108,14 +96,12 @@ const Logs = () => {
                                                 />
                                           </Form.Group>
                                     </Col>
-
                                     {/* ACTION */}
                                     <Col lg={4} md={6}>
                                           <Form.Group>
                                                 <Form.Label className="small text-muted fw-semibold">
                                                       📌 Action
                                                 </Form.Label>
-
                                                 <Form.Control
                                                       className="border-secondary"
                                                       placeholder="Search by action..."
@@ -124,14 +110,12 @@ const Logs = () => {
                                                 />
                                           </Form.Group>
                                     </Col>
-
                                     {/* LEVEL */}
                                     <Col lg={4} md={12}>
                                           <Form.Group>
                                                 <Form.Label className="small fw-semibold">
                                                       ⚡ Log Level
                                                 </Form.Label>
-
                                                 <Dropdown>
                                                       <Dropdown.Toggle
                                                             className="w-100 text-start d-flex justify-content-between align-items-center"
@@ -150,9 +134,7 @@ const Logs = () => {
                                                             {levelFilter === "WARN" && "WARN"}
                                                             {levelFilter === "ERROR" && "ERROR"}
                                                       </Dropdown.Toggle>
-
                                                       <Dropdown.Menu className="w-100">
-
                                                             <Dropdown.Item
                                                                   active={levelFilter === "ALL"}
                                                                   className="text-bg-secondary fw-semibold"
@@ -160,7 +142,6 @@ const Logs = () => {
                                                             >
                                                                   All Levels
                                                             </Dropdown.Item>
-
                                                             <Dropdown.Item
                                                                   active={levelFilter === "INFO"}
                                                                   className="text-bg-info fw-semibold"
@@ -168,7 +149,6 @@ const Logs = () => {
                                                             >
                                                                   INFO
                                                             </Dropdown.Item>
-
                                                             <Dropdown.Item
                                                                   active={levelFilter === "WARN"}
                                                                   className="text-bg-warning fw-semibold"
@@ -176,7 +156,6 @@ const Logs = () => {
                                                             >
                                                                   WARN
                                                             </Dropdown.Item>
-
                                                             <Dropdown.Item
                                                                   active={levelFilter === "ERROR"}
                                                                   className="text-bg-danger fw-semibold"
@@ -184,21 +163,16 @@ const Logs = () => {
                                                             >
                                                                   ERROR
                                                             </Dropdown.Item>
-
                                                       </Dropdown.Menu>
                                                 </Dropdown>
-
                                           </Form.Group>
                                     </Col>
-
                               </Row>
                         </Card.Body>
                   </Card>
-
                   {/* TABLE */}
                   <div>
                         <div className="p-0">
-
                               {loading ? (
                                     <div className="text-center py-4">
                                           <Spinner animation="border" />
@@ -214,46 +188,32 @@ const Logs = () => {
                                           responsive
                                           className="align-middle mb-0 logs-table"
                                     >
-
                                           <colgroup>
                                                 <col className="action-column" />
                                                 <col className="time-column" />
                                                 <col className="user-column" />
                                                 <col className="level-column" />
                                           </colgroup>
-
                                           <thead className="table-light">
-
                                                 <tr>
-
                                                       <th className="text-uppercase small text-muted">
                                                             📌 Action
                                                       </th>
-
                                                       <th className="text-uppercase small text-muted">
                                                             🕒 Time
                                                       </th>
-
                                                       <th className="text-uppercase small text-muted">
                                                             👤 User
                                                       </th>
-
                                                       <th className="text-uppercase small text-muted">
                                                             ⚡ Level
                                                       </th>
-
                                                 </tr>
-
                                           </thead>
-
                                           <tbody>
-
                                                 {filteredLogs.map((log) => {
-
                                                       const timestamp = formatTimestamp(log.timestamp);
-
                                                       return (
-
                                                             <tr
                                                                   key={log.id}
                                                                   className={
@@ -264,47 +224,33 @@ const Logs = () => {
                                                                                     : ""
                                                                   }
                                                             >
-
                                                                   <td className="fw-semibold">
                                                                         {log.action}
                                                                   </td>
-
                                                                   <td className="text-muted small">
-
                                                                         <div className="fw-semibold">
                                                                               {timestamp.date}
                                                                         </div>
-
                                                                         <div>
                                                                               {timestamp.time}
                                                                         </div>
-
                                                                   </td>
-
                                                                   <td>
                                                                         <span className="fw-bold small">
                                                                               {log.userEmail || "-"}
                                                                         </span>
                                                                   </td>
-
                                                                   <td className="text-center">
                                                                         {getLevelBadge(log.level)}
                                                                   </td>
-
                                                             </tr>
-
                                                       );
-
                                                 })}
-
                                           </tbody>
-
                                     </Table>
                               )}
-
                         </div>
                   </div>
-
             </Container>
       );
 };

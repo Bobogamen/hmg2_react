@@ -1,6 +1,11 @@
 {
   "fee": "Fee",
   "fees": "Fees",
+  "noneAddedFees": "No fees has been added",
+  "monthlyFee": "Monthly",
+  "monthlyFeeInfo": "Determines whether this <strong>Fee</strong> is applied<br> <strong>monthly</strong> or <strong>one-time</strong>.<br>The setting can be changed<br>at <u>any time.</u>",
+  "mainFeeInfo": "Основна... такса..",
+  "main": "Main",
   "bill": "Bill",
   "bills": "Bills",
   "repair": "Repair",

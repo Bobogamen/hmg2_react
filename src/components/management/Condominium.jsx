@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import apartments from '../../assets/images/app/apartment_building.png';
 import ModalCondominium from "./ModalCondominium";
 import HomesTable from "./home/HomesTable";
-import FeesTable from "./FeesTable";
+import FeesTable from "./fee/FeesTable";
 import BillsTable from "./BillsTable";
 import RepairsTable from "./RepairsTable";
 import { getCondominium } from "../../api/services/managementService";
@@ -14,16 +14,16 @@ import { useTranslation } from "react-i18next";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 
 const Condominium = () => {
+
       const { condominiumId } = useParams();
       const { setIsLoading } = useLoading();
       const { logout } = useUser();
       const navigate = useNavigate();
       const { t, i18n } = useTranslation();
-
       const { setBreadcrumbs } = useBreadcrumb();
 
       const initCondominium = {
-            condominiumId: null,
+            id: null,
             name: "",
             homes: [],
             fees: [],
@@ -40,11 +40,23 @@ const Condominium = () => {
                   const data = await getCondominium(condominiumId);
                   setCondominium(data);
             } catch (error) {
-                  errorHandler(error, undefined, navigate, t, logout);
+                  errorHandler(
+                        error,
+                        undefined,
+                        navigate,
+                        t,
+                        logout
+                  );
             } finally {
                   setIsLoading(false);
             }
-      }, [condominiumId, setIsLoading, navigate, t, logout]);
+      }, [
+            condominiumId,
+            setIsLoading,
+            navigate,
+            t,
+            logout
+      ]);
 
       useEffect(() => {
             fetchCondominium();
@@ -52,7 +64,6 @@ const Condominium = () => {
 
       useEffect(() => {
             if (!condominium.name) return;
-
             setBreadcrumbs([
                   {
                         label: t("dashboard:management"),
@@ -60,10 +71,9 @@ const Condominium = () => {
                   },
                   {
                         label: condominium.name,
-                        color: condominium.backgroundColor,
+                        color: condominium.backgroundColor
                   }
             ]);
-
       }, [
             condominium.name,
             condominium.backgroundColor,
@@ -71,39 +81,73 @@ const Condominium = () => {
             setBreadcrumbs
       ]);
 
-      const handleOpen = () => setEditCondominium(true);
-      const handleClose = () => setEditCondominium(false);
+      const handleOpen = () => {
+            setEditCondominium(true);
+      };
 
+      const handleClose = () => {
+            setEditCondominium(false);
+      };
+      
       return (
             <>
-                  <ModalCondominium show={editCondominium} handleClose={handleClose} condominium={condominium} />
-                  <button className="hg-title mb-lg-4" onClick={handleOpen}>
-                        <div className="d-flex justify-content-center align-items-center gap-3">
+                  <ModalCondominium
+                        show={editCondominium}
+                        handleClose={handleClose}
+                        condominium={condominium}
+                        onSaved={fetchCondominium}
+                  />
+                  <button
+                        className="hg-title mb-lg-4"
+                        onClick={handleOpen}
+                  >
+                        <div className="
+                              d-flex
+                              justify-content-center
+                              align-items-center
+                              gap-3
+                        ">
                               <div className="text-center">
                                     <div className="fw-bold fs-4">
                                           {condominium.name}
                                     </div>
-
                                     <div className="text-muted small">
-                                          {i18n.language === "bg" ? `${t("condo:cityShort")} ` : ""}
-                                          {condominium.city}, {condominium.address}
+                                          {i18n.language === "bg"
+                                                ? `${t("condo:cityShort")} `
+                                                : ""
+                                          }
+                                          {condominium.city},{" "}
+                                          {condominium.address}
                                     </div>
                               </div>
-                              <img src={apartments} className="medium-icon" alt="apartments" />
+                              <img
+                                    src={apartments}
+                                    className="medium-icon"
+                                    alt="apartments"
+                              />
                         </div>
                   </button>
                   <div className="layout">
                         <section className="homes-section">
-                              <HomesTable condominium={condominium || []} onSaved={fetchCondominium} />
+                              <HomesTable
+                                    condominium={condominium}
+                                    onSaved={fetchCondominium}
+                              />
                         </section>
                         <section className="utility-section">
-                              <FeesTable fees={condominium.fees || []} />
-                              <BillsTable bills={condominium.bills || []} />
-                              <RepairsTable repairs={condominium.repairs || []} />
+                              <FeesTable
+                                    condominium={condominium}
+                                    onSaved={fetchCondominium}
+                              />
+                              <BillsTable
+                                    bills={condominium.bills || []}
+                              />
+                              <RepairsTable
+                                    repairs={condominium.repairs || []}
+                              />
                         </section>
                   </div>
             </>
-      )
-}
-
+      );
+};
 export default Condominium;

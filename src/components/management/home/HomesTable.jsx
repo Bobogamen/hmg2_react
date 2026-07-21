@@ -170,7 +170,7 @@ const HomesTable = ({ condominium, onSaved }) => {
                 </>
             ) : (
                 <div>
-                    <p className="mt-3 fw-bold">
+                    <p className="mt-3 fs-4 fw-bold">
                         {t("home:noHomes")}
                     </p>
                 </div>

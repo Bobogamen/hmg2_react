@@ -101,7 +101,6 @@ const ApplicationSettings = () => {
                 );
             }
 
-
             console.log(error);
 
             await loadSettings();
@@ -110,6 +109,30 @@ const ApplicationSettings = () => {
 
             setLoadingId(null);
 
+        }
+    };
+
+    const getSettingType = (type) => {
+        switch (type) {
+            case "STRING":
+                return "text-bg-primary";
+
+            case "INTEGER":
+                return "text-bg-success";
+
+            case "DOUBLE":
+                return "text-bg-info";
+
+            case "BOOLEAN":
+                return "text-bg-warning";
+
+            case "DATE":
+                return "text-bg-dark";
+
+            case "COLOR":
+                return "text-bg-danger";
+            default:
+                return "text-bg-secondary";
         }
     };
 
@@ -294,7 +317,7 @@ const ApplicationSettings = () => {
 
                                         {/* Type */}
                                         <td>
-                                            <Badge bg="primary">
+                                            <Badge bg={null} className={getSettingType(setting.type)}>
                                                 {setting.type}
                                             </Badge>
                                         </td>
@@ -357,7 +380,7 @@ const ApplicationSettings = () => {
 
                                     {/* Type */}
                                     <div className="mb-2">
-                                        <Badge bg="secondary">
+                                        <Badge bg={null} className={getSettingType(setting.type)}>
                                             {setting.type}
                                         </Badge>
                                     </div>

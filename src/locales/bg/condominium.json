@@ -13,8 +13,8 @@
   "namePlaceholder": "Име на етажната собственост",
   "cityPlaceholder": "Град",
   "addressPlaceholder": "Адрес",
-  "startDateWarning": "<strong>ВНИМАНИЕ!</strong> След създаване на началната дата тя не може да бъде променяна!",
-  "startDateInfo": "<strong>Началната дата</strong> е месецът и годината от които започва отчитането. <strong>Пример: януари 2026 г.</strong>",
+  "startDateWarning": "<strong>ВНИМАНИЕ!</strong><br> Моля, изберете внимателно <strong>началната дата</strong>.<br> Тя определя <u>началото на отчитането</u> и след създаване, <strong><u>не може да бъде променяна</u></strong>.",
+  "startDateInfo": "<strong>Началната дата</strong><br> е <i><u>месецът</u></i> и <i><u>годината</u></i><br> от които започва <u>отчитането</u>. <br><strong>Пример: <i><u>януари 2026 г.</u></i></strong>",
   "maxLimitReached": "Максималният брой е достигнат",
   "months": {
     "jan": "Януари",

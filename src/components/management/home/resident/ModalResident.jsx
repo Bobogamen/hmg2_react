@@ -206,16 +206,16 @@ const ModalResident = ({
                                 }
                             </span>
 
-                            <span className="
-                                bg-success
+                            <span className={`
+                                ${isOwner ? "bg-danger" : "bg-success"}
                                 bg-opacity-50
                                 border
                                 border-3
                                 border-primary
                                 px-1
                                 rounded
-                            ">
-                                {t("home:resident")}
+                            `}>
+                                {t(isOwner ? "home:owner" : "home:resident")}
                             </span>
 
                             <div className="mt-2">
@@ -264,15 +264,9 @@ const ModalResident = ({
                     />
                 </Modal.Body>
 
-                <Modal.Footer
-                    className={
-                        isEditing && !isOwner
-                            ? "justify-content-between"
-                            : ""
-                    }
-                >
+                <Modal.Footer className="justify-content-between">
                     {
-                        isEditing && !isOwner && (
+                        isEditing && (
                             <Button
                                 variant="danger"
                                 size="sm"
@@ -305,7 +299,7 @@ const ModalResident = ({
             >
                 <Modal.Header closeButton>
                     <Modal.Title className="text-danger fw-bold fs-5">
-                        {t("resident:confirmDeleteTitle")}
+                        {t(isOwner ? "resident:ownerConfirmDeleteTitle" : "resident:confirmDeleteTitle")}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

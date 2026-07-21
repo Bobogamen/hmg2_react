@@ -16,7 +16,7 @@ const RepairsTable = ({ repairs }) => {
       const handleClose = () => setOpenFeeModal(false);
 
       return (
-            <div className="border border-3 border-primary border-opacity-50 rounded-5 shadow-lg p-3 mx-1">
+            <div className="bg-success bg-opacity-50  border border-3 border-primary border-opacity-75 rounded-5 shadow-lg p-3 mx-1">
                   <div className="d-flex justify-content-center align-items-center">
                         <h4 className="text-capitalize fw-bold">{t('repairs')}&nbsp;</h4>
                         <h4>{repairs.length}{t('pcs.')}</h4>
