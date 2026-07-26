@@ -1,0 +1,220 @@
+.primary-fee-info {
+    background: #fff;
+    border-radius: 18px;
+}
+
+/* ---------- Header ---------- */
+
+.primary-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.6rem;
+    background: #f8f5ff;
+    border-radius: 16px;
+}
+
+.header-content {
+    flex: 1;
+}
+
+.header-content p {
+    margin: 0;
+    color: #555;
+    line-height: 1;
+}
+
+.header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon.info {
+    color: #8413cf;
+}
+
+.header-icon.calendar {
+    color: #197406;
+}
+
+/* ---------- Sections ---------- */
+
+.info-section {
+    margin: 0.8rem 0;
+}
+
+.info-section h5 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+}
+
+/* ---------- Formula ---------- */
+
+.formula-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.formula-item {
+    min-width: 80px;
+    padding: 0.4rem;
+    border-radius: 12px;
+    background: #ece4e4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .2rem;
+    transition: .2s ease;
+}
+
+.formula-item:hover {
+    transform: translateY(-2px);
+}
+
+.formula-item svg {
+    color: #008040;
+}
+
+.formula-item span {
+    color: #666;
+    text-align: center;
+}
+
+.formula-item strong {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+}
+
+.formula-item.result {
+    background: #c3f5d1;
+}
+
+.operator {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* ---------- Property Example ---------- */
+
+.section-description {
+    margin-bottom: 0.7rem;
+    color: #666;
+}
+
+.properties-example {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .8rem;
+}
+
+.property-card {
+    padding: .8rem;
+    border-radius: 14px;
+    border: 1px solid #e8e8e8;
+    background: #eef6ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .7rem;
+    transition: .2s ease;
+}
+
+.property-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+}
+
+.property-header {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.property-header svg {
+    color: #567890;
+}
+
+.fee-value {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .45rem .8rem;
+    background: #ece4e4;
+    border-radius: 12px;
+}
+
+.fee-value svg,
+.fee-value strong {
+    color: #008040;
+}
+
+.fee-value strong {
+    font-size: 1.4rem;
+}
+
+.resident-icons {
+    display: flex;
+    gap: .3rem;
+}
+
+.resident-icons svg {
+    color: #0bb10b;
+}
+
+.property-result {
+    text-align: center;
+    font-size: 1.05rem;
+}
+
+.property-result strong {
+    color: #008040;
+}
+
+/* ---------- Important ---------- */
+
+.important {
+    padding: 1rem;
+    border-radius: 14px;
+    background: #fff8e6;
+}
+
+.important ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.important li {
+    text-align: start;
+    gap: .2rem;
+    margin-bottom: .2rem;
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 600px) {
+
+    .primary-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .formula-card {
+        flex-direction: column;
+    }
+
+    .operator {
+        transform: rotate(90deg);
+    }
+
+    .properties-example {
+        grid-template-columns: 1fr;
+    }
+
+}

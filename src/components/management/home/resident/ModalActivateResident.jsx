@@ -93,7 +93,7 @@ const ModalActivateResident = ({
                             bg-danger-subtle
                         ">
                     <div className="small text-center">
-                        <Trans i18nKey="resident:activateOwnerWarning" />
+                        <Trans i18nKey={isOwner? "resident:activateOwnerWarning" : "resident:activateWarning"} />
                     </div>
                 </div>
 

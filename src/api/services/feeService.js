@@ -1,6 +1,29 @@
 import api from "../axios";
 
 /**
+ * VALIDATE FEE
+ */
+export const validateFee = async ({
+      condominiumId,
+      name,
+      value
+}) => {
+      if (!condominiumId) {
+            console.log("Missing condominium ID for fee create");
+            throw new Error();
+      }
+      const payload = {
+            name,
+            value
+      };
+      const { data } = await api.post(
+            `/management/condominiums/${condominiumId}/fees/validation`,
+            payload
+      );
+      return data;
+};
+
+/**
  * CREATE FEE
  */
 export const addFee = async ({

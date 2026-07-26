@@ -20,5 +20,6 @@
   "pastOrPresent": "Start date cannot be in the future",
   "notMoreThan200": "Not more than 200",
   "notMoreThan100 000": "Not more than 100 000",
-  "sizeIsLess": "The number of homes is greater than the specified size"
+  "sizeIsLess": "The number of homes is greater than the specified size",
+  "atLeastOneActiveResident": "The home must have at least ONE active resident"
 }

@@ -6,6 +6,7 @@
   "close": "Close",
   "add": "Add",
   "continue": "Continue",
+  "understand": "I understand",
   "back": "Back",
   "select": "Select",
   "create": "Create",
@@ -26,5 +27,6 @@
   "name": "name",
   "roles": "Roles",
   "warning": "WARNING!",
-  "noInfo": "no info"
+  "noInfo": "no info",
+  "selectAll": "Select all"
 }

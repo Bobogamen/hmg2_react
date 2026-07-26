@@ -5,37 +5,42 @@ import { Bounce, toast } from "react-toastify";
 import { useLoading } from "../../../loader/LoadingContext";
 import { useUser } from "../../../user/UserContext";
 import renderFieldErrors from "../../../utils/renderFieldErrors";
-import { addFee, editFee, deleteFee } from "../../../api/services/feeService";
+import { validateFee, addFee, editFee, deleteFee } from "../../../api/services/feeService";
 import "./Fee.css";
+import PrimaryFeeInfo from "./PrimaryFeeInfo";
 
 const initialState = {
     name: "",
     value: "",
     monthly: true,
-    main: false,
+    primary: false,
 };
 
 const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
-
     const { t } = useTranslation();
     const { setIsLoading } = useLoading();
     const { updateUser } = useUser();
     const isEditing = !!fee?.id;
+
     const [step, setStep] = useState(1);
     const [feeData, setFeeData] = useState(initialState);
     const [errors, setErrors] = useState({});
     const [selectedHomes, setSelectedHomes] = useState([]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [saving, setSaving] = useState(false);
+
     const homes = condominium?.homes || [];
 
+    const [hideMainModal, setHideMainModal] = useState(false);
     const [openMonthlyInfo, setOpenMonthlyInfo] = useState(false);
-    const [openMainInfo, setMainInfo] = useState(false);
+    const [showPrimaryInfoModal, setShowPrimaryInfoModal] = useState(false);
+    const [showPrimaryConfirm, setShowPrimaryConfirm] = useState(false);
+
+    // const [validating, setValidating] = useState(false);
 
     /*
           LOAD DATA
       */
-
     useEffect(() => {
         if (!show) {
             return;
@@ -44,8 +49,8 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
             setFeeData({
                 name: fee?.name || "",
                 value: fee?.value || "",
-                monthly: fee?.monthly || true,
-                main: fee?.main || false,
+                monthly: fee?.monthly ?? fee?.primary ?? true, // If primary, monthly must be true
+                primary: fee?.primary || false,
             });
         } else {
             setFeeData({
@@ -55,7 +60,18 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         setErrors({});
         setStep(1);
         setSelectedHomes([]);
-    }, [show, fee?.id, fee?.name, fee?.value, fee?.monthly, fee?.main, isEditing]);
+        setSelectedHomes((condominium?.homes || []).map(home => home.id));
+
+    }, [show,
+        fee?.id,
+        fee?.name,
+        fee?.value,
+        fee?.monthly,
+        fee?.primary,
+        isEditing,
+        condominium?.homes
+    ]);
+
     /*
           INPUT CHANGE
       */
@@ -72,6 +88,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
             }));
         }
     };
+
     /*
           MONTHLY CHECKBOX
       */
@@ -85,55 +102,103 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
     /*
       MAINT CHECKBOX
   */
-    const handleMainFeeChange = (e) => {
+    const handlePrimaryFeeChange = (e) => {
+        const isChecked = e.target.checked;
+        if (isChecked) {
+            setHideMainModal(true);
+            setShowPrimaryInfoModal(true);
+            return;
+        }
         setFeeData((prev) => ({
             ...prev,
-            main: e.target.checked,
+            primary: false,
         }));
+    };
+
+    const confirmPrimaryFee = () => {
+        setShowPrimaryConfirm(false);
+        setHideMainModal(false);
+        setTimeout(() => {
+            setFeeData((prev) => ({
+                ...prev,
+                primary: true,
+                monthly: true,
+            }));
+        }, 400);
+    };
+    /*
+      CLOSE HELPERS
+  */
+    const closePrimaryInfoModal = () => {
+        setShowPrimaryInfoModal(false);
+        setHideMainModal(false);
+    };
+
+    const closePrimaryConfirmModal = () => {
+        setShowPrimaryConfirm(false);
+        setHideMainModal(false);
     };
 
     /*
           SIMPLE STEP 1 VALIDATION
-          Backend validation still remains
       */
-    const validateStepOne = () => {
-        const newErrors = {};
-        if (!feeData.name || feeData.name.trim().length < 3) {
-            newErrors.name = [
-                {
-                    code: "lengthBetween",
-                    args: {
-                        min: 3,
-                        max: 12,
-                    },
-                },
-            ];
+    const validateStepOne = async () => {
+        setSaving(true);
+        try {
+            await validateFee({
+                condominiumId: condominium.id,
+                name: feeData.name,
+                value: feeData.value,
+                monthly: feeData.monthly,
+                primary: feeData.primary,
+                feeId: fee?.id // optional while editing
+            });
+
+            setErrors({});
+            setStep(2);
+
+        } catch (error) {
+
+            if (error.isValidationError) {
+                setErrors(error.validationErrors || {});
+            } else {
+                toast.error(t("server:error"));
+            }
+
+        } finally {
+            setSaving(false);
         }
-        if (!feeData.value || Number(feeData.value) <= 0) {
-            newErrors.value = [
-                {
-                    code: "positiveNumber",
-                    args: {},
-                },
-            ];
-        }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
     };
+
     /*
           CONTINUE / SAVE BUTTON
       */
     const handleContinue = async (e) => {
         e.preventDefault();
+
         if (step === 1) {
-            if (!validateStepOne()) {
-                return;
-            }
-            setStep(2);
+            await validateStepOne();
             return;
         }
+
         await saveFee();
     };
+
+    /*
+          SELECT ALL HOMES
+      */
+    const allHomesSelected =
+        homes.length > 0 &&
+        selectedHomes.length === homes.length;
+
+    const toggleAllHomes = () => {
+        if (allHomesSelected) {
+            setSelectedHomes([]);
+        } else {
+            setSelectedHomes(homes.map(home => home.id));
+        }
+    };
+
     /*
           CREATE / UPDATE
       */
@@ -146,6 +211,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                 name: feeData.name,
                 value: feeData.value,
                 monthly: feeData.monthly,
+                primary: feeData.primary,
                 homeIds: selectedHomes,
             };
             if (isEditing) {
@@ -176,6 +242,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
             setIsLoading(false);
         }
     };
+
     /*
           SELECT HOME
       */
@@ -187,6 +254,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
             return [...prev, homeId];
         });
     };
+
     /*
           RESET
       */
@@ -198,6 +266,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         setStep(1);
         setSelectedHomes([]);
     };
+
     /*
           DELETE
       */
@@ -218,62 +287,31 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
             setIsLoading(false);
         }
     };
+
     return (
         <>
-            <Modal show={show} onHide={handleClose} centered>
+            <Modal show={show && !hideMainModal} onHide={handleClose} centered>
                 <Modal.Header closeButton>
                     <Modal.Title className="fw-bold">
                         <div className="fw-bold fs-5">
                             {isEditing ? (
                                 <>
                                     <span>{t("edit")} </span>
-                                    <span
-                                        className="
-                                        bg-info
-                                        bg-opacity-50
-                                        border
-                                        border-3
-                                        border-primary
-                                        border-opacity-50
-                                        px-1
-                                        rounded
-                                    "
-                                    >
+                                    <span className="bg-info bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 rounded">
                                         {t("finance:fee")}
                                     </span>
                                 </>
                             ) : (
                                 <>
                                     <span>{t("add")} </span>
-                                    <span
-                                        className="
-                                        bg-danger
-                                        bg-opacity-50
-                                        border
-                                        border-3
-                                        border-primary
-                                        border-opacity-50
-                                        px-1
-                                        rounded
-                                    "
-                                    >
+                                    <span className="bg-danger bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 rounded">
                                         {t("finance:fee")}
                                     </span>
                                 </>
                             )}
                             <div className="mt-2">
                                 {t("in")}{" "}
-                                <span
-                                    className="
-                                    text-muted
-                                    fst-italic
-                                    border
-                                    border-3
-                                    border-secondary
-                                    rounded
-                                    px-1
-                                "
-                                >
+                                <span className="text-muted fst-italic border border-3 border-secondary rounded px-1">
                                     {condominium?.name}
                                 </span>
                             </div>
@@ -313,201 +351,214 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                     <div className="registrationForm mb-3 bg-danger bg-opacity-50">
                                         <div>
                                             <label>{t("name")}</label>
-                                            <input
-                                                type="text"
-                                                name="name"
+                                            <input type="text" name="name"
                                                 value={feeData.name}
-                                                onChange={handleChange}
-                                            />
+                                                onChange={handleChange} />
                                             {renderFieldErrors(errors, "name", t)}
                                         </div>
                                         <div>
-                                            <label>{t("value")}</label>
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                min="0"
-                                                name="value"
+                                            <label>{`${t("value")} €`}</label>
+                                            <input type="number" step="0.01" min="0" name="value"
                                                 value={feeData.value}
-                                                onChange={handleChange}
-                                            />
+                                                onChange={handleChange} />
                                             {renderFieldErrors(errors, "value", t)}
                                         </div>
-                                        <div className="d-flex align-items-center justify-content-between" >
+                                        <div className="d-flex align-items-center gap-1">
                                             <div
-                                                className="d-block pointer"
-                                                onClick={() => setOpenMonthlyInfo(v => !v)}
-                                            >
-                                                <span className="mx-1 fs-5">
+                                                className="pointer d-flex align-items-center"
+                                                onClick={() => setOpenMonthlyInfo(v => !v)}>
+                                                <span
+                                                    className="mx-1 fs-5"
+                                                    title={t("clickForMoreInfo")}>
                                                     ℹ️
                                                 </span>
-
-                                                <label className="pointer">
-                                                    {t("finance:monthlyFee")}
-                                                </label>
+                                                <span className="fw-semibold">
+                                                    {t(feeData.monthly
+                                                        ? "finance:monthlyFee"
+                                                        : "finance:oneTimeFee"
+                                                    )}
+                                                </span>
+                                                <span className="mx-1 fs-5">
+                                                    {feeData.monthly ? "📅" : "💶"}
+                                                </span>
                                             </div>
-
                                             <div className="form-check form-switch m-0">
-                                                <input className="form-check-input monthly-switch border-2 border-dark m-auto"
+                                                <input
+                                                    className="form-check-input fee-switch"
                                                     type="checkbox"
                                                     role="switch"
                                                     checked={feeData.monthly}
                                                     onChange={handleMonthlyChange}
-                                                    style={{
-                                                        width: "3rem",
-                                                        height: "1.5rem",
-                                                        cursor: "pointer"
-                                                    }} />
+                                                    disabled={feeData.primary}
+                                                />
                                             </div>
                                         </div>
-
                                         {openMonthlyInfo && (
-                                            <div className="d-inline border border-3 border-info rounded p-1 bg-info-subtle mt-1">
+                                            <span className="alert alert-info mt-1 py-1 px-2 small w-100">
                                                 <Trans
                                                     i18nKey="finance:monthlyFeeInfo"
                                                     components={{
                                                         strong: <strong />,
-                                                        i: <i />,
                                                         u: <u />
                                                     }}
                                                 />
-                                            </div>
+                                            </span>
                                         )}
-
-                                        <div className="d-flex align-items-center justify-content-between" >
-                                            <div
-                                                className="d-block pointer"
-                                                onClick={() => setMainInfo(v => !v)}
-                                            >
-                                                <span className="mx-1 fs-5">
-                                                    ℹ️
+                                        <div className="d-flex align-items-center gap-2">
+                                            <div className="d-flex align-items-center pointer">
+                                                <span className="fs-5 me-1">⭐</span>
+                                                <span className="fw-semibold">
+                                                    {t("finance:primary")}
                                                 </span>
-
-                                                <label className="pointer">
-                                                    {t("finance:main")}
-                                                </label>
                                             </div>
 
                                             <div className="form-check form-switch m-0">
-                                                <input className="form-check-input monthly-switch border-2 border-dark m-auto"
+                                                <input
+                                                    className="form-check-input fee-switch"
                                                     type="checkbox"
                                                     role="switch"
-                                                    checked={feeData.main}
-                                                    onChange={handleMainFeeChange}
-                                                    style={{
-                                                        width: "3rem",
-                                                        height: "1.5rem",
-                                                        cursor: "pointer"
-                                                    }} />
-                                            </div>
-                                        </div>
-
-                                        {openMainInfo && (
-                                            <div className="d-inline border border-3 border-info rounded p-1 bg-info-subtle mt-1">
-                                                <Trans
-                                                    i18nKey="finance:mainFeeInfo"
-                                                    components={{
-                                                        strong: <strong />,
-                                                        i: <i />,
-                                                        u: <u />
-                                                    }}
+                                                    checked={feeData.primary}
+                                                    onChange={handlePrimaryFeeChange}
                                                 />
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
-
                                     <button
                                         type="submit"
                                         className="authentication-button mt-3 m-auto d-flex align-items-center justify-content-center gap-2"
                                         disabled={saving}
                                     >
-                                        {saving && (
-                                            <span
-                                                className="spinner-border spinner-border-sm"
-                                                role="status"
-                                            />
-                                        )}
-
-                                        {saving ? t("saving") : t("continue")}
+                                        {saving
+                                            ? <span className="spinner-border spinner-border-sm" />
+                                            : t("continue")}
                                     </button>
                                 </form>
                             )}
+
+                            {/* HOMES SELECTION */}
                             {step === 2 && (
                                 <div>
-                                    <h5
-                                        className="
-                                        fw-bold
-                                        text-center
-                                    "
-                                    >
-                                        {t("finance:assignHomes")}
+                                    <h5 className="fw-bold text-center">
+                                        <span className="text-decoration-underline">
+                                            {t("finance:applyToProperties")}
+                                        </span>
                                     </h5>
-                                    <div
-                                        className="
-                                        table-responsive
-                                    "
-                                    >
-                                        <table
-                                            className="
-                                            table
-                                            table-bordered
-                                            table-hover
-                                            mt-3
-                                        "
-                                        >
-                                            <thead>
-                                                <tr>
-                                                    <th>{t("floor")}</th>
-                                                    <th>{t("name")}</th>
-                                                    <th>{t("owner")}</th>
-                                                    <th className="text-center">✓</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {homes.map((home) => (
-                                                    <tr key={home.id}>
-                                                        <td>{home.floor}</td>
-                                                        <td>{home.name}</td>
-                                                        <td>
-                                                            {home.owner?.firstName} {home.owner?.lastName}
-                                                        </td>
-                                                        <td
-                                                            className="
-                                                                text-center
-                                                            "
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedHomes.includes(home.id)}
-                                                                onChange={() => toggleHome(home.id)}
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                    <div className="alert alert-light border shadow-sm p-2 mb-3">
+                                        <div className="d-flex justify-content-center align-items-center gap-1 flex-wrap fw-bold">
+                                            {feeData.primary && (
+                                                <span className="fs-5"
+                                                    title={t("finance:primary")}>
+                                                    ⭐
+                                                </span>
+                                            )}
+                                            {feeData.monthly ? (
+                                                <span className="fs-5"
+                                                    title={t("finance:monthlyFee")}>
+                                                    📅
+                                                </span>
+                                            ) : (
+                                                <span className="fs-5"
+                                                    title={t("finance:oneTimeFee")}>
+                                                    💶
+                                                </span>
+                                            )}
+                                            <span className="text-bg-warning bg-opacity-25 px-2 rounded">
+                                                {feeData.name}
+                                            </span>
+                                            <span className="text-muted">
+                                                -
+                                            </span>
+                                            <span className="bg-success bg-opacity-25 px-2 rounded">
+                                                {feeData.value} €
+                                            </span>
+                                            {feeData.monthly && (
+                                                <span className="text-muted">
+                                                    / {t("month")}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div
-                                        className="
-                                        d-flex
-                                        justify-content-between
-                                        mt-3
-                                    "
-                                    >
-                                        <button
-                                            type="button"
-                                            className="
-                                                authentication-button text-bg-info
-                                            "
-                                            onClick={() => setStep(1)}
-                                        >
+                                    <div>
+                                        <div className="card shadow-sm">
+                                            <div className="card-body">
+                                                <table className="table table-sm table-striped table-bordered border-1 table-hover text-center">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{t("home:floor")}</th>
+                                                            <th>{t("name")}</th>
+                                                            <th>{t("home:owner")}</th>
+                                                            <th>
+                                                                <div className="d-flex align-items-center justify-content-center gap-2">
+                                                                    <input
+                                                                        className="width-fit-content pointer"
+                                                                        type="checkbox"
+                                                                        checked={allHomesSelected}
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        onChange={toggleAllHomes}
+                                                                    />
+                                                                    <small>{t("selectAll")}</small>
+                                                                </div>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {homes.length === 0 ? (
+                                                            <tr>
+                                                                <td colSpan="4" className="text-center text-muted">
+                                                                    {t("finance:noHomes")}
+                                                                </td>
+                                                            </tr>
+                                                        ) : (
+                                                            homes.map((home) => (
+                                                                <tr
+                                                                    key={home.id}
+                                                                    onClick={() => toggleHome(home.id)}
+                                                                    style={{ cursor: "pointer" }}
+                                                                    role="button"
+                                                                >
+                                                                    <td>{home.floor}</td>
+                                                                    <td>{home.name}</td>
+                                                                    <td className="text-start">
+                                                                        {home.owner?.firstName} {home.owner?.lastName}
+                                                                    </td>
+                                                                    <td>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="width-fit-content pointer"
+                                                                            checked={selectedHomes.includes(home.id)}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            onChange={() => toggleHome(home.id)}
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+                                                            ))
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                                <div className={`text-center mt-1 fw-bolder ${selectedHomes.length === 0 ? "text-danger" : "text-muted"
+                                                    }`}>
+                                                    {selectedHomes.length === 0
+                                                        ? t("finance:selectAtLeastOneHome")
+                                                        : t("finance:selectedHomes", {
+                                                            selected: selectedHomes.length,
+                                                            total: homes.length
+                                                        })
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex justify-content-between mt-3">
+                                        <button type="button"
+                                            className="authentication-button text-bg-info"
+                                            onClick={() => setStep(1)}>
                                             ← {t("back")}
                                         </button>
                                         <button
                                             type="button"
                                             className="authentication-button d-flex align-items-center justify-content-center gap-2"
                                             onClick={saveFee}
-                                            disabled={saving}
+                                            disabled={saving || selectedHomes.length === 0}
                                         >
                                             {saving && (
                                                 <span
@@ -516,7 +567,6 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                     aria-hidden="true"
                                                 />
                                             )}
-
                                             {saving ? t("saving") : t("save")}
                                         </button>
                                     </div>
@@ -540,12 +590,90 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* primary FEE INFORAMTION MODAL */}
+            <Modal
+                show={showPrimaryInfoModal}
+                onHide={closePrimaryInfoModal}
+                centered
+                size="xl"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title className="fw-bold">
+                        ⭐ {`${t("finance:primary")} ${t("finance:fee")}`}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center">
+                    <PrimaryFeeInfo />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="primary"
+                        onClick={() => {
+                            setShowPrimaryInfoModal(false);
+                            setShowPrimaryConfirm(true);
+                        }}
+                    >
+                        {t("common:understand")}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            {/* primary FEE CONFIRMATION */}
+            <Modal
+                show={showPrimaryConfirm}
+                onHide={closePrimaryConfirmModal}
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title className="fw-bold text-warning">
+                        {t("finance:primaryFeeConfirmation.title")}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="text-center">
+                        <div className="d-flex justify-content-center align-items-center mt-0 mb-3">
+                            <span className="fs-2 me-0">⚠️</span>
+                            <div className="d-block ms-1">
+                                <Trans i18nKey="finance:primaryFeeConfirmation.question"
+                                    components={{
+                                        strong: <strong />,
+                                        u: <u />
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div className="border border-warning rounded bg-warning-subtle p-2">
+                            <Trans i18nKey="finance:primaryFeeConfirmation.description"
+                                components={{
+                                    strong: <strong />,
+                                    u: <u />
+                                }}
+                            />
+                        </div>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer className="justify-content-between">
+                    <Button
+                        variant="secondary"
+                        onClick={() => {
+                            setShowPrimaryConfirm(false);
+                            setHideMainModal(false);
+                        }}>
+                        {t("cancel")}
+                    </Button>
+                    <Button
+                        variant="info"
+                        onClick={confirmPrimaryFee}
+                        className="fw-bold">
+                        ⭐ {t("finance:primaryFeeConfirmation.confirm")}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             {/* DELETE CONFIRMATION */}
             <Modal
                 show={showDeleteConfirm}
                 onHide={() => setShowDeleteConfirm(false)}
-                centered
-            >
+                centered >
                 <Modal.Header closeButton>
                     <Modal.Title
                         className="
@@ -596,7 +724,10 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                 >
                     <Button
                         variant="secondary"
-                        onClick={() => setShowDeleteConfirm(false)}
+                        onClick={() => {
+                            setShowPrimaryConfirm(false);
+                            setHideMainModal(false);
+                        }}
                     >
                         {t("cancel")}
                     </Button>

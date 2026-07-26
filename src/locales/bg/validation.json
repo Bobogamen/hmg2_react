@@ -21,5 +21,6 @@
   "notMoreThan200": "Не повече от 200",
   "notMoreThan100 000": "Не повече от 100 000",
   "sizeIsLess": "Броят домове е повече от зададеният",
-  "notMoreThanMaxValue": "Не трябва да се повече от {{value}}"
+  "notMoreThanMaxValue": "Не трябва да се повече от {{value}}",
+  "atLeastOneActiveResident": "Домът трябва да има поне ЕДИН активен живущ"
 }

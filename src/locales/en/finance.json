@@ -1,15 +1,53 @@
 {
   "fee": "Fee",
   "fees": "Fees",
-  "noneAddedFees": "No fees has been added",
+  "noneAddedFees": "No fees have been added",
   "monthlyFee": "Monthly",
-  "monthlyFeeInfo": "Determines whether this <strong>Fee</strong> is applied<br> <strong>monthly</strong> or <strong>one-time</strong>.<br>The setting can be changed<br>at <u>any time.</u>",
-  "mainFeeInfo": "Основна... такса..",
-  "main": "Main",
+  "oneTimeFee": "One-time",
+  "monthlyFeeInfo": "Determines whether the <strong>fee</strong> is charged <br><u>monthly</u> or <u>one-time.</u><br>Monthly fees are charged <strong>every month</strong>, while one-time fees are charged <strong>only once.</strong><br>This setting can be changed at <u>any time.</u>",
+  "primary": "Primary",
   "bill": "Bill",
   "bills": "Bills",
   "repair": "Repair",
   "repairs": "Repairs",
   "budget": "Budget",
-  "type": "Type"
+  "type": "Type",
+  "selectedHomes": "Selected {{selected}} of {{total}} properties",
+  "applyToProperties": "Apply fee to properties",
+  "selectAtLeastOneHome": "Please select at least ONE property",
+  "primaryFeeInfo": {
+    "title": "Primary Fee",
+    "description": "The primary fee is applied <u>monthly</u> and is calculated based on the number of <strong>active</strong> residents in the property.",
+    "calculation": {
+      "title": "How is it calculated?",
+      "formula": "Fee Amount × Active Residents",
+      "example": "Example",
+      "fee": "Fee",
+      "residents": "Active Residents",
+      "total": "Total"
+    },
+    "example": {
+      "title": "Each property has its own <u>primary</u> fee",
+      "description": "The <strong>primary</strong> fee can be <u>different</u> for each property.",
+      "example": "Example",
+      "fee": "Fee",
+      "residents": "Active Residents",
+      "total": "Total"
+    },
+    "important": {
+      "title": "Important",
+      "monthly": "The primary fee is <strong>always</strong> <u>monthly</u>.",
+      "onePerProperty": "Each property can have only <strong>one</strong> primary fee.",
+      "activeResidents": "The calculation includes the owner (if active) and all active residents.",
+      "differentProperties": "Different properties can have different primary fees."
+    }
+  },
+  "primaryFeeConfirmation": {
+    "title": "Set Primary Fee",
+    "question": "Are you sure you want <u>this fee</u> <br>to be set as the <strong>primary</strong> fee?",
+    "description": "The primary fee is calculated based on the number of <u>active</u> residents in the property. Each property can have only <strong>one</strong> primary fee.",
+    "confirm": "Set as Primary"
+  },
+  "feeCreated": "Fee has been successfully created",
+  "feeUpdated": "Fee has been successfully updated"
 }
