@@ -2,15 +2,23 @@ import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Link } from "react-router-dom";
+import { TriangleAlert, CircleX, Info } from "lucide-react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Popover } from "react-bootstrap";
+
+import "./SortableRow.css";
 
 import homeIcon from "../../src/assets/images/app/home.png";
 import addResident from "../../src/assets/images/app/add_resident.png";
+import { useTranslation } from "react-i18next";
 
 const SortableRow = ({
     home,
     condominiumId,
     onOpenResidentModal
 }) => {
+    const { t } = useTranslation();
+
     const {
         attributes,
         listeners,
@@ -27,6 +35,45 @@ const SortableRow = ({
         cursor: "grab",
     };
 
+    const feeCalculations = home.feeCalculations || [];
+    const formatAmount = (amount) => Number(amount || 0).toFixed(2);
+    const calculationPopover = (
+        <Popover id={`fee-calculation-${home.id}`} className="fee-calculation-popover">
+            <Popover.Body className="p-2">
+                <div className="fee-calculation-scroll">
+                    <table className="table table-sm table-bordered table-striped table-info mb-0 fee-calculation-table">
+                        <thead>
+                            <tr>
+                                <th>{t("finance:fee")}</th>
+                                <th>{t("value")}</th>
+                                <th>{t("home:residents")}</th>
+                                <th className="text-center">{t("total")}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {feeCalculations.map((calculation) => (
+                                <tr key={calculation.feeName}>
+                                    <td>{calculation.feeName}</td>
+                                    <td className="text-center">{formatAmount(calculation.feeValue)}</td>
+                                    <td className="text-center">{calculation.activeResidentCount}</td>
+                                    <td className="text-end">
+                                        {formatAmount(calculation.feeValue)} × {calculation.activeResidentCount} = {formatAmount(calculation.total)}
+                                    </td>
+                                </tr>
+                            ))}
+                            <tr className="fw-bold">
+                                <td colSpan="3">{t("total")}</td>
+                                <td className="text-end">
+                                    {formatAmount(home.totalForMonth)} €
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </Popover.Body>
+        </Popover>
+    );
+
     return (
         <tr
             ref={setNodeRef}
@@ -36,9 +83,86 @@ const SortableRow = ({
         >
             <td>{home.floor}</td>
             <td>{home.name}</td>
-            <td>{`${home.owner.firstName} ${home.owner.lastName}`}</td>
+            <td>
+                <div className="owner-cell">
+                    <div className="owner-cell-left">
+                        {!home.hasFees && (
+                            <OverlayTrigger
+                                trigger={["hover", "focus", "click"]}
+                                placement="top"
+                                rootClose
+                                overlay={
+                                    <Tooltip id={`no-fees-tooltip-${home.id}`}>
+                                        {t("finance:noFeesAssigned")}
+                                    </Tooltip>
+                                }
+                            >
+                                <span
+                                    className="owner-warning-trigger"
+                                    onPointerDown={(event) => event.stopPropagation()}
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <CircleX
+                                        size={18}
+                                        className="owner-warning owner-warning-danger"
+                                        aria-label="No fees assigned"
+                                    />
+                                </span>
+                            </OverlayTrigger>
+                        )}
+
+                        {home.hasFees && !home.hasPrimaryFee && (
+                            <OverlayTrigger
+                                trigger={["hover", "focus", "click"]}
+                                placement="top"
+                                rootClose
+                                overlay={
+                                    <Tooltip id={`no-primary-fee-tooltip-${home.id}`}>
+                                        {t("finance:noPrimaryFeeAssigned")}
+                                    </Tooltip>
+                                }
+                            >
+                                <span
+                                    className="owner-warning-trigger"
+                                    onPointerDown={(event) => event.stopPropagation()}
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <TriangleAlert
+                                        size={18}
+                                        className="owner-warning owner-warning-warning"
+                                        aria-label="No primary fee assigned"
+                                    />
+                                </span>
+                            </OverlayTrigger>
+                        )}
+                    </div>
+
+                    <div className="owner-cell-center">
+                        {`${home.owner.firstName} ${home.owner.lastName}`}
+
+                        {home.hasFees && <OverlayTrigger
+                            trigger={["click"]}
+                            placement="top"
+                            rootClose
+                            overlay={calculationPopover}
+                        >
+                            <span
+                                className="owner-fee-info"
+                                onPointerDown={(event) => event.stopPropagation()}
+                                onClick={(event) => event.stopPropagation()}
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Show monthly fee calculation"
+                            >
+                                <Info size={15} />
+                            </span>
+                        </OverlayTrigger>
+                        }
+                    </div>
+                </div>
+            </td>
             <td>{home.residentsSize}</td>
-            <td>{home.totalForMonth}</td>
+            <td>€ {home.totalForMonth.toFixed(2)}</td>
             <td>
                 <div className="d-flex justify-content-evenly">
                     <Link

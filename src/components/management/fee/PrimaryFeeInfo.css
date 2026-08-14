@@ -109,8 +109,9 @@
 
 .properties-example {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: .8rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 150px));
+    gap: 1rem;
+    justify-content: center;
 }
 
 .property-card {
@@ -196,25 +197,24 @@
     margin-bottom: .2rem;
 }
 
-/* ---------- Mobile ---------- */
-
 @media (max-width: 600px) {
 
-    .primary-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .formula-card {
-        flex-direction: column;
-    }
-
-    .operator {
-        transform: rotate(90deg);
-    }
-
     .properties-example {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 110px));
+        gap: .5rem;
+        justify-content: center;
     }
 
+        .important {
+        padding: .3rem;
+        border-radius: 14px;
+        background: #fff8e6;
+    }
+
+        .important li {
+        margin-bottom: .6rem;
+    }
+
+    
 }

@@ -15,6 +15,9 @@
   "selectedHomes": "Selected {{selected}} of {{total}} properties",
   "applyToProperties": "Apply fee to properties",
   "selectAtLeastOneHome": "Please select at least ONE property",
+  "feeAlreadyExists": "This fee already exists",
+  "homeFeeAlreadyPrimary": "One or more selected properties already have a primary fee",
+  "primaryMustBeMonthly": "The primary fee must be monthly",
   "primaryFeeInfo": {
     "title": "Primary Fee",
     "description": "The primary fee is applied <u>monthly</u> and is calculated based on the number of <strong>active</strong> residents in the property.",

@@ -1,6 +1,6 @@
 const config = Object.freeze({
   api: {
-    baseURL: "http://192.168.1.199:8080",
+    baseURL: "http://192.168.1.245:8080",
   },
   app: {
     baseURL: window.location.origin,

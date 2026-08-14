@@ -4,6 +4,7 @@ import { getLogs } from "../../api/services/logService";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 import { useTranslation } from "react-i18next";
 import { formatTimestamp } from "../../utils/formatDate";
+import { OverlayTrigger, Popover } from "react-bootstrap";
 import "./Logs.css"
 
 const Logs = () => {
@@ -70,12 +71,24 @@ const Logs = () => {
             }
       };
 
+      const popover = (
+            <Popover id="logs-popover">
+                  <Popover.Body>
+                        CID - Condominium ID
+                        <br />
+                        HID - Home ID
+                  </Popover.Body>
+            </Popover>
+      );
+
       return (
             <Container className="mt-3">
                   {/* FILTER CARD */}
                   <Card className="shadow-sm mb-3 border-0">
                         <Card.Header className="fw-bold fs-5 bg-secondary text-white d-flex justify-content-between align-items-center">
-                              <span>📋 Application Logs</span>
+                              <OverlayTrigger trigger="click" placement="bottom" rootClose overlay={popover}>
+                                    <span className="pointer">📋 Application Logs</span>
+                              </OverlayTrigger>
                               <span className="badge bg-light text-dark">
                                     {filteredLogs.length} Results
                               </span>
@@ -193,20 +206,24 @@ const Logs = () => {
                                                 <col className="time-column" />
                                                 <col className="user-column" />
                                                 <col className="level-column" />
+                                                <col className="method-column" />
                                           </colgroup>
                                           <thead className="table-light">
                                                 <tr>
                                                       <th className="text-uppercase small text-muted">
-                                                            📌 Action
+                                                            <span className="column-icon">📌 </span>Action
                                                       </th>
                                                       <th className="text-uppercase small text-muted">
-                                                            🕒 Time
+                                                            <span className="column-icon">🕒 </span>Time
                                                       </th>
                                                       <th className="text-uppercase small text-muted">
-                                                            👤 User
+                                                            <span className="column-icon">👤 </span>User
                                                       </th>
                                                       <th className="text-uppercase small text-muted">
-                                                            ⚡ Level
+                                                            <span className="column-icon">⚡ </span>Level
+                                                      </th>
+                                                      <th className="text-uppercase small text-muted">
+                                                            <span className="column-icon">⚙️ </span>Method
                                                       </th>
                                                 </tr>
                                           </thead>
@@ -224,8 +241,10 @@ const Logs = () => {
                                                                                     : ""
                                                                   }
                                                             >
-                                                                  <td className="fw-semibold">
-                                                                        {log.action}
+                                                                  <td className="fw-semibold text-wrap">
+                                                                        <div className="text-start">
+                                                                              {log.action}
+                                                                        </div>
                                                                   </td>
                                                                   <td className="text-muted small">
                                                                         <div className="fw-semibold">
@@ -242,6 +261,11 @@ const Logs = () => {
                                                                   </td>
                                                                   <td className="text-center">
                                                                         {getLevelBadge(log.level)}
+                                                                  </td>
+                                                                  <td className="text-center">
+                                                                        <span className="small text-wrap" title={log.methodName || "-"}>
+                                                                              {log.methodName || "-"}
+                                                                        </span>
                                                                   </td>
                                                             </tr>
                                                       );

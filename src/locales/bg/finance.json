@@ -14,7 +14,13 @@
   "type": "Вид",
   "selectedHomes": "Избрани {{selected}} от {{total}} имота",
   "applyToProperties": "Прилагане на таксата към имоти",
+  "addAtLeastOneHome": "Моля, добавете поне ЕДИН дом",
   "selectAtLeastOneHome": "Моля, изберете поне ЕДИН дом",
+  "feeAlreadyExists": "Таксата вече съществува",
+  "homeFeeAlreadyPrimary": "Един или повече избрани имота вече имат основна такса",
+  "primaryMustBeMonthly": "Основната такса трябва да е ежемесечна",
+  "noFeesAssigned": "Няма назначение такси",
+  "noPrimaryFeeAssigned": "Без основна такса",
   "primaryFeeInfo": {
     "title": "Основна такса",
     "description": "Основната такса се прилага <u>ежемесечно</u> и се изчислява според броя <strong>активни</strong> живущи в имота.",

@@ -90,6 +90,9 @@ const Profile = () => {
                                                                   <tr>
                                                                         <th>{t("name")}</th>
                                                                         <th>{t("home:homes")}</th>
+                                                                        <th>{t("finance:fees")}</th>
+                                                                        <th>{t("home:bills")}</th>
+                                                                        <th>{t("home:repairs")}</th>
                                                                         <th>{t("condo:startDate")}</th>
                                                                         <th>{t("form:background")}</th>
                                                                   </tr>
@@ -103,6 +106,16 @@ const Profile = () => {
                                                                                     <span className="badge bg-primary">
                                                                                           {condo.homes?.length || 0}
                                                                                     </span>
+                                                                              </td>
+                                                                              
+                                                                              <td>
+
+                                                                              </td>
+                                                                              <td>
+
+                                                                              </td>
+                                                                              <td>
+
                                                                               </td>
 
                                                                               <td>

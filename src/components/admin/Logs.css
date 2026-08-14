@@ -4,7 +4,7 @@
 
 
 .logs-table .action-column {
-    width: 35%;
+    width: 30%;
 }
 
 
@@ -14,19 +14,46 @@
 
 
 .logs-table .user-column {
-    width: 25%;
+    width: 20%;
 }
 
 
 .logs-table .level-column {
-    width: 15%;
+    width: 10%;
 
 }
 
+
+.logs-table .method-column {
+    width: 25%;
+
+}
 
 .logs-table th,
 .logs-table td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+    .logs-table {
+        min-width: 620px;
+        font-size: 0.7rem;
+    }
+
+    .logs-table th,
+    .logs-table td {
+        padding: 0.4rem 0.4rem;
+    }
+
+    .logs-table .column-icon {
+        display: none;
+    }
+
+    .logs-table .smaller-text {
+        font-size: 0.5rem;
+        line-height: 1;
+        padding: 0.2rem 0.3rem;
+    }
 }

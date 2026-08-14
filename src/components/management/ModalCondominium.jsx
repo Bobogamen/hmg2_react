@@ -480,7 +480,7 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
               </div>
 
               {/* Background Color */}
-              <div>
+              <div className="mb-3">
                 <label>{`${t("select")} ${t("form:color")} ${t("for")} ${t("form:background")}`}</label>
                 <input
                   type="color"
@@ -492,7 +492,7 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
                 {renderFieldErrors(condominiumErrors, "backgroundColor", t)}
               </div>
               <hr className="mt-0 w-100 border-1" />
-              <button type="submit" className="authentication-button">
+              <button type="submit" className="authentication-button mb-3">
                 {isEditing ? t("save") : t("add")}
               </button>
 

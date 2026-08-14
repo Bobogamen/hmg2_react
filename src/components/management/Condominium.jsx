@@ -30,7 +30,7 @@ const Condominium = () => {
             bills: [],
             repairs: []
       };
-
+      
       const [condominium, setCondominium] = useState(initCondominium);
       const [editCondominium, setEditCondominium] = useState(false);
 

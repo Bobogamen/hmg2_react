@@ -95,6 +95,16 @@ const HomesTable = ({ condominium, onSaved }) => {
         setSelectedHome(null);
     };
 
+    const totalResidents = items.reduce(
+        (total, home) => total + Number(home.residentsSize || 0),
+        0
+    );
+
+    const totalForMonth = items.reduce(
+        (total, home) => total + Number(home.totalForMonth || 0),
+        0
+    );
+
     return (
         <div className="bg-info bg-opacity-50 border border-3 border-primary border-opacity-50 rounded-5 shadow-lg p-3 mx-1">
             <div className="position-relative d-flex justify-content-center align-items-center mb-1">
@@ -165,6 +175,14 @@ const HomesTable = ({ condominium, onSaved }) => {
                                     ))}
                                 </tbody>
                             </SortableContext>
+                            <tfoot>
+                                <tr className="fw-bold">
+                                    <td colSpan="3">{t("home:total")}</td>
+                                    <td>{totalResidents}</td>
+                                    <td>€ {totalForMonth.toFixed(2)}</td>
+                                    <td />
+                                </tr>
+                            </tfoot>
                         </Table>
                     </DndContext>
                 </>

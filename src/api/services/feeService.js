@@ -6,7 +6,11 @@ import api from "../axios";
 export const validateFee = async ({
       condominiumId,
       name,
-      value
+      value,
+      monthly,
+      primary,
+      feeId,
+      homeIds
 }) => {
       if (!condominiumId) {
             console.log("Missing condominium ID for fee create");
@@ -14,7 +18,11 @@ export const validateFee = async ({
       }
       const payload = {
             name,
-            value
+            value,
+            monthly,
+            primary,
+            feeId,
+            homeIds
       };
       const { data } = await api.post(
             `/management/condominiums/${condominiumId}/fees/validation`,
@@ -29,7 +37,10 @@ export const validateFee = async ({
 export const addFee = async ({
       condominiumId,
       name,
-      value
+      value,
+      monthly,
+      primary,
+      homeIds
 }) => {
       if (!condominiumId) {
             console.log("Missing condominium ID for fee create");
@@ -37,7 +48,10 @@ export const addFee = async ({
       }
       const payload = {
             name,
-            value
+            value,
+            monthly,
+            primary,
+            homeIds
       };
       const { data } = await api.post(
             `/management/condominiums/${condominiumId}/fees`,
@@ -53,7 +67,10 @@ export const editFee = async ({
       condominiumId,
       feeId,
       name,
-      value
+      value,
+      monthly,
+      primary,
+      homeIds
 }) => {
       if (!condominiumId) {
             console.log("Missing condominium ID for fee update");
@@ -65,7 +82,10 @@ export const editFee = async ({
       }
       const payload = {
             name,
-            value
+            value,
+            monthly,
+            primary,
+            homeIds
       };
       const { data } = await api.put(
             `/management/condominiums/${condominiumId}/fees/${feeId}`,

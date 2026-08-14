@@ -15,6 +15,9 @@ const PrimaryFeeInfo = () => {
                 <div className="header-icon info">
                     <Info size={34} />
                 </div>
+                <div className="header-icon calendar">
+                    <CalendarCheck2 size={34} />
+                </div>
 
                 <div className="header-content">
                     <p>
@@ -27,10 +30,6 @@ const PrimaryFeeInfo = () => {
                             }}
                         />
                     </p>
-                </div>
-
-                <div className="header-icon calendar">
-                    <CalendarCheck2 size={34} />
                 </div>
             </div>
 
@@ -99,7 +98,9 @@ const PrimaryFeeInfo = () => {
                     <div className="property-card">
                         <div className="property-header">
                             <Home size={26} />
-                            <strong>Имот 1</strong>
+                            <strong>
+                                {t("home:home")} 1
+                            </strong>
                         </div>
 
                         <div className="fee-value">
@@ -121,7 +122,9 @@ const PrimaryFeeInfo = () => {
                     <div className="property-card">
                         <div className="property-header">
                             <Home size={26} />
-                            <strong>Апартамент 2</strong>
+                            <strong>
+                                {t("home:home")} 2
+                            </strong>
                         </div>
 
                         <div className="fee-value">
@@ -142,7 +145,9 @@ const PrimaryFeeInfo = () => {
                     <div className="property-card">
                         <div className="property-header">
                             <Home size={26} />
-                            <strong>Апартамент 3</strong>
+                            <strong>
+                                {t("home:home")} 3
+                            </strong>
                         </div>
 
                         <div className="fee-value">

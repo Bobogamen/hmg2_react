@@ -198,7 +198,7 @@ const ModalHome = ({
                             onSubmit={handleSubmit}
                         >
                             <div className="registrationForm mb-3 bg-info bg-opacity-50">
-                                {isEditing ? null : <h4 className="fw-bold mb-0 text-decoration-underline">{t("home:home")}</h4>}
+                                {isEditing ? null : <h4 className="fw-bold mb-2 text-decoration-underline">{t("home:home")}</h4>}
                                 <div>
                                     <label>{t("home:floor")}</label>
                                     <input

@@ -30,7 +30,7 @@ const Resident = ({
         >
 
             {showTitle && (
-                <h4 className="fw-bold mb-0 text-decoration-underline">
+                <h4 className="fw-bold mb-2 text-decoration-underline">
                     {t(titleKey)}
                 </h4>
             )}

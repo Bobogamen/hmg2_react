@@ -224,7 +224,7 @@ const ModalResident = ({
                         onSubmit={handleSubmit}
                     />
                 </Modal.Body>
-                <Modal.Footer className="justify-content-between">
+                <Modal.Footer className={isEditing ? "justify-content-between" : ""}>
                     {
                         isEditing && (
                             <Button

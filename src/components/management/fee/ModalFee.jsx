@@ -8,6 +8,7 @@ import renderFieldErrors from "../../../utils/renderFieldErrors";
 import { validateFee, addFee, editFee, deleteFee } from "../../../api/services/feeService";
 import "./Fee.css";
 import PrimaryFeeInfo from "./PrimaryFeeInfo";
+import resolveValidationMessage from "../../../utils/resolveValidationMessage";
 
 const initialState = {
     name: "",
@@ -26,17 +27,41 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
     const [feeData, setFeeData] = useState(initialState);
     const [errors, setErrors] = useState({});
     const [selectedHomes, setSelectedHomes] = useState([]);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [saving, setSaving] = useState(false);
 
     const homes = condominium?.homes || [];
+    const assignableHomes = feeData.primary
+        ? homes.filter((home) =>
+            !home.hasPrimaryFee || (isEditing && fee?.homeIds?.includes(home.id))
+        )
+        : homes;
 
     const [hideMainModal, setHideMainModal] = useState(false);
     const [openMonthlyInfo, setOpenMonthlyInfo] = useState(false);
     const [showPrimaryInfoModal, setShowPrimaryInfoModal] = useState(false);
     const [showPrimaryConfirm, setShowPrimaryConfirm] = useState(false);
 
-    // const [validating, setValidating] = useState(false);
+    const showFeeValidationToast = (error) => {
+        const responseMessage = error?.response?.data?.message || error?.response?.data?.detail;
+        const validationErrors = error?.validationErrors || error?.errors || error?.response?.data?.errors;
+        const validationError = typeof validationErrors === "string"
+            ? { code: validationErrors }
+            : Object.values(validationErrors || {})
+                .flat()
+                .find((item) => item?.code);
+        const validationCode = responseMessage || resolveValidationMessage(validationError, t);
+
+        if (validationCode === "feeAlreadyExists"
+            || validationCode === "primaryMustBeMonthly"
+            || validationCode === "homeFeeAlreadyPrimary") {
+            toast.warning(t(`finance:${validationCode}`), {
+                transition: Bounce,
+            });
+            return true;
+        }
+
+        return false;
+    };
 
     /*
           LOAD DATA
@@ -59,8 +84,11 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         }
         setErrors({});
         setStep(1);
-        setSelectedHomes([]);
-        setSelectedHomes((condominium?.homes || []).map(home => home.id));
+        setSelectedHomes(
+            isEditing
+                ? (fee?.homeIds || [])
+                : (condominium?.homes || []).map(home => home.id)
+        );
 
     }, [show,
         fee?.id,
@@ -68,6 +96,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         fee?.value,
         fee?.monthly,
         fee?.primary,
+        fee?.homeIds,
         isEditing,
         condominium?.homes
     ]);
@@ -118,6 +147,12 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
     const confirmPrimaryFee = () => {
         setShowPrimaryConfirm(false);
         setHideMainModal(false);
+        setSelectedHomes((previousHomeIds) => previousHomeIds.filter((homeId) =>
+            homes.some((home) =>
+                home.id === homeId
+                && (!home.hasPrimaryFee || (isEditing && fee?.homeIds?.includes(home.id)))
+            )
+        ));
         setTimeout(() => {
             setFeeData((prev) => ({
                 ...prev,
@@ -151,13 +186,18 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                 value: feeData.value,
                 monthly: feeData.monthly,
                 primary: feeData.primary,
-                feeId: fee?.id // optional while editing
+                feeId: fee?.id,
+                homeIds: selectedHomes
             });
 
             setErrors({});
             setStep(2);
 
         } catch (error) {
+
+            if (showFeeValidationToast(error)) {
+                return;
+            }
 
             if (error.isValidationError) {
                 setErrors(error.validationErrors || {});
@@ -188,14 +228,14 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
           SELECT ALL HOMES
       */
     const allHomesSelected =
-        homes.length > 0 &&
-        selectedHomes.length === homes.length;
+        assignableHomes.length > 0 &&
+        assignableHomes.every((home) => selectedHomes.includes(home.id));
 
     const toggleAllHomes = () => {
         if (allHomesSelected) {
             setSelectedHomes([]);
         } else {
-            setSelectedHomes(homes.map(home => home.id));
+            setSelectedHomes(assignableHomes.map(home => home.id));
         }
     };
 
@@ -208,11 +248,11 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         try {
             const payload = {
                 condominiumId: condominium.id,
-                name: feeData.name,
-                value: feeData.value,
-                monthly: feeData.monthly,
-                primary: feeData.primary,
-                homeIds: selectedHomes,
+                    name: feeData.name,
+                    value: feeData.value,
+                    monthly: feeData.monthly,
+                    primary: feeData.primary,
+                    homeIds: selectedHomes,
             };
             if (isEditing) {
                 await editFee({
@@ -230,6 +270,10 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                 isEditing ? t("finance:feeUpdated") : t("finance:feeCreated")
             );
         } catch (error) {
+            if (showFeeValidationToast(error)) {
+                return;
+            }
+
             if (error.isValidationError) {
                 setErrors(error.validationErrors || error.errors || {});
             } else {
@@ -265,27 +309,6 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         setErrors({});
         setStep(1);
         setSelectedHomes([]);
-    };
-
-    /*
-          DELETE
-      */
-    const handleDelete = async () => {
-        try {
-            setIsLoading(true);
-            await deleteFee({
-                condominiumId: condominium.id,
-                feeId: fee.id,
-            });
-            toast.error(t("finance:feeDeleted"));
-            handleClose();
-            updateUser();
-            await onSaved?.();
-        } catch (error) {
-            toast.error(t("server:error"));
-        } finally {
-            setIsLoading(false);
-        }
     };
 
     return (
@@ -389,7 +412,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                     role="switch"
                                                     checked={feeData.monthly}
                                                     onChange={handleMonthlyChange}
-                                                    disabled={feeData.primary}
+                                                    disabled={feeData.primary || (isEditing && fee?.primary)}
                                                 />
                                             </div>
                                         </div>
@@ -419,6 +442,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                     role="switch"
                                                     checked={feeData.primary}
                                                     onChange={handlePrimaryFeeChange}
+                                                    disabled={isEditing && fee?.primary}
                                                 />
                                             </div>
                                         </div>
@@ -502,14 +526,14 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {homes.length === 0 ? (
+                                                        {assignableHomes.length === 0 ? (
                                                             <tr>
                                                                 <td colSpan="4" className="text-center text-muted">
                                                                     {t("finance:noHomes")}
                                                                 </td>
                                                             </tr>
                                                         ) : (
-                                                            homes.map((home) => (
+                                                            assignableHomes.map((home) => (
                                                                 <tr
                                                                     key={home.id}
                                                                     onClick={() => toggleHome(home.id)}
@@ -541,7 +565,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                         ? t("finance:selectAtLeastOneHome")
                                                         : t("finance:selectedHomes", {
                                                             selected: selectedHomes.length,
-                                                            total: homes.length
+                                                            total: assignableHomes.length
                                                         })
                                                     }
                                                 </div>
@@ -575,29 +599,18 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                         </div>
                     </div>
                 </Modal.Body>
-                <Modal.Footer className={isEditing ? "justify-content-between" : ""}>
-                    {isEditing && (
-                        <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => setShowDeleteConfirm(true)}
-                        >
-                            {t("delete")}
-                        </Button>
-                    )}
-                    <Button variant="secondary" onClick={handleClose}>
+                <Modal.Footer className="justify-content-end">
+                    <Button className="text-end" variant="secondary" onClick={handleClose}>
                         {t("close")}
                     </Button>
                 </Modal.Footer>
             </Modal>
 
             {/* primary FEE INFORAMTION MODAL */}
-            <Modal
-                show={showPrimaryInfoModal}
+            <Modal show={showPrimaryInfoModal}
                 onHide={closePrimaryInfoModal}
                 centered
-                size="xl"
-            >
+                size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title className="fw-bold">
                         ⭐ {`${t("finance:primary")} ${t("finance:fee")}`}
@@ -666,73 +679,6 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                         onClick={confirmPrimaryFee}
                         className="fw-bold">
                         ⭐ {t("finance:primaryFeeConfirmation.confirm")}
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-            {/* DELETE CONFIRMATION */}
-            <Modal
-                show={showDeleteConfirm}
-                onHide={() => setShowDeleteConfirm(false)}
-                centered >
-                <Modal.Header closeButton>
-                    <Modal.Title
-                        className="
-                            text-danger
-                            fw-bold
-                            fs-5
-                        "
-                    >
-                        {t("finance:confirmDeleteTitle")}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className="text-center">
-                        <h4 className="fw-bold mb-3">{fee?.name}</h4>
-                        <div
-                            className="
-                            border
-                            border-danger
-                            rounded
-                            p-2
-                            bg-danger-subtle
-                        "
-                        >
-                            <div
-                                className="
-                                fw-bold
-                                text-danger
-                                mb-2
-                                fs-4
-                            "
-                            >
-                                ⚠️ {t("warning")}
-                            </div>
-                            <div className="small">
-                                <Trans
-                                    i18nKey="
-                                        finance:deleteWarning
-                                    "
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer
-                    className="
-                        justify-content-between
-                    "
-                >
-                    <Button
-                        variant="secondary"
-                        onClick={() => {
-                            setShowPrimaryConfirm(false);
-                            setHideMainModal(false);
-                        }}
-                    >
-                        {t("cancel")}
-                    </Button>
-                    <Button variant="danger" onClick={handleDelete}>
-                        {t("delete")}
                     </Button>
                 </Modal.Footer>
             </Modal>
