@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apartments from '../../assets/images/app/apartment_building.png';
 import ModalCondominium from "./ModalCondominium";
@@ -33,6 +33,15 @@ const Condominium = () => {
       
       const [condominium, setCondominium] = useState(initCondominium);
       const [editCondominium, setEditCondominium] = useState(false);
+      const [selectedFeeId, setSelectedFeeId] = useState(null);
+
+      const selectedHomeIds = useMemo(() => {
+            const selectedFee = condominium?.fees?.find(
+                  (fee) => fee.id === selectedFeeId
+            );
+
+            return selectedFee?.homeIds || [];
+      }, [condominium?.fees, selectedFeeId]);
 
       const fetchCondominium = useCallback(async () => {
             setIsLoading(true);
@@ -132,12 +141,19 @@ const Condominium = () => {
                               <HomesTable
                                     condominium={condominium}
                                     onSaved={fetchCondominium}
+                                    selectedHomeIds={selectedHomeIds}
                               />
                         </section>
                         <section className="utility-section">
                               <FeesTable
                                     condominium={condominium}
                                     onSaved={fetchCondominium}
+                                    selectedFeeId={selectedFeeId}
+                                    onFeeHomesSelect={(fee) => {
+                                          setSelectedFeeId((currentFeeId) =>
+                                                fee && currentFeeId !== fee.id ? fee.id : null
+                                          );
+                                    }}
                               />
                               <BillsTable
                                     bills={condominium.bills || []}

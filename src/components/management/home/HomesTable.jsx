@@ -17,13 +17,14 @@ const isSameOrder = (firstIds, secondIds) =>
     firstIds.length === secondIds.length &&
     firstIds.every((id, index) => id === secondIds[index]);
 
-const HomesTable = ({ condominium, onSaved }) => {
+const HomesTable = ({ condominium, onSaved, selectedHomeIds = [] }) => {
     const { t } = useTranslation();
 
     const [openHomeModal, setOpenHomeModal] = useState(false);
     const [openResidentModal, setOpenResidentModal] = useState(false);
     const [selectedHome, setSelectedHome] = useState(null);
 
+    //homes
     const [items, setItems] = useState([]);
     const [savedHomeIds, setSavedHomeIds] = useState([]);
     const [hasOrderChanges, setHasOrderChanges] = useState(false);
@@ -166,6 +167,7 @@ const HomesTable = ({ condominium, onSaved }) => {
                                         <SortableRow
                                             key={home.id}
                                             home={home}
+                                            isHighlighted={selectedHomeIds.includes(home.id)}
                                             condominiumId={condominium.id}
                                             onOpenResidentModal={() => {
                                                 setSelectedHome(home);
@@ -177,10 +179,10 @@ const HomesTable = ({ condominium, onSaved }) => {
                             </SortableContext>
                             <tfoot>
                                 <tr className="fw-bold">
-                                    <td colSpan="3">{t("home:total")}</td>
-                                    <td>{totalResidents}</td>
-                                    <td>€ {totalForMonth.toFixed(2)}</td>
-                                    <td />
+                                    <td colSpan="3" className="bg-warning bg-opacity-10">{t("home:total")}</td>
+                                    <td className="bg-warning bg-opacity-10">{totalResidents}</td>
+                                    <td className="bg-warning bg-opacity-10">€ {totalForMonth.toFixed(2)}</td>
+                                    <td className="bg-warning bg-opacity-10" />
                                 </tr>
                             </tfoot>
                         </Table>

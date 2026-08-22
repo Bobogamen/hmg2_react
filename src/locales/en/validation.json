@@ -21,5 +21,7 @@
   "notMoreThan200": "Not more than 200",
   "notMoreThan100 000": "Not more than 100 000",
   "sizeIsLess": "The number of homes is greater than the specified size",
-  "atLeastOneActiveResident": "The home must have at least ONE active resident"
+  "atLeastOneActiveResident": "The home must have at least ONE active resident",
+  "residentsMaxCountReached": "This home has reached the maximum number of residents",
+  "primaryFeeTimesCannotBeChanged": "Applied time on primary fee cannot be changed"
 }

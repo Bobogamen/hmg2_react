@@ -12,11 +12,15 @@
   "total": "Общо",
   "group": "Група",
   "added": "Добавен",
+  "times": "брой",
   "pcs": "бр.",
   "noHomes": "Няма добавени домове",
   "created": "Домът e успешно създаден",
   "updated": "Домът e успешно обновен",
   "deleted": "Домът e успешно ИЗТРИТ",
   "confirmDeleteTitle": "Изтриване на ДОМ",
-  "deleteWarning": "<strong>ДОМЪТ</strong> повече <i>няма</i> да бъде достъпен. Всички свързани данни също ще станат <strong>НЕДОСТЪПНИ.</strong>"
+  "deleteWarning": "<strong>ДОМЪТ</strong> повече <i>няма</i> да бъде достъпен. Всички свързани данни също ще станат <strong>НЕДОСТЪПНИ.</strong>",
+  "activeResidents": "Активни живущи",
+  "inactiveResidents": "Неактивни живущи",
+  "residentMaxCount": "Максимален брой живущи"
 }

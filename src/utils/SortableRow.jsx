@@ -15,7 +15,8 @@ import { useTranslation } from "react-i18next";
 const SortableRow = ({
     home,
     condominiumId,
-    onOpenResidentModal
+    onOpenResidentModal,
+    isHighlighted = false
 }) => {
     const { t } = useTranslation();
 
@@ -35,25 +36,37 @@ const SortableRow = ({
         cursor: "grab",
     };
 
-    const feeCalculations = home.feeCalculations || [];
+    const feeCalculations = [...(home.feeCalculations || [])].sort((a, b) => {
+        const groupA = a.primary ? 0 : a.monthly ? 1 : 2;
+        const groupB = b.primary ? 0 : b.monthly ? 1 : 2;
+
+        return groupA - groupB || a.feeName.localeCompare(b.feeName);
+    });
+
     const formatAmount = (amount) => Number(amount || 0).toFixed(2);
+
     const calculationPopover = (
         <Popover id={`fee-calculation-${home.id}`} className="fee-calculation-popover">
             <Popover.Body className="p-2">
                 <div className="fee-calculation-scroll">
-                    <table className="table table-sm table-bordered table-striped table-info mb-0 fee-calculation-table">
+                    <table className="table table-warning table-sm table-bordered table-striped mb-0 fee-calculation-table">
                         <thead>
                             <tr>
                                 <th>{t("finance:fee")}</th>
                                 <th>{t("value")}</th>
-                                <th>{t("home:residents")}</th>
+                                <th>{t("home:residents")}/{t("home:pcs")}</th>
                                 <th className="text-center">{t("total")}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {feeCalculations.map((calculation) => (
                                 <tr key={calculation.feeName}>
-                                    <td>{calculation.feeName}</td>
+                                    <td>
+                                        {calculation.feeName}{" "}
+                                        {calculation.primary ? "⭐" : ""}
+                                        {calculation.monthly ? "📅" : ""}
+                                        {!calculation.monthly ? "💶" : ""}
+                                    </td>
                                     <td className="text-center">{formatAmount(calculation.feeValue)}</td>
                                     <td className="text-center">{calculation.activeResidentCount}</td>
                                     <td className="text-end">
@@ -78,6 +91,7 @@ const SortableRow = ({
         <tr
             ref={setNodeRef}
             style={style}
+            className={isHighlighted ? "fee-home-highlight" : ""}
             {...attributes}
             {...listeners}
         >

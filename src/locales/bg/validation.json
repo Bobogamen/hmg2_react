@@ -18,9 +18,13 @@
   "lengthBetween": "Дължината трябва да бъде между {{min}} и {{max}} символа",
   "startDateAfter": "Началната дата трябва да бъде през или след {{year}}г.",
   "pastOrPresent": "Датата не може да бъде в бъдещето",
-  "notMoreThan200": "Не повече от 200",
+  "notMoreThan150": "Не повече от 150",
   "notMoreThan100 000": "Не повече от 100 000",
   "sizeIsLess": "Броят домове е повече от зададеният",
   "notMoreThanMaxValue": "Не трябва да се повече от {{value}}",
-  "atLeastOneActiveResident": "Домът трябва да има поне ЕДИН активен живущ"
+  "atLeastOneActiveResident": "Домът трябва да има поне ЕДИН активен живущ",
+  "residentsMaxCountReached": "Домът достигна максималния брой живущи",
+  "primaryFeeTimesCannotBeChanged": "Броят начислявания на основан такса не може да бъде променян",
+  "oneTimeFeeTimesMustBeZeroOrOne": "Еднократната такса трябва да е 1 или 0",
+  "monthlyFeeTimesMustBeNonNegative": "Прилагането на месечна такса не може да е отрицателно число"
 }

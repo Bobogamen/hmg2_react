@@ -95,18 +95,22 @@ const ModalResident = ({
             await onSaved?.();
             handleClose();
         } catch (error) {
-            if (error.isValidationError) {
+            const serverMessage = error?.response?.data?.message;
+
+            if (serverMessage === "residentsMaxCountReached") {
+                toast.warning(t("validation:residentsMaxCountReached"), {
+                    transition: Bounce
+                });
+            } else if (error.isValidationError) {
                 setErrors(
                     error.validationErrors ||
                     error.errors ||
                     {}
                 );
             } else {
-                const message =
-                    error?.response?.data?.message;
                 toast.error(
-                    message
-                        ? i18n.t(`server:${message}`)
+                    serverMessage
+                        ? i18n.t(`server:${serverMessage}`)
                         : t("server:error"),
                     {
                         transition: Bounce

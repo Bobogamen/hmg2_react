@@ -1,11 +1,34 @@
 {
   "fee": "Fee",
   "fees": "Fees",
+  "feeLimit": "Fee limit",
+  "activeFees": "Active fees",
+  "feeTypesInfo": {
+    "open": "Learn about fee types",
+    "title": "Fee types",
+    "primary": {
+      "title": "Primary fee",
+      "description": "A required monthly fee calculated automatically for each property: fee value × number of active residents. Each property can have only one primary fee."
+    },
+    "monthly": {
+      "title": "Monthly fee",
+      "description": "A non-primary fee charged every month. You can choose how many times it is applied to the property."
+    },
+    "oneTime": {
+      "title": "One-time fee",
+      "description": "A non-primary fee charged only when it is Active. Mark it Inactive when it should no longer be included."
+    }
+  },
   "noneAddedFees": "No fees have been added",
   "monthlyFee": "Monthly",
   "oneTimeFee": "One-time",
   "monthlyFeeInfo": "Determines whether the <strong>fee</strong> is charged <br><u>monthly</u> or <u>one-time.</u><br>Monthly fees are charged <strong>every month</strong>, while one-time fees are charged <strong>only once.</strong><br>This setting can be changed at <u>any time.</u>",
   "primary": "Primary",
+  "times": "Times",
+  "active": "Active",
+  "inactive": "Inactive",
+  "toggleStatus": "Toggle status",
+  "timesSaved": "Fee times saved",
   "bill": "Bill",
   "bills": "Bills",
   "repair": "Repair",

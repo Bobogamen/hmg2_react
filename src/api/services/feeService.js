@@ -130,16 +130,24 @@ export const getFees = async (condominiumId) => {
 };
 
 /**
- * DELETE FEE
+ * GET FEES ASSIGNED TO A HOME
  */
-export const deleteFee = async ({
-      condominiumId,
-      feeId
-}) => {
-      if (!condominiumId || !feeId) {
+export const getHomeFees = async ({ condominiumId, homeId }) => {
+      if (!condominiumId || !homeId) {
             throw new Error("Missing IDs");
       }
-      await api.delete(
-            `/management/condominiums/${condominiumId}/fees/${feeId}`
+
+      const { data } = await api.get(
+            `/management/condominiums/${condominiumId}/fees/home/${homeId}`
       );
+
+      return data;
+};
+
+export const updateHomeFeeTimes = async ({ condominiumId, homeId, homeFeeId, times }) => {
+      const { data } = await api.put(
+            `/management/condominiums/${condominiumId}/fees/home/${homeId}/${homeFeeId}/times`,
+            { times }
+      );
+      return data;
 };
