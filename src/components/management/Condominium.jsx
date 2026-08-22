@@ -4,7 +4,7 @@ import apartments from '../../assets/images/app/apartment_building.png';
 import ModalCondominium from "./ModalCondominium";
 import HomesTable from "./home/HomesTable";
 import FeesTable from "./fee/FeesTable";
-import BillsTable from "./BillsTable";
+import BillsTable from "./bill/BillsTable";
 import RepairsTable from "./RepairsTable";
 import { getCondominium } from "../../api/services/managementService";
 import { useLoading } from "../../loader/LoadingContext";
@@ -27,6 +27,7 @@ const Condominium = () => {
             name: "",
             homes: [],
             fees: [],
+            billMaxCount: 0,
             bills: [],
             repairs: []
       };
@@ -156,7 +157,8 @@ const Condominium = () => {
                                     }}
                               />
                               <BillsTable
-                                    bills={condominium.bills || []}
+                                    condominium={condominium}
+                                    onSaved={fetchCondominium}
                               />
                               <RepairsTable
                                     repairs={condominium.repairs || []}

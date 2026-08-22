@@ -5,7 +5,7 @@ import { Bounce, toast } from "react-toastify";
 import { useLoading } from "../../../loader/LoadingContext";
 import { useUser } from "../../../user/UserContext";
 import renderFieldErrors from "../../../utils/renderFieldErrors";
-import { validateFee, addFee, editFee, deleteFee } from "../../../api/services/feeService";
+import { validateFee, addFee, editFee } from "../../../api/services/feeService";
 import "./Fee.css";
 import PrimaryFeeInfo from "./PrimaryFeeInfo";
 import resolveValidationMessage from "../../../utils/resolveValidationMessage";
