@@ -3,6 +3,11 @@
   font-size: medium;
 }
 
+button {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
 .breadcrumb-item + .breadcrumb-item::before {
     display: none;
 }
@@ -40,6 +45,12 @@
       background-color: lightgray;
 }
 
+.registrationForm div {
+  display: grid;
+  text-align: center;
+  place-items: center;
+}
+
 .registrationForm {
   background-color: ivory;
   display: grid;
@@ -53,15 +64,9 @@
   justify-content: center;
 }
 
-.registrationForm div {
-  width: 24em;
-  display: grid;
-  text-align: center;
-  place-items: center;
-}
-
 .registrationForm input {
   width: 16em;
+  /* max-width: 100%; */
   border-radius: 0.5em;
   margin: 2px 0 10px 0;
 }

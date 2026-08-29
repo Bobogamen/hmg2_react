@@ -145,13 +145,24 @@ const Home = () => {
     const feeMaxCount = home.feeMaxCount ?? 0;
     const totalFeeCount = home.fees.length;
     const activeFeeCount = home.fees.filter(
-        fee => fee.primary || (savedFeeTimes[fee.id] ?? 1) > 0
+        fee => fee.primary || (feeTimes[fee.id] ?? 1) > 0
     ).length;
 
     const totalFees = home.fees.reduce(
-        (total, fee) => total + Number(fee.value || 0) * (fee.primary
-            ? activeResidentCount
-            : (savedFeeTimes[fee.id] ?? 1)),
+        (total, fee) => {
+            const value = Number(fee.value || 0);
+            const times = feeTimes[fee.id] ?? 1;
+
+            if (fee.primary) {
+                return total + value * activeResidentCount;
+            }
+
+            if (fee.monthly) {
+                return total + value * times;
+            }
+
+            return total + (times > 0 ? value : 0);
+        },
         0
     );
 
@@ -379,8 +390,11 @@ const FeeDashboard = ({
                     .map((fee) => {
                         const times = feeTimes[fee.id] ?? 1;
                         const savedTimes = savedFeeTimes[fee.id] ?? 1;
-                        const appliedTimes = fee.primary ? activeResidentCount : savedTimes;
-                        const amount = Number(fee.value || 0) * appliedTimes;
+                        const value = Number(fee.value || 0);
+                        const appliedTimes = fee.primary ? activeResidentCount : times;
+                        const amount = fee.primary || fee.monthly
+                            ? value * appliedTimes
+                            : value;
 
                         return (
                             <div className="card border-primary rounded" key={fee.id}>
@@ -453,7 +467,7 @@ const FeeDashboard = ({
                                         )}
                                     </div>
 
-                                    {!fee.primary && fee.monthly && (
+                                    {!fee.primary && fee.monthly && times !== savedTimes && (
                                         <div className="d-flex justify-content-end mt-2">
                                             <button
                                                 type="button"

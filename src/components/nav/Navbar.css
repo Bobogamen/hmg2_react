@@ -33,7 +33,7 @@ nav ul li {
       align-items: center;
       justify-content: center;
       background-color: #00b17c;
-      border: 0.2em inset gray;
+      border: 0.2em outset gray;
       border-radius: 0.3em;
       padding: 0.4em;
       margin: 0.3em 0 0.3em 0.3em;
@@ -53,8 +53,8 @@ nav ul li {
 }
 
 .authorization-button {
-      border: 0.2em inset gray;
-      border-radius: 0.3em;
+      border: 0.1em outset gray;
+      border-radius: 0.5em;
       margin: 0 0.5em 0 0.5em;
       font-family: 'Lucida Sans Unicode';
       font-weight: bold;
@@ -68,7 +68,7 @@ nav ul li {
 
 
 .authorization-button:hover {
-      background-color: darkblue;
+      filter: brightness(0.85);
 }
 
 .authorization-button-icon {
@@ -79,7 +79,7 @@ nav ul li {
       display: flex;
       align-items: center;
       background-color: #37d429;
-      border: 0.2em inset gray;
+      border: 0.1em outset;
       border-radius: 0.3em;
       padding: 0.2em 0.8em 0.2em 0.8em;
       margin: 0.3em 0.3em 0.3em 0;
@@ -88,7 +88,7 @@ nav ul li {
 }
 
 button:hover {
-      background-color: #8bcbe7;
+      filter: brightness(0.85);
 }
 
 .login-form {
@@ -110,7 +110,7 @@ button:hover {
 
 .profile-dropdown-button .dropdown-toggle {
       background-color: #00b17c;
-      border: 0.2em inset gray;
+      border: 0.1em outset;
       border-radius: 0.3em;
       font-family: 'Lucida Sans Unicode';
       font-weight: bold;
@@ -121,7 +121,7 @@ button:hover {
 
 .profile-dropdown-button .dropdown-toggle:hover,
 .profile-dropdown-button .dropdown-toggle:focus {
-      border: 0.2em inset gray;
+      border: 0.1em outset gray;
       color: white;
       outline: none;
       box-shadow: none;
@@ -129,7 +129,7 @@ button:hover {
 
 .profile-dropdown-button .dropdown-menu {
       background-color: #89b9ce;
-      border: 0.2em inset gray;
+      border: 0.1em outset;
       border-radius: 0.3em;
 }
 
@@ -190,7 +190,7 @@ label {
             top: 3.5em;
             left: 0.1em;
             text-align: center;
-            border: 0.2em inset #808080;
+            border: 0.1em outset;
             border-radius: 0.3em;
             padding: 0.1em 0 0.6em 0;
       }

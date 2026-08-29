@@ -8,6 +8,22 @@
     animation-fill-mode: both;
 }
 
+.fee-form-field,
+.fee-form-option {
+    width: min(24em, 100%);
+}
+
+.fee-form-field {
+    display: grid;
+    place-items: center;
+    text-align: center;
+}
+
+.fee-form-option {
+    justify-content: space-between;
+    text-align: left;
+}
+
 .slide-in-right {
     animation-name: slideInRight;
 }

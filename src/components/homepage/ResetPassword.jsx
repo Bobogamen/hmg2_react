@@ -81,7 +81,7 @@ const ResetPassword = () => {
       navigate("/");
 
     } catch (error) {
-      
+
       if (error?.isAuthError) {
         return; // 🔥 STOP HERE
       }
@@ -126,37 +126,35 @@ const ResetPassword = () => {
       <h2 className="mt-2">{t("profile:changePassword")}</h2>
 
       <div className="d-flex justify-content-center">
-        <div>
-          <form className="registrationForm" onSubmit={handleSubmit}>
-            {/* PASSWORD */}
-            <div className="mt-2">
-              <label>{t("profile:password")}</label>
-              <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {renderFieldErrors(errors, "password", t)}
-            </div>
+        <form className="registrationForm px-4" onSubmit={handleSubmit}>
+          {/* PASSWORD */}
+          <div className="mt-2">
+            <label>{t("profile:password")}</label>
+            <input
+              type="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {renderFieldErrors(errors, "password", t)}
+          </div>
 
-            {/* CONFIRM PASSWORD */}
-            <div className="mt-2">
-              <label>{t("auth:confirmPassword")}</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-              {renderFieldErrors(errors, "confirmPassword", t)}
-            </div>
+          {/* CONFIRM PASSWORD */}
+          <div className="mt-2">
+            <label>{t("auth:confirmPassword")}</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            {renderFieldErrors(errors, "confirmPassword", t)}
+          </div>
 
-            <button type="submit" className="authentication-button mt-4">
-              {t("common:send")}
-            </button>
-          </form>
-        </div>
+          <button type="submit" className="authentication-button my-4">
+            {t("common:send")}
+          </button>
+        </form>
       </div>
     </>
   );

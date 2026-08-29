@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import settings from '../../assets/images/app/settings.png';
-import add from '../../assets/images/app/add.png';
-import edit from '../../assets/images/app/edit.png';
+import settings from '../../../assets/images/app/settings.png';
+import add from '../../../assets/images/app/add.png';
+import edit from '../../../assets/images/app/edit.png';
 import ModalRepair from "./ModalRepair";
 
 

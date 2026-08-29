@@ -74,7 +74,7 @@ const Register = () => {
         <div>
           <form className="registrationForm" onSubmit={handleSubmit}>
 
-            <div className="mt-2">
+            <div className="mt-2 px-4">
               <label>{t("common:name")}</label>
 
               <input
@@ -130,7 +130,7 @@ const Register = () => {
               {renderFieldErrors(errors, "confirmPassword", t)}
             </div>
 
-            <button type="submit" className="authentication-button mt-4">
+            <button type="submit" className="authentication-button my-4">
               {t("auth:register")}
             </button>
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
-import { Info, Star, CalendarDays, Coins, Calculator, CheckCircle2 } from "lucide-react";
+import { Info, Star, CalendarDays, Coins, Calculator, CheckCircle2, Banknote } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import settings from '../../../assets/images/app/settings.png';
 import add from '../../../assets/images/app/add.png';
@@ -157,7 +157,7 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                                                 className="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
                                                 style={{ width: 42, height: 42 }}
                                           >
-                                                <Coins size={22} className="text-secondary" />
+                                                <Banknote size={22} className="text-secondary" />
                                           </div>
 
                                           <div className="flex-grow-1">

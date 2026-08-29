@@ -9,6 +9,7 @@ export const validateFee = async ({
       value,
       monthly,
       primary,
+      fund,
       feeId,
       homeIds
 }) => {
@@ -21,6 +22,7 @@ export const validateFee = async ({
             value,
             monthly,
             primary,
+            fund,
             feeId,
             homeIds
       };
@@ -40,6 +42,7 @@ export const addFee = async ({
       value,
       monthly,
       primary,
+      fund,
       homeIds
 }) => {
       if (!condominiumId) {
@@ -51,6 +54,7 @@ export const addFee = async ({
             value,
             monthly,
             primary,
+            fund,
             homeIds
       };
       const { data } = await api.post(
@@ -70,6 +74,7 @@ export const editFee = async ({
       value,
       monthly,
       primary,
+      fund,
       homeIds
 }) => {
       if (!condominiumId) {
@@ -85,6 +90,7 @@ export const editFee = async ({
             value,
             monthly,
             primary,
+            fund,
             homeIds
       };
       const { data } = await api.put(

@@ -15,6 +15,7 @@ const initialState = {
     value: "",
     monthly: true,
     primary: false,
+    fund: false,
 };
 
 const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
@@ -38,6 +39,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
 
     const [hideMainModal, setHideMainModal] = useState(false);
     const [openMonthlyInfo, setOpenMonthlyInfo] = useState(false);
+    const [openFundInfo, setOpenFundInfo] = useState(false);
     const [showPrimaryInfoModal, setShowPrimaryInfoModal] = useState(false);
     const [showPrimaryConfirm, setShowPrimaryConfirm] = useState(false);
 
@@ -74,8 +76,9 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
             setFeeData({
                 name: fee?.name || "",
                 value: fee?.value || "",
-                monthly: fee?.monthly ?? fee?.primary ?? true, // If primary, monthly must be true
-                primary: fee?.primary || false,
+                monthly: fee?.fund ? true : (fee?.monthly ?? fee?.primary ?? true), // Fund and primary fees must be monthly
+                primary: fee?.fund ? false : (fee?.primary || false),
+                fund: fee?.fund || false,
             });
         } else {
             setFeeData({
@@ -96,6 +99,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         fee?.value,
         fee?.monthly,
         fee?.primary,
+        fee?.fund,
         fee?.homeIds,
         isEditing,
         condominium?.homes
@@ -129,6 +133,19 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
     };
 
     /*
+      FUND CHECKBOX
+  */
+    const handleFundChange = (e) => {
+        const isChecked = e.target.checked;
+        setFeeData((prev) => ({
+            ...prev,
+            fund: isChecked,
+            monthly: isChecked ? true : prev.monthly,
+            primary: isChecked ? false : prev.primary,
+        }));
+    };
+
+    /*
       MAINT CHECKBOX
   */
     const handlePrimaryFeeChange = (e) => {
@@ -158,6 +175,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                 ...prev,
                 primary: true,
                 monthly: true,
+                fund: false,
             }));
         }, 400);
     };
@@ -186,6 +204,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                 value: feeData.value,
                 monthly: feeData.monthly,
                 primary: feeData.primary,
+                fund: feeData.fund,
                 feeId: fee?.id,
                 homeIds: selectedHomes
             });
@@ -248,11 +267,12 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         try {
             const payload = {
                 condominiumId: condominium.id,
-                    name: feeData.name,
-                    value: feeData.value,
-                    monthly: feeData.monthly,
-                    primary: feeData.primary,
-                    homeIds: selectedHomes,
+                name: feeData.name,
+                value: feeData.value,
+                monthly: feeData.monthly,
+                primary: feeData.primary,
+                fund: feeData.fund,
+                homeIds: selectedHomes,
             };
             if (isEditing) {
                 await editFee({
@@ -313,7 +333,10 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
 
     return (
         <>
-            <Modal show={show && !hideMainModal} onHide={handleClose} centered>
+            <Modal show={show && !hideMainModal}
+                onHide={handleClose}
+                centered
+                size="l">
                 <Modal.Header closeButton>
                     <Modal.Title className="fw-bold">
                         <div className="fw-bold fs-5">
@@ -372,21 +395,21 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                             {step === 1 && (
                                 <form onSubmit={handleContinue}>
                                     <div className="registrationForm mb-3 bg-danger bg-opacity-50">
-                                        <div>
+                                        <div className="fee-form-field">
                                             <label>{t("name")}</label>
                                             <input type="text" name="name"
                                                 value={feeData.name}
                                                 onChange={handleChange} />
                                             {renderFieldErrors(errors, "name", t)}
                                         </div>
-                                        <div>
+                                        <div className="fee-form-field">
                                             <label>{`${t("value")} €`}</label>
                                             <input type="number" step="0.01" min="0" name="value"
                                                 value={feeData.value}
                                                 onChange={handleChange} />
                                             {renderFieldErrors(errors, "value", t)}
                                         </div>
-                                        <div className="d-flex align-items-center gap-1">
+                                        <div className="fee-form-option d-flex align-items-center gap-1 mt-2">
                                             <div
                                                 className="pointer d-flex align-items-center"
                                                 onClick={() => setOpenMonthlyInfo(v => !v)}>
@@ -412,7 +435,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                     role="switch"
                                                     checked={feeData.monthly}
                                                     onChange={handleMonthlyChange}
-                                                    disabled={feeData.primary || (isEditing && fee?.primary)}
+                                                    disabled={feeData.fund || feeData.primary || (isEditing && fee?.primary)}
                                                 />
                                             </div>
                                         </div>
@@ -427,7 +450,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                 />
                                             </span>
                                         )}
-                                        <div className="d-flex align-items-center gap-2">
+                                        <div className="fee-form-option d-flex align-items-center gap-2">
                                             <div className="d-flex align-items-center pointer">
                                                 <span className="fs-5 me-1">⭐</span>
                                                 <span className="fw-semibold">
@@ -442,10 +465,46 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                     role="switch"
                                                     checked={feeData.primary}
                                                     onChange={handlePrimaryFeeChange}
+                                                    disabled={feeData.fund || (isEditing && fee?.primary)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="fee-form-option d-flex align-items-center gap-2">
+                                            <div
+                                                className="d-flex align-items-center pointer"
+                                                onClick={() => setOpenFundInfo(v => !v)}>
+                                                <span
+                                                    className="mx-1 fs-5"
+                                                    title={t("clickForMoreInfo")}>
+                                                    ℹ️
+                                                </span>
+                                                <span className="fw-semibold">
+                                                    {t("finance:forFund")}
+                                                </span>
+                                                <span className="fs-5 me-1">💰</span>
+                                            </div>
+                                            <div className="form-check form-switch m-0">
+                                                <input
+                                                    className="form-check-input fee-switch"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    checked={feeData.fund}
+                                                    onChange={handleFundChange}
                                                     disabled={isEditing && fee?.primary}
                                                 />
                                             </div>
                                         </div>
+                                        {openFundInfo && (
+                                            <span className="alert alert-info mt-1 py-1 px-2 small w-100">
+                                                <Trans
+                                                    i18nKey="finance:fundInfo"
+                                                    components={{
+                                                        strong: <strong />,
+                                                        u: <u />
+                                                    }}
+                                                />
+                                            </span>
+                                        )}
                                     </div>
                                     <button
                                         type="submit"
@@ -484,6 +543,11 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                 <span className="fs-5"
                                                     title={t("finance:oneTimeFee")}>
                                                     💶
+                                                </span>
+                                            )}
+                                            {feeData.fund && (
+                                                <span className="fs-5" title={t("finance:fund")}>
+                                                    💰
                                                 </span>
                                             )}
                                             <span className="text-bg-warning bg-opacity-25 px-2 rounded">

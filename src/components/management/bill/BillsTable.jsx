@@ -157,7 +157,7 @@ const BillsTable = ({ condominium, onSaved }) => {
                     </tbody>
                 </Table>
             ) : (
-                <p className="mt-3 fs-5 fw-bold">{t("finance:noneAddedBills")}</p>
+                <p className="mt-3 fs-4 fw-bold">{t("finance:noneAddedBills")}</p>
             )}
 
             <ModalBill

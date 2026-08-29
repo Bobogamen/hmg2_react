@@ -64,7 +64,7 @@ const ForgotPassword = () => {
       <div className="d-flex justify-content-center">
         <div>
           <form className="registrationForm" onSubmit={handleSubmit}>
-            <div>
+            <div className="px-4">
               <label>Email</label>
               {/* INPUT */}
               <input
@@ -105,7 +105,7 @@ const ForgotPassword = () => {
 
             <button
               type="submit"
-              className="authentication-button mt-3"
+              className="authentication-button my-4"
               disabled={messages.length > 0}
             >
               {t("common:send")}

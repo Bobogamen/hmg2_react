@@ -5,13 +5,14 @@ import ModalCondominium from "./ModalCondominium";
 import HomesTable from "./home/HomesTable";
 import FeesTable from "./fee/FeesTable";
 import BillsTable from "./bill/BillsTable";
-import RepairsTable from "./RepairsTable";
+import RepairsTable from "./repair/RepairsTable";
 import { getCondominium } from "../../api/services/managementService";
 import { useLoading } from "../../loader/LoadingContext";
 import errorHandler from "../errorHandling/errosHandler";
 import { useUser } from "../../user/UserContext";
 import { useTranslation } from "react-i18next";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
+import FundsTable from "./fund/FundsTable";
 
 const Condominium = () => {
 
@@ -31,7 +32,7 @@ const Condominium = () => {
             bills: [],
             repairs: []
       };
-      
+
       const [condominium, setCondominium] = useState(initCondominium);
       const [editCondominium, setEditCondominium] = useState(false);
       const [selectedFeeId, setSelectedFeeId] = useState(null);
@@ -98,7 +99,7 @@ const Condominium = () => {
       const handleClose = () => {
             setEditCondominium(false);
       };
-      
+
       return (
             <>
                   <ModalCondominium
@@ -159,6 +160,9 @@ const Condominium = () => {
                               <BillsTable
                                     condominium={condominium}
                                     onSaved={fetchCondominium}
+                              />
+                              <FundsTable
+                                    funds={condominium.funds || []}
                               />
                               <RepairsTable
                                     repairs={condominium.repairs || []}
