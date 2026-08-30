@@ -8,6 +8,8 @@ import renderFieldErrors from "../../../utils/renderFieldErrors";
 import { validateFee, addFee, editFee } from "../../../api/services/feeService";
 import "./Fee.css";
 import PrimaryFeeInfo from "./PrimaryFeeInfo";
+import MonthlyFeeInfo from "./MonthlyFeeInfo";
+import FundFeeInfo from "./FundFeeInfo";
 import resolveValidationMessage from "../../../utils/resolveValidationMessage";
 
 const initialState = {
@@ -38,8 +40,8 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         : homes;
 
     const [hideMainModal, setHideMainModal] = useState(false);
-    const [openMonthlyInfo, setOpenMonthlyInfo] = useState(false);
-    const [openFundInfo, setOpenFundInfo] = useState(false);
+    const [showMonthlyInfoModal, setShowMonthlyInfoModal] = useState(false);
+    const [showFundInfoModal, setShowFundInfoModal] = useState(false);
     const [showPrimaryInfoModal, setShowPrimaryInfoModal] = useState(false);
     const [showPrimaryConfirm, setShowPrimaryConfirm] = useState(false);
 
@@ -412,20 +414,15 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                         <div className="fee-form-option d-flex align-items-center gap-1 mt-2">
                                             <div
                                                 className="pointer d-flex align-items-center"
-                                                onClick={() => setOpenMonthlyInfo(v => !v)}>
-                                                <span
-                                                    className="mx-1 fs-5"
-                                                    title={t("clickForMoreInfo")}>
-                                                    ℹ️
+                                                onClick={() => setShowMonthlyInfoModal(true)}>
+                                                <span className="mx-1 fs-5">
+                                                    {feeData.monthly ? "📅" : "💶"}
                                                 </span>
                                                 <span className="fw-semibold">
                                                     {t(feeData.monthly
                                                         ? "finance:monthlyFee"
                                                         : "finance:oneTimeFee"
                                                     )}
-                                                </span>
-                                                <span className="mx-1 fs-5">
-                                                    {feeData.monthly ? "📅" : "💶"}
                                                 </span>
                                             </div>
                                             <div className="form-check form-switch m-0">
@@ -439,17 +436,6 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                 />
                                             </div>
                                         </div>
-                                        {openMonthlyInfo && (
-                                            <span className="alert alert-info mt-1 py-1 px-2 small w-100">
-                                                <Trans
-                                                    i18nKey="finance:monthlyFeeInfo"
-                                                    components={{
-                                                        strong: <strong />,
-                                                        u: <u />
-                                                    }}
-                                                />
-                                            </span>
-                                        )}
                                         <div className="fee-form-option d-flex align-items-center gap-2">
                                             <div className="d-flex align-items-center pointer">
                                                 <span className="fs-5 me-1">⭐</span>
@@ -472,16 +458,11 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                         <div className="fee-form-option d-flex align-items-center gap-2">
                                             <div
                                                 className="d-flex align-items-center pointer"
-                                                onClick={() => setOpenFundInfo(v => !v)}>
-                                                <span
-                                                    className="mx-1 fs-5"
-                                                    title={t("clickForMoreInfo")}>
-                                                    ℹ️
-                                                </span>
+                                                onClick={() => setShowFundInfoModal(true)}>
+                                                <span className="fs-5 me-1">💰</span>
                                                 <span className="fw-semibold">
                                                     {t("finance:forFund")}
                                                 </span>
-                                                <span className="fs-5 me-1">💰</span>
                                             </div>
                                             <div className="form-check form-switch m-0">
                                                 <input
@@ -494,17 +475,6 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                 />
                                             </div>
                                         </div>
-                                        {openFundInfo && (
-                                            <span className="alert alert-info mt-1 py-1 px-2 small w-100">
-                                                <Trans
-                                                    i18nKey="finance:fundInfo"
-                                                    components={{
-                                                        strong: <strong />,
-                                                        u: <u />
-                                                    }}
-                                                />
-                                            </span>
-                                        )}
                                     </div>
                                     <button
                                         type="submit"
@@ -528,26 +498,21 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                     </h5>
                                     <div className="alert alert-light border shadow-sm p-2 mb-3">
                                         <div className="d-flex justify-content-center align-items-center gap-1 flex-wrap fw-bold">
-                                            {feeData.primary && (
-                                                <span className="fs-5"
-                                                    title={t("finance:primary")}>
+                                            {feeData.primary ? (
+                                                <span className="fs-5" title={t("finance:primary")}>
                                                     ⭐
                                                 </span>
-                                            )}
-                                            {feeData.monthly ? (
-                                                <span className="fs-5"
-                                                    title={t("finance:monthlyFee")}>
+                                            ) : feeData.fund ? (
+                                                <span className="fs-5" title={t("finance:fund")}>
+                                                    💰
+                                                </span>
+                                            ) : feeData.monthly ? (
+                                                <span className="fs-5" title={t("finance:monthlyFee")}>
                                                     📅
                                                 </span>
                                             ) : (
-                                                <span className="fs-5"
-                                                    title={t("finance:oneTimeFee")}>
+                                                <span className="fs-5" title={t("finance:oneTimeFee")}>
                                                     💶
-                                                </span>
-                                            )}
-                                            {feeData.fund && (
-                                                <span className="fs-5" title={t("finance:fund")}>
-                                                    💰
                                                 </span>
                                             )}
                                             <span className="text-bg-warning bg-opacity-25 px-2 rounded">
@@ -655,7 +620,6 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                     aria-hidden="true"
                                                 />
                                             )}
-                                            {saving ? t("saving") : t("save")}
                                         </button>
                                     </div>
                                 </div>
@@ -667,6 +631,30 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                     <Button className="text-end" variant="secondary" onClick={handleClose}>
                         {t("close")}
                     </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showMonthlyInfoModal} onHide={() => setShowMonthlyInfoModal(false)} centered size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title className="fw-bold">
+                        📅{`${t("finance:monthlyFee")} ${t("and")} 💶${t("finance:oneTimeFee")} ${t("finance:fee")}`}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center"><MonthlyFeeInfo /></Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowMonthlyInfoModal(false)}>{t("close")}</Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showFundInfoModal} onHide={() => setShowFundInfoModal(false)} centered size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title className="fw-bold">
+                        {`${t("finance:fee")} ${t("for")} 💰${t("finance:fund")}`}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center"><FundFeeInfo /></Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowFundInfoModal(false)}>{t("close")}</Button>
                 </Modal.Footer>
             </Modal>
 

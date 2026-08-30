@@ -1,6 +1,6 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { Info, CalendarCheck2, CircleEuroSign, Users, Calculator, ShieldCheck, Home, UserCheck } from "lucide-react";
+import { Info, CircleEuroSign, Users, Calculator, ShieldCheck, Home, UserCheck, Star } from "lucide-react";
 
 import "./PrimaryFeeInfo.css";
 
@@ -16,11 +16,11 @@ const PrimaryFeeInfo = () => {
                     <Info size={34} />
                 </div>
                 <div className="header-icon calendar">
-                    <CalendarCheck2 size={34} />
+                    <Star size={34} />
                 </div>
 
                 <div className="header-content">
-                    <p>
+                    <p className="text-start">
                         <Trans
                             i18nKey="finance:primaryFeeInfo.description"
                             components={{

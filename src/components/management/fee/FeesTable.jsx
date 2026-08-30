@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Table } from "react-bootstrap";
-import { Info, Star, CalendarDays, Coins, Calculator, CheckCircle2, Banknote } from "lucide-react";
+import { Table } from "react-bootstrap";
+import { Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import settings from '../../../assets/images/app/settings.png';
 import add from '../../../assets/images/app/add.png';
 import edit from '../../../assets/images/app/edit.png';
 import ModalFee from "./ModalFee";
+import ModalFeeTypesInfo from "./ModalFeeTypesInfo";
 const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) => {
       const [openFeeModal, setOpenFeeModal] = useState(false);
       const [selectedFee, setSelectedFee] = useState(null);
@@ -57,7 +58,7 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                               aria-label={t("finance:feeTypesInfo.open")}
                               title={t("finance:feeTypesInfo.open")}
                         >
-                              <Info size={20} color="blue"/>
+                              <Info size={20} color="blue" />
                         </button>
 
                         <div className="position-absolute end-0">
@@ -66,135 +67,10 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                               </div>
                         </div>
                   </div>
-                  <Modal
+                  <ModalFeeTypesInfo
                         show={showFeeInfo}
-                        onHide={() => setShowFeeInfo(false)}
-                        centered
-                        size="xl"
-                  >
-                        <Modal.Header closeButton className="border-0 pb-0">
-                              <div>
-                                    <Modal.Title className="fw-bold d-flex align-items-center gap-2">
-                                          {t("finance:feeTypesInfo.title")}
-                                    </Modal.Title>
-                              </div>
-                        </Modal.Header>
-
-                        <Modal.Body className="pt-3">
-
-                              {/* Primary fee */}
-                              <div className="border rounded-3 p-3 mb-3 bg-warning bg-opacity-10">
-                                    <div className="d-flex align-items-start gap-3">
-                                          <div
-                                                className="rounded-circle bg-warning bg-opacity-25 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                style={{ width: 42, height: 42 }}
-                                          >
-                                                <Star size={22} className="text-warning" />
-                                          </div>
-
-                                          <div className="flex-grow-1">
-                                                <div className="fw-bold">
-                                                      {t("finance:feeTypesInfo.primary.title")}
-                                                </div>
-
-                                                <div className="text-muted small mt-1">
-                                                      {t("finance:feeTypesInfo.primary.description")}
-                                                </div>
-
-                                                <div className="d-flex align-items-center gap-2 mt-2 fw-semibold small">
-                                                      <Calculator size={16} />
-                                                      {t("finance:feeTypesInfo.primary.rule")}
-                                                </div>
-
-                                                <div className="d-flex align-items-start gap-2 mt-2 small text-muted">
-                                                      <CheckCircle2 size={15} className="flex-shrink-0 mt-1" />
-                                                      <span>
-                                                            {t("finance:feeTypesInfo.primary.note")}
-                                                      </span>
-                                                </div>
-                                          </div>
-                                    </div>
-                              </div>
-
-                              {/* Monthly fee */}
-                              <div className="border rounded-3 p-3 mb-3 bg-info bg-opacity-10">
-                                    <div className="d-flex align-items-start gap-3">
-                                          <div
-                                                className="rounded-circle bg-info bg-opacity-25 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                style={{ width: 42, height: 42 }}
-                                          >
-                                                <CalendarDays size={22} className="text-info" />
-                                          </div>
-
-                                          <div className="flex-grow-1">
-                                                <div className="fw-bold">
-                                                      {t("finance:feeTypesInfo.monthly.title")}
-                                                </div>
-
-                                                <div className="text-muted small mt-1">
-                                                      {t("finance:feeTypesInfo.monthly.description")}
-                                                </div>
-
-                                                <div className="d-flex align-items-center gap-2 mt-2 fw-semibold small">
-                                                      <CalendarDays size={16} />
-                                                      {t("finance:feeTypesInfo.monthly.rule")}
-                                                </div>
-
-                                                <div className="d-flex align-items-start gap-2 mt-2 small text-muted">
-                                                      <CheckCircle2 size={15} className="flex-shrink-0 mt-1" />
-                                                      <span>
-                                                            {t("finance:feeTypesInfo.monthly.note")}
-                                                      </span>
-                                                </div>
-                                          </div>
-                                    </div>
-                              </div>
-
-                              {/* One-time fee */}
-                              <div className="border rounded-3 p-3 bg-light">
-                                    <div className="d-flex align-items-start gap-3">
-                                          <div
-                                                className="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                style={{ width: 42, height: 42 }}
-                                          >
-                                                <Banknote size={22} className="text-secondary" />
-                                          </div>
-
-                                          <div className="flex-grow-1">
-                                                <div className="fw-bold">
-                                                      {t("finance:feeTypesInfo.oneTime.title")}
-                                                </div>
-
-                                                <div className="text-muted small mt-1">
-                                                      {t("finance:feeTypesInfo.oneTime.description")}
-                                                </div>
-
-                                                <div className="d-flex align-items-center gap-2 mt-2 fw-semibold small">
-                                                      <Coins size={16} />
-                                                      {t("finance:feeTypesInfo.oneTime.rule")}
-                                                </div>
-
-                                                <div className="d-flex align-items-start gap-2 mt-2 small text-muted">
-                                                      <CheckCircle2 size={15} className="flex-shrink-0 mt-1" />
-                                                      <span>
-                                                            {t("finance:feeTypesInfo.oneTime.note")}
-                                                      </span>
-                                                </div>
-                                          </div>
-                                    </div>
-                              </div>
-
-                        </Modal.Body>
-
-                        <Modal.Footer className="border-0 pt-0">
-                              <Button
-                                    variant="secondary"
-                                    onClick={() => setShowFeeInfo(false)}
-                              >
-                                    {t("close")}
-                              </Button>
-                        </Modal.Footer>
-                  </Modal>
+                        handleClose={() => setShowFeeInfo(false)}
+                  />
                   {condominium?.fees?.length ?
                         <Table bordered striped hover size="sm">
                               <thead className="align-middle">
@@ -215,14 +91,17 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                                           >
                                                 <td>
                                                       <div className="d-flex align-items-center">
-                                                            <div className="me-2 d-flex gap-1" style={{ minWidth: "40px" }}>
-                                                                  {fee.monthly && <span title={t("finance:monthlyFee")}>📅</span>}
-                                                                  {fee.primary && <span title={t("finance:primary")}>⭐</span>}
-                                                                  {!fee.primary && !fee.monthly && (
+                                                            <div className="me-1 d-flex">
+                                                                  {fee.fund ? (
+                                                                        <span title={t("finance:fund")}>💰</span>
+                                                                  ) : fee.primary ? (
+                                                                        <span title={t("finance:primary")}>⭐</span>
+                                                                  ) : fee.monthly ? (
+                                                                        <span title={t("finance:monthlyFee")}>📅</span>
+                                                                  ) : (
                                                                         <span title={t("finance:oneTimeFee")}>💶</span>
                                                                   )}
                                                             </div>
-
                                                             <span>{fee.name}</span>
                                                       </div>
                                                 </td>

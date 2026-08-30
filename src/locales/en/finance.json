@@ -3,67 +3,70 @@
   "fees": "Fees",
   "feeLimit": "Fee limit",
   "activeFees": "Active fees",
+
   "feeTypesInfo": {
     "open": "Learn about fee types",
-    "title": "Fee types",
+    "title": "Fee Types",
+
     "primary": {
-      "title": "Primary fee",
-      "description": "A required monthly fee calculated automatically for each property: fee value × number of active residents. Each property can have only one primary fee."
+      "title": "Primary Fee",
+      "description": "The required monthly <strong>fee</strong> for the property.",
+      "rule": "Fee amount × number of <strong>active</strong> residents",
+      "note": "Each property can have only <strong>one</strong> primary fee."
     },
+
     "monthly": {
-      "title": "Monthly fee",
-      "description": "A non-primary fee charged every month. You can choose how many times it is applied to the property."
+      "title": "Monthly Fee",
+      "description": "A fee that is charged <strong>every</strong> month.",
+      "rule": "You can choose how many <strong>times</strong> it should be <u>applied</u> to the property.",
+      "note": "Optional."
     },
+
     "oneTime": {
-      "title": "One-time fee",
-      "description": "A non-primary fee charged only when it is Active. Mark it Inactive when it should no longer be included."
+      "title": "One-Time Fee",
+      "description": "A fee that is charged <strong>once</strong>.",
+      "rule": "The <u>active</u> fee is included in the current charge.",
+      "note": "Deactivate it when it <u>should no longer</u> be charged."
+    },
+
+    "forFund": {
+      "title": "Fund Fee",
+      "description": "A fee used to set aside money for a <strong>fund</strong>.",
+      "rule": "Each property can contribute a different amount to the fund.",
+      "note": "The fund can be used for <u>planned</u> or <u>unexpected</u> expenses."
     }
   },
+
   "noneAddedFees": "No fees have been added",
   "monthlyFee": "Monthly",
   "oneTimeFee": "One-time",
-  "monthlyFeeInfo": "Determines whether the <strong>fee</strong> is charged <br><u>monthly</u> or <u>one-time.</u><br>Monthly fees are charged <strong>every month</strong>, while one-time fees are charged <strong>only once.</strong><br>This setting can be changed at <u>any time.</u>",
-  "fundInfo": "Marks this as a <strong>fund fee</strong>.<br>Fund fees are always charged <u>monthly</u> and cannot be set as the <u>primary</u> fee.",
+  "monthlyFeeInfo": "Determines whether the <strong>fee</strong> is charged <u>monthly</u> or <u>once</u>.",
   "primary": "Primary",
   "forFund": "for Fund",
-  "times": "Times",
   "active": "Active",
   "inactive": "Inactive",
   "toggleStatus": "Toggle status",
-  "timesSaved": "Fee times saved",
-  "bill": "Bill",
-  "bills": "Bills",
-  "addedOn": "Added on",
-  "addBill": "Add bill",
-  "editBill": "Edit bill",
-  "noBills": "No bills added",
-  "billCreated": "Bill has been successfully added",
-  "billUpdated": "Bill has been successfully updated",
-  "billDeleted": "Bill has been deleted",
-  "billAlreadyExists": "A bill with this name already exists",
-  "billNotFound": "Bill was not found",
-  "billLimitReached": "The bill limit has been reached",
-  "confirmBillDelete": "Are you sure you want to delete {{name}}?",
-  "deleteBillTitle": "Delete bill",
-  "billInfo": {
-    "open": "Learn about bills",
-    "title": "Bills",
-    "description": "Bills are records of condominium expenses that can be added, renamed, or deleted.",
-    "note": "The bill limit is configured by the administrator."
-  },
-  "repair": "Repair",
-  "repairs": "Repairs",
-  "budget": "Budget",
-  "type": "Type",
+  "times": "Number of charges",
+  "timesSaved": "Number of charges saved",
+
+  "addAtLeastOneHome": "Please add at least ONE property",
+  "selectAtLeastOneHome": "Please select at least ONE property",
   "selectedHomes": "Selected {{selected}} of {{total}} properties",
   "applyToProperties": "Apply fee to properties",
-  "selectAtLeastOneHome": "Please select at least ONE property",
+
   "feeAlreadyExists": "This fee already exists",
   "homeFeeAlreadyPrimary": "One or more selected properties already have a primary fee",
   "primaryMustBeMonthly": "The primary fee must be monthly",
+  "noFeesAssigned": "No fees assigned",
+  "noPrimaryFeeAssigned": "No primary fee",
+
+  "feeCreated": "Fee has been successfully created",
+  "feeUpdated": "Fee has been successfully updated",
+
   "primaryFeeInfo": {
     "title": "Primary Fee",
-    "description": "The primary fee is applied <u>monthly</u> and is calculated based on the number of <strong>active</strong> residents in the property.",
+    "description": "The primary fee is applied <u>monthly</u> and is calculated based on the number of <br><strong>active</strong> residents in the property.",
+
     "calculation": {
       "title": "How is it calculated?",
       "formula": "Fee Amount × Active Residents",
@@ -72,6 +75,7 @@
       "residents": "Active Residents",
       "total": "Total"
     },
+
     "example": {
       "title": "Each property has its own <u>primary</u> fee",
       "description": "The <strong>primary</strong> fee can be <u>different</u> for each property.",
@@ -80,6 +84,7 @@
       "residents": "Active Residents",
       "total": "Total"
     },
+
     "important": {
       "title": "Important",
       "monthly": "The primary fee is <strong>always</strong> <u>monthly</u>.",
@@ -88,12 +93,61 @@
       "differentProperties": "Different properties can have different primary fees."
     }
   },
+
   "primaryFeeConfirmation": {
     "title": "Set Primary Fee",
     "question": "Are you sure you want <u>this fee</u> <br>to be set as the <strong>primary</strong> fee?",
     "description": "The primary fee is calculated based on the number of <u>active</u> residents in the property. Each property can have only <strong>one</strong> primary fee.",
     "confirm": "Set as Primary"
   },
-  "feeCreated": "Fee has been successfully created",
-  "feeUpdated": "Fee has been successfully updated"
+
+  "fund": "Fund",
+
+  "fundInfo": {
+    "title": "Set This Fee as a <strong>Fund Fee</strong>",
+    "description": "An amount that is <strong>set aside</strong> for future expenses or needs.",
+    "rule": "Each property can have a different amount <strong>contributed</strong> to the fund.",
+    "note": "It can be used for <u>planned</u> or <u>unexpected</u> expenses."
+  },
+
+  "fundFee": {
+    "rule": "Each property can have only <strong>one</strong> fee for each <strong>fund</strong>.",
+    "note": "The fee is included in the current charge."
+  },
+
+  "bill": "Bill",
+  "bills": "Bills",
+  "noneAddedBills": "No bills have been added",
+  "noBills": "No bills added",
+  "addedOn": "Added on",
+  "addBill": "Add Bill",
+  "editBill": "Edit Bill",
+
+  "billCreated": "Bill has been successfully added",
+  "billUpdated": "Bill has been successfully updated",
+  "billDeleted": "Bill has been deleted",
+  "billAlreadyExists": "A bill with this name already exists",
+  "billNotFound": "Bill was not found",
+  "billLimitReached": "The bill limit has been reached",
+  "deleteBillTitle": "Delete Bill",
+  "confirmBillDelete": "<strong>THE BILL</strong> will no longer be available.<br>All related data will also become <strong>UNAVAILABLE.</strong>",
+
+  "billInfo": {
+    "open": "Learn about bills",
+    "title": "How Do Bills Work?",
+    "description": "Add recurring condominium bills once, and they will automatically appear every month.",
+
+    "steps": {
+      "add": "Add a name, for example: \"Electricity\", \"Water\", or \"Elevator\".",
+      "monthly": "The bill is created and displayed every month.",
+      "value": "Only the amount needs to be entered when the bill is paid."
+    },
+
+    "note": "You can edit or delete added bills at any time."
+  },
+
+  "repair": "Repair",
+  "repairs": "Repairs",
+  "budget": "Budget",
+  "type": "Type"
 }

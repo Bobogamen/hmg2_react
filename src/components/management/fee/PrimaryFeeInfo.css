@@ -1,4 +1,6 @@
-.primary-fee-info {
+.primary-fee-info,
+.monthly-fee-info,
+.fund-fee-info {
     background: #fff;
     border-radius: 18px;
 }
