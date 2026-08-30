@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
+import { TriangleAlert } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import homeIcon from "../../../assets/images/app/home.png";
@@ -382,10 +383,15 @@ const FeeDashboard = ({
             <div className="d-grid gap-2">
                 {[...fees]
                     .sort((first, second) => {
-                        const firstGroup = first.primary ? 0 : first.monthly ? 1 : 2;
-                        const secondGroup = second.primary ? 0 : second.monthly ? 1 : 2;
+                        const getGroup = (fee) => {
+                            if (fee.primary) return 0;
+                            if (fee.monthly) return 1;
+                            if (fee.fund) return 3;
+                            return 2;
+                        };
 
-                        return firstGroup - secondGroup || first.name.localeCompare(second.name);
+                        return getGroup(first) - getGroup(second)
+                            || first.name.localeCompare(second.name);
                     })
                     .map((fee) => {
                         const times = feeTimes[fee.id] ?? 1;
@@ -399,19 +405,43 @@ const FeeDashboard = ({
                         return (
                             <div className="card border-primary rounded" key={fee.id}>
                                 <div
-                                    className={`card-body ${fee.primary && fee.monthly
-                                        ? "bg-warning"
-                                        : fee.monthly
-                                            ? "bg-info"
-                                            : "bg-light"
+                                    className={`card-body ${fee.fund
+                                        ? "bg-secondary"
+                                        : fee.primary
+                                            ? "bg-warning"
+                                            : fee.monthly
+                                                ? "bg-info"
+                                                : "bg-light"
                                         } p-2 bg-opacity-25`}
                                 >
                                     <div className="d-flex justify-content-between align-items-start gap-2">
-                                        <div className="fw-bold text-truncate">
-                                            {fee.name}
-                                            {fee.primary && <span title={t("finance:primary")}> ⭐</span>}
-                                            {fee.monthly && <span title={t("finance:monthlyFee")}> 📅</span>}
-                                            {!fee.monthly && <span title={t("finance:oneTimeFee")}> 💶</span>}
+                                        <div className="fw-bold text-truncate d-flex align-items-center">
+                                            {fee.fund ? (
+                                                <span title={t("finance:fund")}>💰</span>
+                                            ) : fee.primary ? (
+                                                <span title={t("finance:primary")}>⭐</span>
+                                            ) : fee.monthly ? (
+                                                <span title={t("finance:monthlyFee")}>📅</span>
+                                            ) : (
+                                                <span title={t("finance:oneTimeFee")}>💶</span>
+                                            )}
+                                            {fee.name}{" "}
+                                            {fee.fund && fee.fundId == null && (
+                                                <OverlayTrigger
+                                                    trigger={["hover", "focus", "click"]}
+                                                    placement="top"
+                                                    rootClose
+                                                    overlay={
+                                                        <Tooltip id={`home-fund-warning-${fee.id}`}>
+                                                            {t("finance:fundNotAssigned")}
+                                                        </Tooltip>
+                                                    }
+                                                >
+                                                    <span className="text-warning ms-1 pointer">
+                                                        <TriangleAlert size={20} color="red" />
+                                                    </span>
+                                                </OverlayTrigger>
+                                            )}
                                         </div>
                                         <div className="text-end text-nowrap">
                                             <div className="fw-bold">{amount.toFixed(2)} €</div>

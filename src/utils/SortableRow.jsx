@@ -60,12 +60,19 @@ const SortableRow = ({
                         </thead>
                         <tbody>
                             {feeCalculations.map((calculation) => (
-                                <tr key={calculation.feeName}>
+                                <tr
+                                    key={calculation.feeName}
+                                    className={`${calculation.primary ? "fw-bold" : ""} ${calculation.fund ? "fst-italic" : ""}`}
+                                >
                                     <td>
+                                        {calculation.fund
+                                            ? "\u{1F4B0}"
+                                            : calculation.primary
+                                                ? "\u{2B50}"
+                                                : calculation.monthly
+                                                    ? "\u{1F4C5}"
+                                                    : "\u{1F4B6}"}
                                         {calculation.feeName}{" "}
-                                        {calculation.primary ? "⭐" : ""}
-                                        {calculation.monthly ? "📅" : ""}
-                                        {!calculation.monthly ? "💶" : ""}
                                     </td>
                                     <td className="text-center">{formatAmount(calculation.feeValue)}</td>
                                     <td className="text-center">{calculation.activeResidentCount}</td>

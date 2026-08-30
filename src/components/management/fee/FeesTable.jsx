@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
-import { Info } from "lucide-react";
+import { OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import { Info, TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import settings from '../../../assets/images/app/settings.png';
 import add from '../../../assets/images/app/add.png';
@@ -103,6 +103,21 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                                                                   )}
                                                             </div>
                                                             <span>{fee.name}</span>
+                                                            {fee.fund && !fee.fundId && (
+                                                                  <OverlayTrigger
+                                                                        trigger={["hover", "focus", "click"]}
+                                                                        placement="top"
+                                                                        overlay={
+                                                                              <Tooltip id={`fund-warning-${fee.id}`}>
+                                                                                    {t("finance:fundNotAssigned")}
+                                                                              </Tooltip>
+                                                                        }
+                                                                  >
+                                                                        <span className="text-warning ms-2 pointer">
+                                                                              <TriangleAlert size={18} />
+                                                                        </span>
+                                                                  </OverlayTrigger>
+                                                            )}
                                                       </div>
                                                 </td>
                                                 <td>

@@ -620,6 +620,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                     aria-hidden="true"
                                                 />
                                             )}
+                                            {saving ? t("saving") : t("save")}
                                         </button>
                                     </div>
                                 </div>

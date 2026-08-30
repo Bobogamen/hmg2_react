@@ -102,6 +102,7 @@
   },
 
   "fund": "Fund",
+  "fundNotAssigned": "Fund no assigned",
 
   "fundInfo": {
     "title": "Set This Fee as a <strong>Fund Fee</strong>",
