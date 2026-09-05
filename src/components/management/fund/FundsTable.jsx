@@ -1,47 +1,82 @@
 import React, { useState } from "react";
-import { Table } from "react-bootstrap";
+import { OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import { TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import settings from '../../../assets/images/app/settings.png';
-import edit from '../../../assets/images/app/edit.png';
+import settings from "../../../assets/images/app/settings.png";
+import add from "../../../assets/images/app/add.png";
+import edit from "../../../assets/images/app/edit.png";
 import ModalFund from "./ModalFund";
 
+const FundsTable = ({ condominium, onSaved }) => {
+    const { t } = useTranslation();
+    const [selectedFund, setSelectedFund] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const funds = condominium?.funds || [];
+    const fundLimit = condominium?.fundMaxCount || 0;
 
-const FundsTable = ({ funds }) => {
-      const [openFeeModal, setOpenFeeModal] = useState(false);
+    const openAdd = () => { setSelectedFund(null); setShowModal(true); };
+    const openEdit = (fund) => { setSelectedFund(fund); setShowModal(true); };
+    const closeModal = () => { setShowModal(false); setSelectedFund(null); };
 
-      const { t } = useTranslation();
-
-      const handleClose = () => setOpenFeeModal(false);
-
-      return (
-            <div className="bg-secondary bg-opacity-50  border border-3 border-primary border-opacity-75 rounded-5 shadow-lg p-3 mx-1">
-                  <div className="d-flex justify-content-center align-items-center">
-                        <h4 className="text-capitalize fw-bold">{t('funds')}&nbsp;</h4>
-                        <h4>{funds.length}{t('pcs.')}</h4>
-                  </div>
-                  <Table bordered striped hover size="sm">
-                        <thead className="align-middle">
-                              <tr className="fw-bold">
-                                    <td className="text-capitalize">{t('initial date')}</td>
-                                    <td className="w-50">{t('Name')}</td>
-                                    <td className="text-capitalize">{t('budget')}(лв.)</td>
-                                    <td><img src={settings} alt="settings" className="icon pointer" /></td>
-                              </tr>
-                        </thead>
-                        <tbody className="align-middle">
-                              {funds.map(f => (
-                                    <tr key={`r${f.id}`} id={f.id}>
-                                          <td>{f.startDate}</td>
-                                          <td>{f.name}</td>
-                                          <td>{f.budget}</td>
-                                          <td><img src={edit} alt="edit" className="icon" /></td>
-                                    </tr>
-                              ))}
-                        </tbody>
-                  </Table>
-                  <ModalFund show={openFeeModal} handleClose={handleClose} action={'add'} data={"null"} />
-            </div >
-      )
-}
+    return (
+        <div className="bg-secondary bg-opacity-50 border border-3 border-primary border-opacity-75 rounded-5 shadow-lg p-3 mx-1">
+            <div className="d-flex justify-content-center align-items-center position-relative pb-2 mb-1">
+                <h4 className="text-capitalize fw-bold mb-0">{t("dashboard:funds")}</h4>
+                <div className="position-absolute end-0 fw-bold fs-5">{funds.length}/{fundLimit}</div>
+            </div>
+            {funds.length > 0 ? (
+                <Table bordered striped hover size="sm">
+                    <thead className="align-middle">
+                        <tr className="fw-bold">
+                            <th>{t("finance:fundStartDate")}</th>
+                            <th className="w-50">{t("name")}</th>
+                            <th>{t("finance:fees")}</th>
+                            <th><img src={settings} alt="settings" className="icon" /></th>
+                        </tr>
+                    </thead>
+                    <tbody className="align-middle">
+                        {funds.map((fund) => (
+                            <tr key={`fund-${fund.id}`}>
+                                <td>{fund.startDate}</td>
+                                <td>
+                                    <div className="d-flex align-items-center">
+                                        <span>{fund.name}</span>
+                                        {fund.feeCount === 0 && (
+                                            <OverlayTrigger
+                                                trigger={["hover", "focus", "click"]}
+                                                placement="top"
+                                                rootClose
+                                                overlay={
+                                                    <Tooltip id={`fund-no-fees-${fund.id}`}>
+                                                        {t("finance:noFeesAssigned")}
+                                                    </Tooltip>
+                                                }
+                                            >
+                                                <span className="text-warning ms-2 pointer">
+                                                    <TriangleAlert size={18} color="red"/>
+                                                </span>
+                                            </OverlayTrigger>
+                                        )}
+                                    </div>
+                                </td>
+                                <td>{fund.feeCount}</td>
+                                <td><img src={edit} alt={t("edit")} className="icon pointer" onClick={() => openEdit(fund)} /></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            ) : (
+                <p className="mt-3 fs-4 fw-bold">{t("finance:noneAddedFunds")}</p>
+            )}
+            <ModalFund show={showModal} handleClose={closeModal} condominium={condominium} fund={selectedFund} onSaved={onSaved} />
+            {funds.length < fundLimit && (
+                <div className="img-button pointer m-auto mt-3" onClick={openAdd}>
+                    <img src={add} className="icon" alt={t("add")} />
+                    <span className="ms-1">{`${t("add")} ${t("finance:fund")}`}</span>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default FundsTable;

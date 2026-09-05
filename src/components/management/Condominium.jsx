@@ -162,7 +162,8 @@ const Condominium = () => {
                                     onSaved={fetchCondominium}
                               />
                               <FundsTable
-                                    funds={condominium.funds || []}
+                                    condominium={condominium}
+                                    onSaved={fetchCondominium}
                               />
                               <RepairsTable
                                     repairs={condominium.repairs || []}

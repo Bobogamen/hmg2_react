@@ -36,12 +36,12 @@ const ModalFeeTypesInfo = ({ show, handleClose }) => {
                                                       components={{ strong: <strong />, u: <u /> }} />
                                           </div>
 
-                                          <div className="gap-2 mt-2 small">
+                                          <div className="gap-1 mt-2 small">
                                                 <Calculator size={20} /><Trans i18nKey="finance:feeTypesInfo.primary.rule"
                                                       components={{ strong: <strong />, u: <u /> }} />
                                           </div>
 
-                                          <div className="gap-2 mt-2 small">
+                                          <div className="gap-1 mt-2 small">
                                                 <House size={20} className="flex-shrink-0 mt-1" /> <Trans i18nKey="finance:feeTypesInfo.primary.note"
                                                       components={{ strong: <strong />, u: <u /> }} />
                                           </div>

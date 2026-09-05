@@ -183,7 +183,7 @@ const ModalHome = ({
                             )}
                             <div className="mt-2">
                                 {t("in")}{" "}
-                                <span className="text-muted fst-italic border border-3 border-secondary rounded px-1 py-0">
+                                <span className="fst-italic text-primary border border-3 border-primary rounded px-1 ms-1">
                                     {condominium?.name || ""}
                                 </span>
                             </div>

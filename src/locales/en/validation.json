@@ -23,5 +23,6 @@
   "sizeIsLess": "The number of homes is greater than the specified size",
   "atLeastOneActiveResident": "The home must have at least ONE active resident",
   "residentsMaxCountReached": "This home has reached the maximum number of residents",
-  "primaryFeeTimesCannotBeChanged": "Applied time on primary fee cannot be changed"
+  "primaryFeeTimesCannotBeChanged": "Applied time on primary fee cannot be changed",
+  "feeNotAssignedToFund": "No assigned Fund"
 }

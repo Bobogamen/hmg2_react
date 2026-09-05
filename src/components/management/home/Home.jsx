@@ -193,7 +193,24 @@ const Home = () => {
             }));
             toast.success(t("finance:feeUpdated"), { transition: Bounce });
         } catch (error) {
-            toast.error(t("server:error"), { transition: Bounce });
+            const feeTimesValue = Number(fee.times);
+            const previousTimes = savedFeeTimes[fee.id]
+                ?? (Number.isFinite(feeTimesValue) ? feeTimesValue : 0);
+            setFeeTimes((current) => ({
+                ...current,
+                [fee.id]: previousTimes
+            }));
+
+            const errorCode = error?.response?.data?.message;
+            const translatedMessage = errorCode
+                ? t(`validation:${errorCode}`)
+                : t("server:error");
+            toast.error(
+                translatedMessage === `validation:${errorCode}`
+                    ? t("server:error")
+                    : translatedMessage,
+                { transition: Bounce }
+            );
         } finally {
             setSavingFeeId(null);
         }
@@ -425,7 +442,14 @@ const FeeDashboard = ({
                                             ) : (
                                                 <span title={t("finance:oneTimeFee")}>💶</span>
                                             )}
-                                            {fee.name}{" "}
+                                            <div className="text-start">
+                                                <div>{fee.name}</div>
+                                                {fee.fund && fee.fundId != null && fee.fundName && (
+                                                    <div className="smaller-text fst-italic text-muted">
+                                                        {t("finance:fund")} &quot;{fee.fundName}&quot;
+                                                    </div>
+                                                )}
+                                            </div>
                                             {fee.fund && fee.fundId == null && (
                                                 <OverlayTrigger
                                                     trigger={["hover", "focus", "click"]}

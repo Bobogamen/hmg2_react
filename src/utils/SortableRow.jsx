@@ -152,6 +152,7 @@ const SortableRow = ({
                                         size={18}
                                         className="owner-warning owner-warning-warning"
                                         aria-label="No primary fee assigned"
+                                        color="red"
                                     />
                                 </span>
                             </OverlayTrigger>

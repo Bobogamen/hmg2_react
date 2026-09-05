@@ -102,7 +102,14 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                                                                         <span title={t("finance:oneTimeFee")}>💶</span>
                                                                   )}
                                                             </div>
-                                                            <span>{fee.name}</span>
+                                                            <div className="text-start">
+                                                                  <div>{fee.name}</div>
+                                                                  {fee.fund && fee.fundId != null && fee.fundName && (
+                                                                        <div className="smaller-text fst-italic text-muted">
+                                                                              {t("finance:fund")} &quot;{fee.fundName}&quot;
+                                                                        </div>
+                                                                  )}
+                                                            </div>
                                                             {fee.fund && !fee.fundId && (
                                                                   <OverlayTrigger
                                                                         trigger={["hover", "focus", "click"]}
@@ -114,7 +121,7 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                                                                         }
                                                                   >
                                                                         <span className="text-warning ms-2 pointer">
-                                                                              <TriangleAlert size={18} />
+                                                                              <TriangleAlert size={18} color="red" />
                                                                         </span>
                                                                   </OverlayTrigger>
                                                             )}

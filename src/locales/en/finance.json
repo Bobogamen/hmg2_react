@@ -1,7 +1,7 @@
 {
   "fee": "Fee",
   "fees": "Fees",
-  "feeLimit": "Fee limit",
+  "feeLimit": "Fees limit",
   "activeFees": "Active fees",
 
   "feeTypesInfo": {
@@ -102,7 +102,28 @@
   },
 
   "fund": "Fund",
+  "noneAddedFunds": "No funds have been added",
+  "fundStartDate": "Start date",
+  "availableFunds": "Available funds",
+  "assignedFees": "Assigned fees",
+  "fundCreated": "Fund has been successfully created",
+  "fundUpdated": "Fund has been successfully updated",
+  "fundDeleted": "Fund has been successfully deleted",
+  "fundAlreadyExists": "This fund already exists",
+  "fundLimitReached": "The fund limit has been reached",
+  "fundFeeLimitReached": "This Fund has reached its fee limit",
+  "fundNotFound": "Fund not found",
+  "fundFeesNotFound": "One or more selected Fund fees are no longer available",
+  "assignFundFees": "Assign Fund fees",
+  "selectedFundFees": "Chosen fees: {{selected}}/{{total}}",
+  "selectAtLeastOneFundFee": "Please choose at least one fee",
+  "noUnassignedFundFees": "There are no unassigned Fund fees",
+  "fundDeleteTitle": "Delete Fund",
+  "confirmFundDelete": "Are you sure you want to delete this fund? Assigned fund fees will become unassigned.",
   "fundNotAssigned": "Fund no assigned",
+  "feeDeleted": "Fee has been deleted",
+  "feeDeleteTitle": "Delete Fee",
+  "confirmFeeDelete": "<strong>THE FEE</strong> will no longer be available.<br>All related data will also become <strong>UNAVAILABLE.</strong>",
 
   "fundInfo": {
     "title": "Set This Fee as a <strong>Fund Fee</strong>",

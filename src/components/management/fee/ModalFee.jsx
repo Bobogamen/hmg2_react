@@ -5,7 +5,7 @@ import { Bounce, toast } from "react-toastify";
 import { useLoading } from "../../../loader/LoadingContext";
 import { useUser } from "../../../user/UserContext";
 import renderFieldErrors from "../../../utils/renderFieldErrors";
-import { validateFee, addFee, editFee } from "../../../api/services/feeService";
+import { validateFee, addFee, editFee, deleteFee } from "../../../api/services/feeService";
 import "./Fee.css";
 import PrimaryFeeInfo from "./PrimaryFeeInfo";
 import MonthlyFeeInfo from "./MonthlyFeeInfo";
@@ -31,6 +31,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
     const [errors, setErrors] = useState({});
     const [selectedHomes, setSelectedHomes] = useState([]);
     const [saving, setSaving] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const homes = condominium?.homes || [];
     const assignableHomes = feeData.primary
@@ -309,6 +310,31 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         }
     };
 
+    const handleDelete = async () => {
+        if (!fee?.id) return;
+
+        setSaving(true);
+        setIsLoading(true);
+        try {
+            await deleteFee({ condominiumId: condominium.id, feeId: fee.id });
+            setShowDeleteConfirm(false);
+            resetForm();
+            handleClose();
+            updateUser();
+            await onSaved?.();
+            toast.success(t("finance:feeDeleted"), { transition: Bounce });
+        } catch (error) {
+            const errorCode = error?.response?.data?.message;
+            toast.error(
+                errorCode ? t(`validation:${errorCode}`) : t("server:error"),
+                { transition: Bounce }
+            );
+        } finally {
+            setSaving(false);
+            setIsLoading(false);
+        }
+    };
+
     /*
           SELECT HOME
       */
@@ -359,7 +385,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                             )}
                             <div className="mt-2">
                                 {t("in")}{" "}
-                                <span className="text-muted fst-italic border border-3 border-secondary rounded px-1">
+                                <span className="fst-italic text-primary border border-3 border-primary rounded px-1 ms-1">
                                     {condominium?.name}
                                 </span>
                             </div>
@@ -628,9 +654,44 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                         </div>
                     </div>
                 </Modal.Body>
-                <Modal.Footer className="justify-content-end">
+                <Modal.Footer className="justify-content-between">
+                    {isEditing && (
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => setShowDeleteConfirm(true)}
+                            disabled={saving}
+                        >
+                            {t("delete")}
+                        </Button>
+                    )}
                     <Button className="text-end" variant="secondary" onClick={handleClose}>
                         {t("close")}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showDeleteConfirm} onHide={() => setShowDeleteConfirm(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title className="text-danger fw-bold fs-5">
+                        {t("finance:feeDeleteTitle")}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center">
+                    <h4 className="fw-bold mb-3">{fee?.name}</h4>
+                    <div className="border border-danger rounded p-2 bg-danger-subtle">
+                        <div className="fw-bold text-danger mb-2 fs-4">⚠️ {t("warning")}</div>
+                        <div className="small">
+                            <Trans i18nKey="finance:confirmFeeDelete" />
+                        </div>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer className="justify-content-between">
+                    <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+                        {t("cancel")}
+                    </Button>
+                    <Button variant="danger" onClick={handleDelete} disabled={saving}>
+                        {t("delete")}
                     </Button>
                 </Modal.Footer>
             </Modal>

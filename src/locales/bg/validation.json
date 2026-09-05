@@ -26,5 +26,6 @@
   "residentsMaxCountReached": "Домът достигна максималния брой живущи",
   "primaryFeeTimesCannotBeChanged": "Броят начислявания на основан такса не може да бъде променян",
   "oneTimeFeeTimesMustBeZeroOrOne": "Еднократната такса трябва да е 1 или 0",
-  "monthlyFeeTimesMustBeNonNegative": "Прилагането на месечна такса не може да е отрицателно число"
+  "monthlyFeeTimesMustBeNonNegative": "Прилагането на месечна такса не може да е отрицателно число",
+  "feeNotAssignedToFund": "Няма назначен Фонд"
 }
