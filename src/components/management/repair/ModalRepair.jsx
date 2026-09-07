@@ -823,6 +823,15 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                                                             );
                                                         })}
                                                     </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colSpan={5}>
+                                                                <div className="fw-bold m-auto my-1 px-1 rounded small text-bg-danger width-fit-content">
+                                                                    {t("finance:installmentRoundedInfo")}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
                                                 </table>
                                             </div>
                                         </div>

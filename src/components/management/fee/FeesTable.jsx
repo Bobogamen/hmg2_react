@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { Info, TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -12,26 +12,13 @@ const FeesTable = ({
       condominium,
       onSaved,
       selectedFeeId,
+      highlightedFeeIds = [],
       onFeeHomesSelect,
 }) => {
       const [openFeeModal, setOpenFeeModal] = useState(false);
       const [selectedFee, setSelectedFee] = useState(null);
       const [showFeeInfo, setShowFeeInfo] = useState(false);
       const { t } = useTranslation();
-
-      useEffect(() => {
-            const handleOutsidePointerDown = (event) => {
-                  if (!event.target.closest(".fee-homes-cell")) {
-                        onFeeHomesSelect?.(null);
-                  }
-            };
-
-            document.addEventListener("pointerdown", handleOutsidePointerDown);
-
-            return () => {
-                  document.removeEventListener("pointerdown", handleOutsidePointerDown);
-            };
-      }, [onFeeHomesSelect]);
 
       const handleOpenAdd = () => {
             setSelectedFee(null);
@@ -91,7 +78,7 @@ const FeesTable = ({
                                     {condominium?.fees?.map((fee) => (
                                           <tr
                                                 key={`f${fee.id}`}
-                                                className={selectedFeeId === fee.id ? "table-primary" : ""}
+                                                className={selectedFeeId === fee.id || highlightedFeeIds.includes(fee.id) ? "table-primary" : ""}
                                           >
                                                 <td>
                                                       <div className="d-flex align-items-center">
@@ -138,7 +125,8 @@ const FeesTable = ({
                                                       role="button"
                                                       tabIndex={0}
                                                       aria-pressed={selectedFeeId === fee.id}
-                                                      title="Highlight homes assigned to this fee"
+                                                      aria-label={t(fee.fund && fee.fundId != null ? "finance:highlightFeeHomesAndFund" : "finance:highlightFeeHomes", { name: fee.name })}
+                                                      title={t(fee.fund && fee.fundId != null ? "finance:highlightFeeHomesAndFund" : "finance:highlightFeeHomes", { name: fee.name })}
                                                       onKeyDown={(event) => {
                                                             if (event.key === "Enter" || event.key === " ") {
                                                                   event.preventDefault();

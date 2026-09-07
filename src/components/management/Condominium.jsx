@@ -36,15 +36,44 @@ const Condominium = () => {
 
       const [condominium, setCondominium] = useState(initCondominium);
       const [editCondominium, setEditCondominium] = useState(false);
-      const [selectedFeeId, setSelectedFeeId] = useState(null);
+      const [selection, setSelection] = useState(null);
 
-      const selectedHomeIds = useMemo(() => {
-            const selectedFee = condominium?.fees?.find(
-                  (fee) => fee.id === selectedFeeId
-            );
+      const selectedFee = useMemo(() => selection?.type === "fee"
+            ? condominium?.fees?.find((fee) => fee.id === selection.id)
+            : null, [condominium?.fees, selection]);
+      const selectedFund = useMemo(() => selection?.type === "fund"
+            ? condominium?.funds?.find((fund) => fund.id === selection.id)
+            : null, [condominium?.funds, selection]);
+      const selectedHomeIds = selectedFee?.homeIds || [];
+      const highlightedFundId = selectedFund?.id ?? (selectedFee?.fund ? selectedFee.fundId : null);
+      const highlightedFeeIds = useMemo(() => selectedFund
+            ? (condominium?.fees || [])
+                  .filter((fee) => fee.fund && fee.fundId != null && String(fee.fundId) === String(selectedFund.id))
+                  .map((fee) => fee.id)
+            : [], [condominium?.fees, selectedFund]);
 
-            return selectedFee?.homeIds || [];
-      }, [condominium?.fees, selectedFeeId]);
+      const toggleSelection = (type, item) => {
+            setSelection((current) => item && !(current?.type === type && current.id === item.id)
+                  ? { type, id: item.id }
+                  : null);
+      };
+
+      useEffect(() => { setSelection(null); }, [condominiumId]);
+
+      useEffect(() => {
+            const clearOutside = (event) => {
+                  if (!event.target.closest?.(".fee-homes-cell, .fund-fees-cell")) setSelection(null);
+            };
+            const clearOnEscape = (event) => {
+                  if (event.key === "Escape") setSelection(null);
+            };
+            document.addEventListener("pointerdown", clearOutside);
+            document.addEventListener("keydown", clearOnEscape);
+            return () => {
+                  document.removeEventListener("pointerdown", clearOutside);
+                  document.removeEventListener("keydown", clearOnEscape);
+            };
+      }, []);
 
       const fetchCondominium = useCallback(async () => {
             setIsLoading(true);
@@ -151,12 +180,9 @@ const Condominium = () => {
                               <FeesTable
                                     condominium={condominium}
                                     onSaved={fetchCondominium}
-                                    selectedFeeId={selectedFeeId}
-                                    onFeeHomesSelect={(fee) => {
-                                          setSelectedFeeId((currentFeeId) =>
-                                                fee && currentFeeId !== fee.id ? fee.id : null
-                                          );
-                                    }}
+                                    selectedFeeId={selectedFee?.id}
+                                    highlightedFeeIds={highlightedFeeIds}
+                                    onFeeHomesSelect={(fee) => toggleSelection("fee", fee)}
                               />
                               <BillsTable
                                     condominium={condominium}
@@ -165,6 +191,9 @@ const Condominium = () => {
                               <FundsTable
                                     condominium={condominium}
                                     onSaved={fetchCondominium}
+                                    selectedFundId={selectedFund?.id}
+                                    highlightedFundId={highlightedFundId}
+                                    onFundFeesSelect={(fund) => toggleSelection("fund", fund)}
                               />
                               <RepairsTable
                                     condominium={condominium}

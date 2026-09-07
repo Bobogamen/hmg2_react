@@ -9,7 +9,7 @@ import ModalFund from "./ModalFund";
 import ModalFundsInfo from "./ModalFundsInfo";
 import { formatDate } from "../../../utils/formatDate";
 
-const FundsTable = ({ condominium, onSaved }) => {
+const FundsTable = ({ condominium, onSaved, selectedFundId, highlightedFundId, onFundFeesSelect }) => {
     const { t, i18n } = useTranslation();
     const [selectedFund, setSelectedFund] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -49,7 +49,8 @@ const FundsTable = ({ condominium, onSaved }) => {
                     </thead>
                     <tbody className="align-middle">
                         {funds.map((fund) => (
-                            <tr key={`fund-${fund.id}`}>
+                            <tr key={`fund-${fund.id}`}
+                                className={highlightedFundId != null && String(highlightedFundId) === String(fund.id) ? "table-primary" : ""}>
                                 <td>{formatDate(fund.startDate, i18n.language)}</td>
                                 <td>
                                     <div className="d-flex align-items-center">
@@ -72,7 +73,21 @@ const FundsTable = ({ condominium, onSaved }) => {
                                         )}
                                     </div>
                                 </td>
-                                <td>{fund.feeCount}</td>
+                                <td
+                                    className={`fund-fees-cell ${selectedFundId === fund.id ? "selected" : ""}`}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-pressed={selectedFundId === fund.id}
+                                    aria-label={t("finance:highlightFundFees", { name: fund.name })}
+                                    title={t("finance:highlightFundFees", { name: fund.name })}
+                                    onClick={() => onFundFeesSelect?.(fund)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter" || event.key === " ") {
+                                            event.preventDefault();
+                                            onFundFeesSelect?.(fund);
+                                        }
+                                    }}
+                                >{fund.feeCount}</td>
                                 <td><img src={edit} alt={t("edit")} className="icon pointer" onClick={() => openEdit(fund)} /></td>
                             </tr>
                         ))}

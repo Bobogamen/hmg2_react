@@ -1,5 +1,24 @@
 import api from "../axios";
 
+export const getHomeRepairs = async ({ condominiumId, homeId }) => {
+    const { data: repairs } = await api.get(
+        `/management/condominiums/${condominiumId}/repairs`
+    );
+    const assignedRepairs = repairs.filter((repair) =>
+        repair.homeIds?.some((id) => String(id) === String(homeId))
+    );
+
+    return Promise.all(assignedRepairs.map(async (repair) => {
+        const { data: payments } = await api.get(
+            `/management/condominiums/${condominiumId}/repairs/${repair.id}/payments`
+        );
+        return {
+            ...repair,
+            payments: payments.filter((payment) => String(payment.homeId) === String(homeId)),
+        };
+    }));
+};
+
 export const validateRepair = async ({
     condominiumId,
     name,

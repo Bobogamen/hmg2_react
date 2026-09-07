@@ -17,6 +17,8 @@ import { useBreadcrumb } from "../../breadcrumb/BreadcrumpContext";
 import OwnerCard from "./resident/OwnerCard";
 import CardResident from "./resident/CardResident";
 import ModalBuilding from "./ModalBuilding";
+import HomeRepairsTable from "./HomeRepairsTable";
+import { getHomeRepairs } from "../../../api/services/repairService";
 
 const Home = () => {
     const { setBreadcrumbs } = useBreadcrumb();
@@ -34,6 +36,7 @@ const Home = () => {
         name: "",
         residents: [],
         fees: [],
+        repairs: [],
         condominium: null
     };
 
@@ -48,11 +51,12 @@ const Home = () => {
         setIsLoading(true);
 
         try {
-            const [data, fees] = await Promise.all([
+            const [data, fees, repairs] = await Promise.all([
                 getHome({ condominiumId, homeId }),
-                getHomeFees({ condominiumId, homeId })
+                getHomeFees({ condominiumId, homeId }),
+                getHomeRepairs({ condominiumId, homeId })
             ]);
-            setHome({ ...data, fees });
+            setHome({ ...data, fees, repairs });
             const loadedFeeTimes = Object.fromEntries(
                 fees.map((fee) => {
                     const times = Number(fee.times);
@@ -371,6 +375,7 @@ const Home = () => {
                             />
                         </div>
                     </div>
+                    <HomeRepairsTable repairs={home.repairs} />
                 </section>
             </div>
 
@@ -397,7 +402,7 @@ const FeeDashboard = ({
 }) => (
     <>
         {fees.length ? (
-            <div className="d-grid gap-2">
+            <div className="d-grid gap-1">
                 {[...fees]
                     .sort((first, second) => {
                         const getGroup = (fee) => {
