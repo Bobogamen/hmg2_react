@@ -186,7 +186,7 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                                             className="mb-0 text-center">
                                             <thead>
                                                 <tr>
-                                                    <th>{t("name")}</th>
+                                                    <th>{t("finance:fee")}</th>
                                                     <th>{t("value")}</th>
                                                     <th>{t("home:homes")}</th>
                                                     <th>{t("select")}</th>

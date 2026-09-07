@@ -1,4 +1,5 @@
 import React from "react";
+import NativeValidation from "./app/NativeValidation";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { BreadcrumbProvider } from "./components/breadcrumb/BreadcrumpContext";
 
@@ -64,6 +65,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <NativeValidation />
       {isLoading && (
         <div className="loader-overlay">
           <div className="loader">

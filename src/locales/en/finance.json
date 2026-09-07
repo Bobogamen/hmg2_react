@@ -3,32 +3,27 @@
   "fees": "Fees",
   "feeLimit": "Fees limit",
   "activeFees": "Active fees",
-
   "feeTypesInfo": {
     "open": "Learn about fee types",
     "title": "Fee Types",
-
     "primary": {
       "title": "Primary Fee",
       "description": "The required monthly <strong>fee</strong> for the property.",
       "rule": "Fee amount × number of <strong>active</strong> residents",
       "note": "Each property can have only <strong>one</strong> primary fee."
     },
-
     "monthly": {
       "title": "Monthly Fee",
       "description": "A fee that is charged <strong>every</strong> month.",
       "rule": "You can choose how many <strong>times</strong> it should be <u>applied</u> to the property.",
       "note": "Optional."
     },
-
     "oneTime": {
       "title": "One-Time Fee",
       "description": "A fee that is charged <strong>once</strong>.",
       "rule": "The <u>active</u> fee is included in the current charge.",
       "note": "Deactivate it when it <u>should no longer</u> be charged."
     },
-
     "forFund": {
       "title": "Fund Fee",
       "description": "A fee used to set aside money for a <strong>fund</strong>.",
@@ -36,7 +31,6 @@
       "note": "The fund can be used for <u>planned</u> or <u>unexpected</u> expenses."
     }
   },
-
   "noneAddedFees": "No fees have been added",
   "monthlyFee": "Monthly",
   "oneTimeFee": "One-time",
@@ -48,25 +42,20 @@
   "toggleStatus": "Toggle status",
   "times": "Number of charges",
   "timesSaved": "Number of charges saved",
-
   "addAtLeastOneHome": "Please add at least ONE property",
   "selectAtLeastOneHome": "Please select at least ONE property",
   "selectedHomes": "Selected {{selected}} of {{total}} properties",
   "applyToProperties": "Apply fee to properties",
-
   "feeAlreadyExists": "This fee already exists",
   "homeFeeAlreadyPrimary": "One or more selected properties already have a primary fee",
   "primaryMustBeMonthly": "The primary fee must be monthly",
   "noFeesAssigned": "No fees assigned",
   "noPrimaryFeeAssigned": "No primary fee",
-
   "feeCreated": "Fee has been successfully created",
   "feeUpdated": "Fee has been successfully updated",
-
   "primaryFeeInfo": {
     "title": "Primary Fee",
     "description": "The primary fee is applied <u>monthly</u> and is calculated based on the number of <br><strong>active</strong> residents in the property.",
-
     "calculation": {
       "title": "How is it calculated?",
       "formula": "Fee Amount × Active Residents",
@@ -75,7 +64,6 @@
       "residents": "Active Residents",
       "total": "Total"
     },
-
     "example": {
       "title": "Each property has its own <u>primary</u> fee",
       "description": "The <strong>primary</strong> fee can be <u>different</u> for each property.",
@@ -84,7 +72,6 @@
       "residents": "Active Residents",
       "total": "Total"
     },
-
     "important": {
       "title": "Important",
       "monthly": "The primary fee is <strong>always</strong> <u>monthly</u>.",
@@ -93,17 +80,14 @@
       "differentProperties": "Different properties can have different primary fees."
     }
   },
-
   "primaryFeeConfirmation": {
     "title": "Set Primary Fee",
     "question": "Are you sure you want <u>this fee</u> <br>to be set as the <strong>primary</strong> fee?",
     "description": "The primary fee is calculated based on the number of <u>active</u> residents in the property. Each property can have only <strong>one</strong> primary fee.",
     "confirm": "Set as Primary"
   },
-
   "fund": "Fund",
   "noneAddedFunds": "No funds have been added",
-  "fundStartDate": "Start date",
   "availableFunds": "Available funds",
   "assignedFees": "Assigned fees",
   "fundCreated": "Fund has been successfully created",
@@ -117,26 +101,47 @@
   "assignFundFees": "Assign Fund fees",
   "selectedFundFees": "Chosen fees: {{selected}}/{{total}}",
   "selectAtLeastOneFundFee": "Please choose at least one fee",
-  "noUnassignedFundFees": "There are no unassigned Fund fees",
+  "noUnassignedFundFees": "There are no fees with label \"for Fund\"",
   "fundDeleteTitle": "Delete Fund",
   "confirmFundDelete": "Are you sure you want to delete this fund? Assigned fund fees will become unassigned.",
   "fundNotAssigned": "Fund no assigned",
   "feeDeleted": "Fee has been deleted",
   "feeDeleteTitle": "Delete Fee",
   "confirmFeeDelete": "<strong>THE FEE</strong> will no longer be available.<br>All related data will also become <strong>UNAVAILABLE.</strong>",
-
+  "fundsInfo": {
+    "open": "Information about funds",
+    "title": "How do funds work?",
+    "description": "Funds help you set aside money for a specific purpose, such as building improvements or unexpected expenses. Fund fees determine how much each home contributes.",
+    "sections": {
+      "create": {
+        "title": "1. Give the fund a name",
+        "description": "Choose Add Fund and enter a clear name, such as “Building improvements” or “Reserve”. Then continue to select its fees. You can also save a fund without fees and assign them later."
+      },
+      "fees": {
+        "title": "2. Link the fund fees",
+        "description": "Select the fees that should contribute to this fund. Only fund fees that are unassigned or already linked to this fund appear here. If none are available, create a fee of type Fund in the Fees section, then edit the fund to assign it."
+      },
+      "homes": {
+        "title": "Which homes contribute?",
+        "description": "Homes contribute through the fees assigned to them. Set the amount and choose the homes when creating or editing a fee. While selecting fees for a fund, click a fee’s home count to see the homes it applies to."
+      },
+      "table": {
+        "title": "What does the table show?",
+        "description": "The Fees column shows how many fees are linked to each fund. A warning icon means no fees are assigned yet. Use the edit icon to link fees. The counter beside the Funds heading shows how many funds you have and the maximum allowed."
+      }
+    },
+    "note": "You can edit a fund’s name and assigned fees later. To move a fee to another fund, first uncheck it in the current fund and save. Deleting a fund leaves its fees available to assign again."
+  },
   "fundInfo": {
     "title": "Set This Fee as a <strong>Fund Fee</strong>",
     "description": "An amount that is <strong>set aside</strong> for future expenses or needs.",
     "rule": "Each property can have a different amount <strong>contributed</strong> to the fund.",
     "note": "It can be used for <u>planned</u> or <u>unexpected</u> expenses."
   },
-
   "fundFee": {
     "rule": "Each property can have only <strong>one</strong> fee for each <strong>fund</strong>.",
     "note": "The fee is included in the current charge."
   },
-
   "bill": "Bill",
   "bills": "Bills",
   "noneAddedBills": "No bills have been added",
@@ -144,7 +149,6 @@
   "addedOn": "Added on",
   "addBill": "Add Bill",
   "editBill": "Edit Bill",
-
   "billCreated": "Bill has been successfully added",
   "billUpdated": "Bill has been successfully updated",
   "billDeleted": "Bill has been deleted",
@@ -153,23 +157,85 @@
   "billLimitReached": "The bill limit has been reached",
   "deleteBillTitle": "Delete Bill",
   "confirmBillDelete": "<strong>THE BILL</strong> will no longer be available.<br>All related data will also become <strong>UNAVAILABLE.</strong>",
-
   "billInfo": {
     "open": "Learn about bills",
     "title": "How Do Bills Work?",
     "description": "Add recurring condominium bills once, and they will automatically appear every month.",
-
     "steps": {
       "add": "Add a name, for example: \"Electricity\", \"Water\", or \"Elevator\".",
       "monthly": "The bill is created and displayed every month.",
       "value": "Only the amount needs to be entered when the bill is paid."
     },
-
     "note": "You can edit or delete added bills at any time."
   },
-
   "repair": "Repair",
   "repairs": "Repairs",
   "budget": "Budget",
-  "type": "Type"
+  "amount": "Amount",
+  "noHomes": "No homes have been added yet.",
+  "type": "Type",
+  "noneAddedRepairs": "No repairs have been added",
+  "repairCreated": "Repair has been successfully added",
+  "repairUpdated": "Repair has been successfully updated",
+  "repairDeleted": "Repair has been deleted",
+  "repairDeleteTitle": "Delete Repair",
+  "confirmRepairDelete": "Are you sure you want to delete this repair?",
+  "repairDistribution": "Distribute the budget",
+  "equalToAll": "Equal shares",
+  "equalToAllDescription": "Split the budget equally among the selected homes.",
+  "differentPercentage": "Percentage per home",
+  "differentPercentageDescription": "Enter each home’s share of the budget. The percentages must add up to 100%.",
+  "homePercentages": "Share per home",
+  "percentageComplete": "100% allocated",
+  "percentageRemaining": "Percentage remaining",
+  "equalAmountPerHome": "Amount per home",
+  "numberOfInstallments": "Number of installments",
+  "maximumInstallments": "Maximum installments",
+  "installment": "installment",
+  "installments": "installments",
+  "installmentPreview": "Payment schedule preview",
+  "perInstallment": "Per installment",
+  "total": "Total",
+  "repairInstallmentsHelp": "Each home’s share is split into 1–{{max}} installments. The preview shows one installment amount rounded up to the nearest cent. Some actual installments may be €0.01 lower so the total matches the budget. All installments start unpaid.",
+  "repairInvalidBudget": "Enter a positive budget with no more than two decimal places.",
+  "repairInvalidInstallments": "Enter a whole number of installments between 1 and {{max}}.",
+  "repairInvalidDistribution": "Choose how to distribute the budget.",
+  "repairInvalidPercentage": "Enter a percentage from 0 to 100 for every selected home (up to four decimal places).",
+  "repairPercentageMustBe100": "The percentages for the selected homes must add up to 100%.",
+  "repairHomesNotFound": "Some selected homes are no longer available in this condominium. Please reopen the repair and check the selection.",
+  "repairAlreadyExists": "A repair with this name already exists.",
+  "repairLimitReached": "The repair limit has been reached.",
+  "repairNotFound": "Repair not found.",
+  "repairPaymentNotFound": "Installment not found.",
+  "repairPaidScheduleLocked": "A payment has already been recorded. You can change the repair name, but its budget, homes, distribution and installments are now fixed.",
+  "repairInvalidPaidDate": "Choose a payment date that is today or earlier.",
+  "repairPaymentAlreadyPaid": "This installment has already been paid.",
+  "repairInfo": {
+    "open": "Information about repairs",
+    "title": "How do repairs work?",
+    "description": "Plan a repair, decide which homes contribute and split their shares into manageable installments.",
+    "sections": {
+      "details": {
+        "title": "1. Name and budget",
+        "description": "Enter a clear name, such as “Roof repair”, and the total budget. Continue after the details have been checked."
+      },
+      "homes": {
+        "title": "2. Choose the participating homes",
+        "description": "Select the homes that will contribute. Use Select All if the repair applies to everyone."
+      },
+      "distribution": {
+        "title": "Choose how to split the budget",
+        "description": "Divide it equally among the selected homes, or enter a percentage for each home. The percentages must total 100%."
+      },
+      "installments": {
+        "title": "Choose the number of installments",
+        "description": "This is how many parts each home’s share is split into. For example, a €300 share in 3 installments creates three payments of €100 for that home."
+      },
+      "payments": {
+        "title": "Save and track payments",
+        "description": "Saving creates the repair and all installments for every selected home. They start unpaid. An installment is marked paid when its actual payment date is recorded."
+      }
+    },
+    "note": "Check the setup before saving. After a repair is created, only its name can be changed."
+  }
 }

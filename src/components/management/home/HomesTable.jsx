@@ -149,7 +149,7 @@ const HomesTable = ({ condominium, onSaved, selectedHomeIds = [] }) => {
                                         {t("home:owner")}
                                     </td>
                                     <td>{t("home:residents")}</td>
-                                    <td>{t("home:total")} €</td>
+                                    <td>{t("home:total")}</td>
                                     <td>
                                         <img
                                             src={settings}

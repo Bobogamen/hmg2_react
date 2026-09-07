@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import { OverlayTrigger, Table, Tooltip } from "react-bootstrap";
 import { Info, TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import settings from '../../../assets/images/app/settings.png';
-import add from '../../../assets/images/app/add.png';
-import edit from '../../../assets/images/app/edit.png';
+import settings from "../../../assets/images/app/settings.png";
+import add from "../../../assets/images/app/add.png";
+import edit from "../../../assets/images/app/edit.png";
 import ModalFee from "./ModalFee";
 import ModalFeeTypesInfo from "./ModalFeeTypesInfo";
-const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) => {
+
+const FeesTable = ({
+      condominium,
+      onSaved,
+      selectedFeeId,
+      onFeeHomesSelect,
+}) => {
       const [openFeeModal, setOpenFeeModal] = useState(false);
       const [selectedFee, setSelectedFee] = useState(null);
       const [showFeeInfo, setShowFeeInfo] = useState(false);
@@ -47,9 +53,7 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
       return (
             <div className="bg-danger bg-opacity-50 border border-3 border-primary border-opacity-50 rounded-5 shadow-lg p-3 mx-1">
                   <div className="d-flex justify-content-center align-items-center position-relative pb-2 mb-1">
-                        <h4 className="text-capitalize fw-bold mb-0">
-                              {t('finance:fees')}
-                        </h4>
+                        <h4 className="text-capitalize fw-bold mb-0">{t("finance:fees")}</h4>
 
                         <button
                               type="button"
@@ -71,12 +75,12 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                         show={showFeeInfo}
                         handleClose={() => setShowFeeInfo(false)}
                   />
-                  {condominium?.fees?.length ?
+                  {condominium?.fees?.length ? (
                         <Table bordered striped hover size="sm">
                               <thead className="align-middle">
                                     <tr className="fw-bold">
                                           <th className="w-50">{t("name")}</th>
-                                          <th>{t("value")} €</th>
+                                          <th>{t("value")}</th>
                                           <th>{t("home:homes")}</th>
                                           <th>
                                                 <img src={settings} alt="settings" className="icon" />
@@ -127,9 +131,7 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                                                             )}
                                                       </div>
                                                 </td>
-                                                <td>
-                                                      € {fee.value.toFixed(2)}
-                                                </td>
+                                                <td>€ {fee.value.toFixed(2)}</td>
                                                 <td
                                                       className={`fee-homes-cell ${selectedFeeId === fee.id ? "selected" : ""}`}
                                                       onClick={() => onFeeHomesSelect?.(fee)}
@@ -151,22 +153,24 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                                                             src={edit}
                                                             alt="edit"
                                                             className="icon pointer"
-                                                            onClick={() =>
-                                                                  handleOpenEdit(fee)
-                                                            }
+                                                            onClick={() => handleOpenEdit(fee)}
                                                       />
                                                 </td>
                                           </tr>
                                     ))}
                               </tbody>
                         </Table>
-                        :
+                  ) : (
                         <div>
                               <p className="mt-3 fs-4 fw-bold">
-                                    {t(condominium?.homes?.length > 0 ? "finance:noneAddedFees" : "finance:addAtLeastOneHome")}
+                                    {t(
+                                          condominium?.homes?.length > 0
+                                                ? "finance:noneAddedFees"
+                                                : "finance:addAtLeastOneHome",
+                                    )}
                               </p>
                         </div>
-                  }
+                  )}
                   <ModalFee
                         show={openFeeModal}
                         handleClose={handleClose}
@@ -175,17 +179,12 @@ const FeesTable = ({ condominium, onSaved, selectedFeeId, onFeeHomesSelect }) =>
                         onSaved={handleSaved}
                   />
 
-                  {condominium?.homes?.length > 0 && !condominium?.feeLimit &&
-                        <div className="img-button pointer m-auto mt-3"
-                              onClick={handleOpenAdd}>
-                              <img src={add}
-                                    className="icon"
-                                    alt="add" />
-                              <span className="ms-1">
-                                    {`${t('add')} ${t('finance:fee')}`}
-                              </span>
+                  {condominium?.homes?.length > 0 && !condominium?.feeLimit && (
+                        <div className="img-button pointer m-auto mt-3" onClick={handleOpenAdd}>
+                              <img src={add} className="icon" alt="add" />
+                              <span className="ms-1">{`${t("add")} ${t("finance:fee")}`}</span>
                         </div>
-                  }
+                  )}
             </div>
       );
 };

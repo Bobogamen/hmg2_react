@@ -30,7 +30,8 @@ const Condominium = () => {
             fees: [],
             billMaxCount: 0,
             bills: [],
-            repairs: []
+            repairs: [],
+            repairLimit: 20
       };
 
       const [condominium, setCondominium] = useState(initCondominium);
@@ -166,7 +167,8 @@ const Condominium = () => {
                                     onSaved={fetchCondominium}
                               />
                               <RepairsTable
-                                    repairs={condominium.repairs || []}
+                                    condominium={condominium}
+                                    onSaved={fetchCondominium}
                               />
                         </section>
                   </div>

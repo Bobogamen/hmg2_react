@@ -1,5 +1,20 @@
 {
   "required": "This field is required",
+  "native": {
+    "minimum": "Enter a value greater than or equal to {{min}}.",
+    "maximum": "Enter a value less than or equal to {{max}}.",
+    "invalidNumber": "Enter a valid number.",
+    "wholeNumber": "Enter a whole number.",
+    "numberStep": "Enter a value in increments of {{step}}, starting from {{base}}.",
+    "step": "Choose a value that matches the allowed intervals.",
+    "invalidUrl": "Enter a valid web address.",
+    "minLength": "Enter at least {{min}} characters.",
+    "maxLength": "Enter no more than {{max}} characters.",
+    "pattern": "Use the requested format.",
+    "invalid": "Check the value in this field."
+  },
+  "repairInvalidBudget": "Enter a budget with no more than two decimal places.",
+  "repairInvalidPaidDate": "Choose a payment date that is today or earlier.",
   "notBlank": "Cannot be blank or contain only spaces",
   "positiveWholeNumber": "Must be a positive whole number",
   "positiveNumber": "Must be a positive number",

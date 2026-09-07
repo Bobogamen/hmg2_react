@@ -431,7 +431,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                             {renderFieldErrors(errors, "name", t)}
                                         </div>
                                         <div className="fee-form-field">
-                                            <label>{`${t("value")} €`}</label>
+                                            <label>{`€ ${t("value")}`}</label>
                                             <input type="number" step="0.01" min="0" name="value"
                                                 value={feeData.value}
                                                 onChange={handleChange} />
@@ -548,7 +548,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                 -
                                             </span>
                                             <span className="bg-success bg-opacity-25 px-2 rounded">
-                                                {feeData.value} €
+                                                € {feeData.value}
                                             </span>
                                             {feeData.monthly && (
                                                 <span className="text-muted">
@@ -563,8 +563,8 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
                                                 <table className="table table-sm table-striped table-bordered border-1 table-hover text-center">
                                                     <thead>
                                                         <tr>
-                                                            <th>{t("home:floor")}</th>
-                                                            <th>{t("name")}</th>
+                                                            <th>{t("home:fl")}</th>
+                                                            <th>{t("home:apt")}</th>
                                                             <th>{t("home:owner")}</th>
                                                             <th>
                                                                 <div className="d-flex align-items-center justify-content-center gap-2">

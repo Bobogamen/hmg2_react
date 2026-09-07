@@ -468,7 +468,7 @@ const FeeDashboard = ({
                                             )}
                                         </div>
                                         <div className="text-end text-nowrap">
-                                            <div className="fw-bold">{amount.toFixed(2)} €</div>
+                                            <div className="fw-bold">€ {amount.toFixed(2)}</div>
                                         </div>
                                     </div>
 
@@ -496,9 +496,9 @@ const FeeDashboard = ({
                                                         onChange={(event) => onTimesChange(fee, event.target.value)}
                                                     />
                                                     <span>×</span>
-                                                    <span>{Number(fee.value || 0).toFixed(2)} €</span>
+                                                    <span>€ {Number(fee.value || 0).toFixed(2)}</span>
                                                     <span>=</span>
-                                                    <span className="fw-bold text-dark">{amount.toFixed(2)} €</span>
+                                                    <span className="fw-bold text-dark">€ {amount.toFixed(2)}</span>
                                                 </>
                                             ) : (
                                                 <button

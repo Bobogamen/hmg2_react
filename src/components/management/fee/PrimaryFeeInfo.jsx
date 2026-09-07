@@ -45,7 +45,7 @@ const PrimaryFeeInfo = () => {
                     <div className="formula-item">
                         <CircleEuroSign size={36} />
                         <span>{t("finance:primaryFeeInfo.calculation.fee")}</span>
-                        <strong>5€</strong>
+                        <strong>€5</strong>
                     </div>
 
                     <div className="operator">×</div>
@@ -61,7 +61,7 @@ const PrimaryFeeInfo = () => {
                     <div className="formula-item result">
                         <Calculator size={36} />
                         <span>{t("finance:primaryFeeInfo.calculation.total")}</span>
-                        <strong>15€</strong>
+                        <strong>€15</strong>
                     </div>
 
                 </div>
@@ -105,7 +105,7 @@ const PrimaryFeeInfo = () => {
 
                         <div className="fee-value">
                             <CircleEuroSign size={28} />
-                            <strong>5€</strong>
+                            <strong>€5</strong>
                         </div>
 
                         <div className="resident-icons">
@@ -115,7 +115,7 @@ const PrimaryFeeInfo = () => {
                         </div>
 
                         <div className="property-result">
-                            5€ × 3 = <strong>15€</strong>
+                            €5 × 3 = <strong>€15</strong>
                         </div>
                     </div>
 
@@ -129,7 +129,7 @@ const PrimaryFeeInfo = () => {
 
                         <div className="fee-value">
                             <CircleEuroSign size={28} />
-                            <strong>5€</strong>
+                            <strong>€5</strong>
                         </div>
 
                         <div className="resident-icons">
@@ -138,7 +138,7 @@ const PrimaryFeeInfo = () => {
                         </div>
 
                         <div className="property-result">
-                            5€ × 2 = <strong>10€</strong>
+                            €5 × 2 = <strong>€10</strong>
                         </div>
                     </div>
 
@@ -152,7 +152,7 @@ const PrimaryFeeInfo = () => {
 
                         <div className="fee-value">
                             <CircleEuroSign size={28} />
-                            <strong>7€</strong>
+                            <strong>€7</strong>
                         </div>
 
                         <div className="resident-icons">
@@ -163,7 +163,7 @@ const PrimaryFeeInfo = () => {
                         </div>
 
                         <div className="property-result">
-                            7€ × 4 = <strong>28€</strong>
+                            €7 × 4 = <strong>€28</strong>
                         </div>
                     </div>
 
