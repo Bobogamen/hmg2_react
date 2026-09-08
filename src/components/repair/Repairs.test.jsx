@@ -4,11 +4,12 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Repairs from "./Repairs";
 import { BreadcrumbProvider } from "../breadcrumb/BreadcrumpContext";
 import Breadcrumbs from "../breadcrumb/Breadcrumbs";
+import { LoadingProvider } from "../../loader/LoadingContext";
 import { getCondominium } from "../../api/services/managementService";
-import { getRepairDetails, addRepairExpense, payRepairInstallment } from "../../api/services/repairService";
+import { getRepairDetails, addRepairExpense, payRepairInstallment, completeRepair } from "../../api/services/repairService";
 
 jest.mock("../../api/services/managementService", () => ({ getCondominium: jest.fn() }));
-jest.mock("../../api/services/repairService", () => ({ getRepairDetails: jest.fn(), addRepairExpense: jest.fn(), payRepairInstallment: jest.fn() }));
+jest.mock("../../api/services/repairService", () => ({ getRepairDetails: jest.fn(), addRepairExpense: jest.fn(), payRepairInstallment: jest.fn(), completeRepair: jest.fn() }));
 jest.mock("react-toastify", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 jest.mock("../../user/UserContext", () => ({ useUser: () => ({ user: { condominiums: [{ id: 1, name: "Building A" }] } }) }));
 jest.mock("react-i18next", () => {
@@ -24,7 +25,7 @@ jest.mock("react-i18next", () => {
     return { useTranslation: () => ({ t, i18n: { language: "en" } }) };
 });
 
-const repair = { id: 5, name: "Roof repair", budget: "1000", totalPaid: "34", totalExpenses: "10", balance: "24", completed: false };
+const repair = { id: 5, name: "Roof repair", budget: "1000", totalPaid: "33.34", totalExpenses: "10", balance: "23.34", completed: false };
 const details = { repair, payments: [
     { id: 1, homeId: 10, installmentNumber: 1, value: "33.34", paidDate: "2026-01-01" },
     { id: 2, homeId: 10, installmentNumber: 2, value: "33.33", paidDate: null },
@@ -37,11 +38,11 @@ const condo = { id: 1, name: "Building A", repairs: [repair], homes: [
 
 const open = (path = "/repair") => render(
     <MemoryRouter initialEntries={[path]}>
-        <BreadcrumbProvider><Breadcrumbs /><Routes>
+        <LoadingProvider><BreadcrumbProvider><Breadcrumbs /><Routes>
             <Route path="/repair" element={<Repairs />} />
             <Route path="/repair/condominiums/:condominiumId" element={<Repairs />} />
             <Route path="/repair/condominiums/:condominiumId/repairs/:repairId" element={<Repairs />} />
-        </Routes></BreadcrumbProvider>
+        </Routes></BreadcrumbProvider></LoadingProvider>
     </MemoryRouter>
 );
 
@@ -51,6 +52,7 @@ beforeEach(() => {
     getRepairDetails.mockResolvedValue(details);
     addRepairExpense.mockResolvedValue({ id: 42 });
     payRepairInstallment.mockResolvedValue({ id: 2, paidDate: "2026-01-04" });
+    completeRepair.mockResolvedValue(undefined);
 });
 
 test("selects condominium then repair, and breadcrumbs navigate back", async () => {
@@ -75,8 +77,8 @@ test("shows each home's paid installments in a modal without unpaid or other-hom
     fireEvent.click(count);
     const modal = within(await screen.findByRole("dialog"));
     expect(modal.getByText("01-Jan-2026")).toBeInTheDocument();
-    expect(modal.getByText("€ 34")).toBeInTheDocument();
-    expect(modal.queryByText("€ 50")).not.toBeInTheDocument();
+    expect(modal.getByText("€ 33.34")).toBeInTheDocument();
+    expect(modal.queryByText("€ 50.00")).not.toBeInTheDocument();
     expect(modal.getAllByRole("row")).toHaveLength(2);
     fireEvent.click(modal.getAllByRole("button", { name: "Close", exact: true })[0]);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
@@ -85,29 +87,50 @@ test("shows each home's paid installments in a modal without unpaid or other-hom
 });
 
 test("validates expense fields inline, saves selected repair, and refreshes totals and expenses", async () => {
+    addRepairExpense.mockRejectedValueOnce({ isValidationError: true, validationErrors: {
+        name: [{ code: "required" }], value: [{ code: "required" }], documentNumber: [{ code: "required" }],
+    } });
     open("/repair/condominiums/1/repairs/5");
     fireEvent.click(await screen.findByRole("button", { name: "Add expense" }));
     const modal = within(await screen.findByRole("dialog"));
     expect(modal.queryByLabelText("Added on")).not.toBeInTheDocument();
     expect([...screen.getByRole("dialog").querySelectorAll("input")].map((input) => input.name))
         .toEqual(["name", "value", "documentNumber", "documentDate"]);
-    fireEvent.click(modal.getByRole("button", { name: "Save" }));
-    expect(modal.getAllByText("This field is required")).toHaveLength(3);
-    expect(addRepairExpense).not.toHaveBeenCalled();
+    fireEvent.click(modal.getByRole("button", { name: "Add" }));
+    expect(await modal.findAllByText("This field is required")).toHaveLength(3);
     fireEvent.change(modal.getByLabelText(/^name$/i), { target: { value: "Materials" } });
     fireEvent.change(modal.getByLabelText("Document number"), { target: { value: "INV-2" } });
     fireEvent.change(modal.getByLabelText(/Value/), { target: { value: "-5" } });
-    fireEvent.click(modal.getByRole("button", { name: "Save" }));
-    expect(addRepairExpense).not.toHaveBeenCalled();
-    expect(modal.getByText(/Enter a positive amount/)).toBeInTheDocument();
+    addRepairExpense.mockRejectedValueOnce({ isValidationError: true,
+        validationErrors: { value: [{ code: "positiveNumber" }] },
+    });
+    fireEvent.submit(modal.getByRole("button", { name: "Add" }).closest("form"));
+    expect(await modal.findByText("Must be a positive number")).toBeInTheDocument();
     fireEvent.change(modal.getByLabelText(/Value/), { target: { value: "5.25" } });
-    getRepairDetails.mockResolvedValueOnce({ ...details, repair: { ...repair, totalExpenses: "15.25", balance: "18.75" },
+    getRepairDetails.mockResolvedValueOnce({ ...details, repair: { ...repair, totalExpenses: "15.25", balance: "18.09" },
         expenses: [...details.expenses, { id: 42, name: "Materials", value: "5.25", addedOn: "2026-01-03", documentDate: "2026-01-03", documentNumber: "INV-2" }] });
-    fireEvent.click(modal.getByRole("button", { name: "Save" }));
+    fireEvent.click(modal.getByRole("button", { name: "Add" }));
     await waitFor(() => expect(addRepairExpense).toHaveBeenCalledWith(expect.objectContaining({ condominiumId: 1, repairId: 5, name: "Materials", value: "5.25", documentNumber: "INV-2" })));
     expect(addRepairExpense.mock.calls[0][0]).not.toHaveProperty("addedOn");
     expect(await screen.findByText("Materials")).toBeInTheDocument();
-    expect(screen.getAllByText("€ 19")).toHaveLength(2);
+    expect(screen.getAllByText("€ 18.09")).toHaveLength(2);
+});
+
+test("shows paid income, summed expenses and their difference with exact cents", async () => {
+    getRepairDetails.mockResolvedValueOnce({ ...details,
+        repair: { ...repair, totalExpenses: "20.47", balance: "12.87" },
+        expenses: [
+            { ...details.expenses[0], value: "10.23" },
+            { ...details.expenses[0], id: 6, name: "Materials", value: "10.24" },
+        ],
+    });
+    open("/repair/condominiums/1/repairs/5");
+    await screen.findByRole("button", { name: "Add expense" });
+    expect(screen.getByRole("rowheader", { name: "Income" }).closest("tr")).toHaveTextContent("€ 33.34");
+    expect(screen.getByRole("rowheader", { name: "Expenses" }).closest("tr")).toHaveTextContent("€ 20.47");
+    expect(screen.getAllByText("€ 12.87")).toHaveLength(2);
+    expect(screen.getByText("€ 10.23")).toBeInTheDocument();
+    expect(screen.getByText("€ 10.24")).toBeInTheDocument();
 });
 
 test("shows the configured expense maximum from backend validation and allows a corrected submission", async () => {
@@ -119,28 +142,107 @@ test("shows the configured expense maximum from backend validation and allows a 
     const modal = within(await screen.findByRole("dialog"));
     const value = modal.getByLabelText(/Value/);
     expect(value).not.toHaveAttribute("max");
-    expect(modal.getByLabelText("Document number")).toHaveAttribute("maxlength", "30");
     fireEvent.change(modal.getByLabelText(/^name$/i), { target: { value: "Materials" } });
     fireEvent.change(modal.getByLabelText("Document number"), { target: { value: "INV-2" } });
     fireEvent.change(value, { target: { value: "100.01" } });
-    fireEvent.click(modal.getByRole("button", { name: "Save" }));
+    fireEvent.click(modal.getByRole("button", { name: "Add" }));
     expect(await modal.findByText("Must not exceed 100")).toBeInTheDocument();
-    expect(value).toHaveClass("is-invalid");
     expect(value).toHaveValue(100.01);
     expect(getRepairDetails).toHaveBeenCalledTimes(1);
     fireEvent.change(value, { target: { value: "100" } });
     expect(modal.queryByText("Must not exceed 100")).not.toBeInTheDocument();
-    fireEvent.click(modal.getByRole("button", { name: "Save" }));
+    fireEvent.click(modal.getByRole("button", { name: "Add" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(addRepairExpense).toHaveBeenLastCalledWith(expect.objectContaining({ value: "100" }));
     expect(getRepairDetails).toHaveBeenCalledTimes(2);
+});
+
+test.each([
+    ["unpaid installments", details],
+    ["no installments", { ...details, payments: [] }],
+    ["an already completed repair", { ...details, repair: { ...repair, completed: true },
+        payments: details.payments.map((payment) => ({ ...payment, paidDate: "2026-01-04" })) }],
+])("hides completion for %s", async (_, result) => {
+    getRepairDetails.mockResolvedValueOnce(result);
+    open("/repair/condominiums/1/repairs/5");
+    await screen.findByRole("region", { name: "homes" });
+    expect(screen.queryByRole("button", { name: "Complete repair" })).not.toBeInTheDocument();
+    if (result.repair.completed) {
+        expect(screen.queryByRole("button", { name: "Add expense" })).not.toBeInTheDocument();
+    }
+});
+
+test("completes a fully paid repair, prevents duplicate clicks, and refreshes the status", async () => {
+    const paidDetails = { ...details, payments: details.payments.map((payment) => ({ ...payment, paidDate: "2026-01-04" })) };
+    getRepairDetails.mockResolvedValueOnce(paidDetails);
+    let finish;
+    completeRepair.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+    open("/repair/condominiums/1/repairs/5");
+    const button = await screen.findByRole("button", { name: "Complete repair" });
+    expect(within(screen.getByRole("region", { name: "homes" })).getByRole("button", { name: "Complete repair" })).toBe(button);
+    fireEvent.click(button);
+    const modal = within(await screen.findByRole("dialog"));
+    expect(modal.getByText("After completing this repair, you will no longer be able to add expenses.")).toBeInTheDocument();
+    expect(completeRepair).not.toHaveBeenCalled();
+    const confirm = modal.getByRole("button", { name: "Complete repair" });
+    fireEvent.click(confirm);
+    fireEvent.click(confirm);
+    expect(confirm).toBeDisabled();
+    expect(modal.getByRole("button", { name: "Cancel" })).toBeDisabled();
+    expect(completeRepair).toHaveBeenCalledTimes(1);
+    expect(completeRepair).toHaveBeenCalledWith({ condominiumId: 1, repairId: 5 });
+    getRepairDetails.mockResolvedValueOnce({ ...paidDetails, repair: { ...repair, completed: true } });
+    await act(async () => finish());
+    expect(await screen.findByText("Completed")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Complete repair" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add expense" })).not.toBeInTheDocument();
+});
+
+test("cancelling completion leaves the repair open for expenses", async () => {
+    getRepairDetails.mockResolvedValueOnce({ ...details,
+        payments: details.payments.map((payment) => ({ ...payment, paidDate: "2026-01-04" })) });
+    open("/repair/condominiums/1/repairs/5");
+    fireEvent.click(await screen.findByRole("button", { name: "Complete repair" }));
+    fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Cancel" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(completeRepair).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Add expense" }));
+    expect(within(await screen.findByRole("dialog")).getByLabelText(/Value/)).toBeInTheDocument();
+});
+
+test("refreshes a stale expense form when the repair was completed elsewhere", async () => {
+    addRepairExpense.mockRejectedValueOnce({ response: { status: 409, data: { message: "repairCompletedExpensesLocked" } } });
+    open("/repair/condominiums/1/repairs/5");
+    fireEvent.click(await screen.findByRole("button", { name: "Add expense" }));
+    const modal = within(await screen.findByRole("dialog"));
+    fireEvent.change(modal.getByLabelText(/^name$/i), { target: { value: "Materials" } });
+    fireEvent.change(modal.getByLabelText("Document number"), { target: { value: "INV-2" } });
+    fireEvent.change(modal.getByLabelText(/Value/), { target: { value: "25" } });
+    getRepairDetails.mockResolvedValueOnce({ ...details, repair: { ...repair, completed: true } });
+    fireEvent.click(modal.getByRole("button", { name: "Add" }));
+    expect(await screen.findByText("Completed")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add expense" })).not.toBeInTheDocument();
+});
+
+test("keeps completion errors visible and allows retry without changing the repair status", async () => {
+    getRepairDetails.mockResolvedValueOnce({ ...details,
+        payments: details.payments.map((payment) => ({ ...payment, paidDate: "2026-01-04" })) });
+    completeRepair.mockRejectedValueOnce({ response: { status: 409, data: { message: "repairNotFullyPaid" } } });
+    open("/repair/condominiums/1/repairs/5");
+    fireEvent.click(await screen.findByRole("button", { name: "Complete repair" }));
+    const modal = within(await screen.findByRole("dialog"));
+    fireEvent.click(modal.getByRole("button", { name: "Complete repair" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("All installments must be paid before completing the repair.");
+    expect(modal.getByRole("button", { name: "Complete repair" })).toBeEnabled();
+    expect(getRepairDetails).toHaveBeenCalledTimes(1);
 });
 
 test("failed requests show an error and support retry instead of empty financial totals", async () => {
     getRepairDetails.mockRejectedValueOnce(new Error("Network error"));
     open("/repair/condominiums/1/repairs/5");
     expect(await screen.findByRole("alert")).toBeInTheDocument();
-    expect(screen.queryByText("€ 0")).not.toBeInTheDocument();
+    expect(screen.queryByText("€ 0.00")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
     expect(await screen.findByRole("button", { name: "Add expense" })).toBeInTheDocument();
 });
@@ -155,7 +257,7 @@ test("repair cards show collection progress while their colors follow completion
     const partlyFunded = await screen.findByRole("link", { name: /Partly funded/ });
     expect(partlyFunded).toHaveClass("repair-selection-card--pending");
     expect(within(partlyFunded).getByRole("progressbar", { name: "Budget collected for Partly funded" })).toHaveAttribute("aria-valuenow", "25");
-    expect(within(partlyFunded).getByText("€ 750 left to collect")).toBeInTheDocument();
+    expect(within(partlyFunded).getByText("€ 750.00 left to collect")).toBeInTheDocument();
 
     const fullyFunded = screen.getByRole("link", { name: /Fully funded/ });
     expect(fullyFunded).toHaveClass("repair-selection-card--pending");
@@ -184,7 +286,7 @@ test("shows each home's paid/total and changes the red payment control to green 
     expect(pay).toHaveClass("btn-danger");
     expect(screen.getByRole("columnheader", { name: "Paid / total" })).toBeInTheDocument();
     const cells = within(pay.closest("tr")).getAllByRole("cell");
-    expect(cells.slice(3, 5).map((cell) => cell.textContent)).toEqual(["€ 34", "€ 34 / 67"]);
+    expect(cells.slice(3, 5).map((cell) => cell.textContent)).toEqual(["€ 33.34", "€ 33.34 / 66.67"]);
     expect(within(pay.closest("tr")).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
     fireEvent.click(pay);
     const modal = within(await screen.findByRole("dialog"));
@@ -192,7 +294,7 @@ test("shows each home's paid/total and changes the red payment control to green 
     expect(modal.getByRole("combobox")).toHaveValue("2");
     fireEvent.change(modal.getByLabelText("Payment date"), { target: { value: "2026-01-04" } });
     getRepairDetails.mockResolvedValueOnce({ ...details,
-        repair: { ...repair, totalPaid: "67.33", balance: "57.33" },
+        repair: { ...repair, totalPaid: "66.67", balance: "56.67" },
         payments: details.payments.map((payment) => payment.id === 2 ? { ...payment, paidDate: "2026-01-04" } : payment),
     });
     fireEvent.click(modal.getByRole("button", { name: "Pay", exact: true }));
@@ -201,7 +303,7 @@ test("shows each home's paid/total and changes the red payment control to green 
     const refreshed = screen.getByRole("button", { name: "View paid installments for floor 1 • apt 1" });
     expect(refreshed).toHaveTextContent("2 / 2");
     expect(within(refreshed.closest("tr")).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
-    expect(within(refreshed.closest("tr")).getAllByRole("cell")[4]).toHaveTextContent("€ 67 / 67");
+    expect(within(refreshed.closest("tr")).getAllByRole("cell")[4]).toHaveTextContent("€ 66.67 / 66.67");
     const fullyPaid = screen.getByRole("button", { name: "Paid in full" });
     expect(fullyPaid).toHaveClass("btn-success");
     expect(fullyPaid).toBeDisabled();

@@ -1,5 +1,9 @@
 import api from "../axios";
 
+export const completeRepair = async ({ condominiumId, repairId }) => {
+    await api.put(`/management/condominiums/${condominiumId}/repairs/${repairId}/complete`);
+};
+
 export const payRepairInstallment = async ({ condominiumId, repairId, paymentId, paidDate }) => {
     const { data } = await api.put(
         `/management/condominiums/${condominiumId}/repairs/${repairId}/payments/${paymentId}/paid`,
@@ -63,6 +67,7 @@ export const addRepair = async ({
     distributionType,
     homePercentages,
     installments,
+    homeInstallmentValues,
 }) => {
     const { data } = await api.post(
         `/management/condominiums/${condominiumId}/repairs`,
@@ -73,6 +78,7 @@ export const addRepair = async ({
             distributionType,
             homePercentages,
             installments,
+            homeInstallmentValues,
         }
     );
 

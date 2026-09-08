@@ -59,6 +59,7 @@ const ModalRepairExpense = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (repair?.completed) return;
         setIsLoading(true);
 
         try {
@@ -78,6 +79,12 @@ const ModalRepairExpense = ({
 
             toast.success(t("finance:repairDetails.expenseAdded"));
         } catch (error) {
+            if (error.response?.data?.message === "repairCompletedExpensesLocked") {
+                toast.error(t("finance:repairCompletedExpensesLocked"));
+                handleClose();
+                await onSaved?.();
+                return;
+            }
             if (error.isValidationError) {
                 setErrors(error.validationErrors || error.errors || {});
             } else {
@@ -118,7 +125,7 @@ const ModalRepairExpense = ({
     };
 
     return (
-        <Modal show={show} onHide={closeModal} centered>
+        <Modal show={show && !repair?.completed} onHide={closeModal} centered>
             <Modal.Header closeButton>
                 <Modal.Title className="fw-bold">
                     <div className="fw-bold fs-5">
@@ -140,8 +147,9 @@ const ModalRepairExpense = ({
                     <form onSubmit={handleSubmit}>
                         <div className="registrationForm mb-3 bg-warning bg-opacity-25">
                             <div>
-                                <label>{t("name")}</label>
+                                <label htmlFor="expense-name">{t("name")}</label>
                                 <input
+                                    id="expense-name"
                                     type="text"
                                     name="name"
                                     value={expenseData.name}
@@ -152,25 +160,27 @@ const ModalRepairExpense = ({
                                 {renderFieldErrors(errors, "name", t)}
                             </div>
                             <div>
-                                <label>{t("value")} (€)</label>
+                                <label htmlFor="expense-value">{t("value")} (€)</label>
 
                                 <input
+                                    id="expense-value"
                                     type="number"
                                     name="value"
                                     value={expenseData.value}
                                     onChange={handleChange}
                                     placeholder={t("value")}
                                     min="0.01"
-                                    step="0.01"
+                                    step="any"
                                 />
 
                                 {renderFieldErrors(errors, "value", t)}
                             </div>
 
                             <div>
-                                <label>{t("finance:repairDetails.documentNumber")}</label>
+                                <label htmlFor="expense-documentNumber">{t("finance:repairDetails.documentNumber")}</label>
 
                                 <input
+                                    id="expense-documentNumber"
                                     type="text"
                                     name="documentNumber"
                                     value={expenseData.documentNumber}
@@ -182,9 +192,10 @@ const ModalRepairExpense = ({
                             </div>
 
                             <div>
-                                <label>{t("finance:repairDetails.documentDate")}</label>
+                                <label htmlFor="expense-documentDate">{t("finance:repairDetails.documentDate")}</label>
 
                                 <input
+                                    id="expense-documentDate"
                                     type="date"
                                     name="documentDate"
                                     value={expenseData.documentDate}

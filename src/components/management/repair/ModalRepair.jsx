@@ -298,6 +298,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                     data.distributionType === "PERCENTAGE"
                         ? Object.fromEntries(selectedHomes.map((id) => [id, Number(data.homePercentages[id])])) : {},
                 installments: Number(data.installments),
+                homeInstallmentValues: Object.fromEntries(schedule.map((share) => [share.homeId, share.payments[0]])),
             };
             if (isEditing) {
                 await editRepair({
@@ -676,11 +677,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                                                                 if (!home) {
                                                                     return null;
                                                                 }
-                                                                const percentage = Number(
-                                                                    data.homePercentages?.[homeId] || 0,
-                                                                );
-                                                                const amount =
-                                                                    (Number(data.budget || 0) * percentage) / 100;
+                                                                const amount = getHomeAmount(homeId);
                                                                 return (
                                                                     <tr key={homeId}>
                                                                         <td>{home.floor}</td>

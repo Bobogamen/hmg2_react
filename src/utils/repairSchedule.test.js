@@ -2,17 +2,25 @@ import { repairSchedule } from "./repairSchedule";
 
 const input = { budget: "100", homeIds: [3, 1, 2], distributionType: "EQUAL", homePercentages: {}, installments: 3 };
 
-test("allocates every cent across homes and installments deterministically", () => {
+test("rounds all equal installments up to whole euros and includes the rounding in home totals", () => {
     const schedule = repairSchedule(input);
-    expect(schedule.map((share) => share.total)).toEqual([33.34, 33.33, 33.33]);
-    expect(schedule[0].payments).toEqual([11.12, 11.11, 11.11]);
-    expect(schedule.flatMap((share) => share.payments).reduce((sum, amount) => sum + Math.round(amount * 100), 0)).toBe(10000);
+    expect(schedule.map((share) => share.total)).toEqual([36, 36, 36]);
+    expect(schedule.every((share) => share.payments.every((payment) => payment === 12))).toBe(true);
+    expect(schedule.flatMap((share) => share.payments).reduce((sum, amount) => sum + amount, 0)).toBe(108);
 });
 
 test("uses each home's percentage and handles a full 100 percent share", () => {
     expect(repairSchedule({ ...input, homeIds: [1, 2], distributionType: "PERCENTAGE", homePercentages: { 1: "25", 2: "75" }, installments: 2 })
-        .map((share) => share.payments)).toEqual([[12.5, 12.5], [37.5, 37.5]]);
+        .map((share) => share.payments)).toEqual([[13, 13], [38, 38]]);
     expect(repairSchedule({ ...input, homeIds: [1], distributionType: "PERCENTAGE", homePercentages: { 1: "100" }, installments: 1 })[0].total).toBe(100);
+});
+
+test("rounds exact shares directly without losing tiny amounts or increasing exact whole installments", () => {
+    expect(repairSchedule({ ...input, budget: "90" }).map((share) => share.payments)).toEqual([[10, 10, 10], [10, 10, 10], [10, 10, 10]]);
+    expect(repairSchedule({ ...input, budget: "0.02" }).map((share) => share.payments)).toEqual([[1, 1, 1], [1, 1, 1], [1, 1, 1]]);
+    expect(repairSchedule({ ...input, budget: "6.01", homeIds: [1, 2] }).map((share) => share.payments)).toEqual([[2, 2, 2], [2, 2, 2]]);
+    expect(repairSchedule({ ...input, homeIds: [1, 2], distributionType: "PERCENTAGE", homePercentages: { 1: "0", 2: "100" }, installments: 2 })
+        .map((share) => share.payments)).toEqual([[0, 0], [50, 50]]);
 });
 
 test.each([

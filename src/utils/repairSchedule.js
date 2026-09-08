@@ -1,6 +1,6 @@
 /* global BigInt */
-// Work in whole cents so the preview matches the saved payment schedule.
-export const repairSchedule = ({ budget, homeIds, distributionType, homePercentages, installments, installmentsLimit = 60 }) => {
+// Round each exact installment up to whole euros, matching the stored schedule.
+export const repairSchedule = ({ budget, homeIds, distributionType, homePercentages = {}, installments, installmentsLimit = 60 }) => {
     const count = Number(installments);
     const amount = String(budget);
     if (!/^\d+(\.\d{1,2})?$/.test(amount) || Number(amount) <= 0 ||
@@ -15,18 +15,14 @@ export const repairSchedule = ({ budget, homeIds, distributionType, homePercenta
         return BigInt(value.split(".")[0]) * 10000n + BigInt((value.split(".")[1] || "").padEnd(4, "0"));
     });
     if (!equal && (weights.includes(null) || weights.reduce((sum, weight) => sum + weight, 0n) !== 1000000n)) return [];
-    const divisor = equal ? BigInt(ids.length) : 1000000n;
-    const shares = ids.map((homeId, index) => {
+    const divisor = (equal ? BigInt(ids.length) : 1000000n) * BigInt(count) * 100n;
+    return ids.map((homeId, index) => {
         const numerator = cents * (equal ? 1n : weights[index]);
-        return { homeId, cents: numerator / divisor, remainder: numerator % divisor };
+        const installment = Number((numerator + divisor - 1n) / divisor);
+        return {
+            homeId,
+            total: installment * count,
+            payments: Array(count).fill(installment),
+        };
     });
-    const remainder = Number(cents - shares.reduce((sum, share) => sum + share.cents, 0n));
-    [...shares].sort((a, b) => Number(b.remainder - a.remainder) || a.homeId - b.homeId)
-        .slice(0, remainder).forEach((share) => { share.cents += 1n; });
-    return shares.map((share) => ({
-        homeId: share.homeId,
-        total: Number(share.cents) / 100,
-        payments: Array.from({ length: count }, (_, index) =>
-            Number(share.cents / BigInt(count) + (BigInt(index) < share.cents % BigInt(count) ? 1n : 0n)) / 100),
-    }));
 };

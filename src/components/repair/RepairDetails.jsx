@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { completeRepair } from "../../api/services/repairService";
 import { formatDate } from "../../utils/formatDate";
-import { repairAmount } from "./repairFormatting";
+import { repairAmount, repairAmountValue } from "./repairFormatting";
 import ModalRepairExpense from "./ModalRepairExpense";
 import ModalRepairPayment from "./ModalRepairPayment";
 import repairIcon from "../../assets/images/app/repair.png";
@@ -15,6 +17,41 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
     const [selectedHomeId, setSelectedHomeId] = useState(null);
     const [showExpense, setShowExpense] = useState(false);
     const [paymentHomeId, setPaymentHomeId] = useState(null);
+    const [completing, setCompleting] = useState(false);
+    const [confirmCompletion, setConfirmCompletion] = useState(false);
+    const [completionError, setCompletionError] = useState(null);
+    const completionPending = useRef(false);
+    const canComplete =
+        !repair.completed &&
+        payments.length > 0 &&
+        payments.every((payment) => payment.paidDate != null);
+    const handleComplete = async () => {
+        if (!confirmCompletion || !canComplete || completionPending.current) return;
+        completionPending.current = true;
+        setCompleting(true);
+        setCompletionError(null);
+        try {
+            await completeRepair({
+                condominiumId: condominium.id,
+                repairId: repair.id,
+            });
+        } catch (error) {
+            const code = error.response?.data?.message;
+            if (!error.handled && !error.isForbidden) {
+                setCompletionError(
+                    ["repairNotFullyPaid", "repairNotFound"].includes(code)
+                        ? `finance:${code}`
+                        : "server:error",
+                );
+            }
+            completionPending.current = false;
+            setCompleting(false);
+            return;
+        }
+        setConfirmCompletion(false);
+        toast.success(t("finance:repairDetails.completedSuccessfully"));
+        onSaved();
+    };
     const sumPayments = (items) =>
         items.reduce(
             (total, payment) => total + Math.round(Number(payment.value) * 100),
@@ -112,13 +149,36 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
             <div className="layout">
                 <section className="homes-section" aria-label={t("home:homes")}>
                     <div className="bg-info bg-opacity-50 border border-3 border-primary border-opacity-50 rounded-5 shadow-lg p-3 mx-1">
-                        <div className="d-flex justify-content-center align-items-center gap-2 pb-2 mb-1">
-                            <h3 className="h4 text-capitalize fw-bold mb-0">
-                                {t("home:homes")}
-                            </h3>
-                            <span className="h4 mb-0">
-                                {rows.length} {t("home:pcs")}
-                            </span>
+                        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 pb-2 mb-1">
+                            <div className="d-flex flex-grow-1 justify-content-center align-items-center gap-2">
+                                <h3 className="h4 text-capitalize fw-bold mb-0">
+                                    {t("home:homes")}
+                                </h3>
+                                <span className="h4 mb-0">
+                                    {rows.length} {t("home:pcs")}
+                                </span>
+                            </div>
+                            {canComplete && (
+                                <Button
+                                    variant="success"
+                                    size="sm"
+                                    className="ms-auto fw-bold"
+                                    disabled={completing}
+                                    onClick={() => {
+                                        setCompletionError(null);
+                                        setConfirmCompletion(true);
+                                    }}
+                                >
+                                    <span aria-hidden="true" className="me-1">
+                                        ✓
+                                    </span>
+                                    {t(
+                                        completing
+                                            ? "saving"
+                                            : "finance:repairDetails.completeRepair",
+                                    )}
+                                </Button>
+                            )}
                         </div>
                         <div>
                             {rows.length ? (
@@ -183,7 +243,7 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                                                             </strong>
                                                             <span className="text-muted">
                                                                 {" "}
-                                                                / {Math.ceil(row.total).toFixed(0)}
+                                                                / {repairAmountValue(row.total)}
                                                             </span>
                                                         </div>
                                                         <div
@@ -325,8 +385,12 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                                     <thead>
                                         <tr>
                                             <th scope="col">{t("date")}</th>
-                                            <th scope="col" className="col-5">{t("name")}</th>
-                                            <th scope="col" className="col-5">{t("numberN")}</th>
+                                            <th scope="col" className="col-5">
+                                                {t("name")}
+                                            </th>
+                                            <th scope="col" className="col-5">
+                                                {t("numberN")}
+                                            </th>
                                             <th scope="col">{t("value")}</th>
                                         </tr>
                                     </thead>
@@ -353,26 +417,84 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                                 </p>
                             )}
                         </div>
-                        <div
-                            className="img-button pointer d-flex align-items-center m-auto mt-3"
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => setShowExpense(true)}
-                            onKeyDown={(event) => {
-                                if (event.key === "Enter" || event.key === " ") {
-                                    event.preventDefault();
-                                    setShowExpense(true);
-                                }
-                            }}
-                        >
-                            <img src={addIcon} className="icon" alt="" />
-                            <span className="ms-1">
-                                {t("finance:repairDetails.addExpense")}
-                            </span>
-                        </div>
+                        {!repair.completed && (
+                            <div
+                                className="img-button pointer d-flex align-items-center m-auto mt-3"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setShowExpense(true)}
+                                onKeyDown={(event) => {
+                                    if (event.key === "Enter" || event.key === " ") {
+                                        event.preventDefault();
+                                        setShowExpense(true);
+                                    }
+                                }}
+                            >
+                                <img src={addIcon} className="icon" alt="" />
+                                <span className="ms-1">
+                                    {t("finance:repairDetails.addExpense")}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </section>
             </div>
+            <Modal
+                show={confirmCompletion && canComplete}
+                onHide={() => !completing && setConfirmCompletion(false)}
+                centered
+                backdrop={completing ? "static" : true}
+                keyboard={!completing}
+                aria-describedby="repair-completion-warning"
+            >
+                <Modal.Header closeButton closeLabel={t("close")}>
+                    <Modal.Title className="fs-5 fw-bold">
+                        {t("complete")} {" "}
+                        <span className="m-auto bg-success bg-opacity-50 border border-3 border-primary px-1 rounded width-fit-content fs-5 fw-bold">
+                            {t("finance:repair")}
+                        </span>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="d-grid justify-content-center flex-wrap gap-1 mb-3">
+                        <div className="fst-italic text-primary border border-3 border-primary rounded px-1 text-break width-fit-content fs-5 fw-bold">
+                            {repair.name}
+                        </div>
+                    </div>
+                    <div
+                        className="text-center bg-warning bg-opacity-25 border border-warning rounded p-3"
+                        id="repair-completion-warning"
+                    >
+                        <p className="fw-bold mb-2">
+                            {t("finance:repairDetails.completeWarning")}
+                        </p>
+                        <p className="mb-0">
+                            {t("finance:repairDetails.completeCheckExpenses")}
+                        </p>
+                    </div>
+                    {completionError && (
+                        <div role="alert" className="alert alert-danger mt-3 mb-0">
+                            {t(completionError)}
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer className="justify-content-between">
+                    <Button
+                        variant="secondary"
+                        disabled={completing}
+                        onClick={() => setConfirmCompletion(false)}
+                    >
+                        {t("cancel")}
+                    </Button>
+                    <Button
+                        variant="success"
+                        disabled={completing}
+                        onClick={handleComplete}
+                    >
+                        {t(completing ? "saving" : "finance:repairDetails.completeRepair")}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <Modal
                 show={Boolean(selected)}
                 onHide={() => setSelectedHomeId(null)}
@@ -441,26 +563,24 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                 </Modal.Footer>
             </Modal>
             <ModalRepairExpense
-                show={showExpense}
+                show={showExpense && !repair.completed}
                 handleClose={() => setShowExpense(false)}
                 condominiumId={condominium.id}
                 repair={repair}
                 onSaved={onSaved}
             />
-            {
-                paymentHome && (
-                    <ModalRepairPayment
-                        key={paymentHome.id}
-                        condominiumId={condominium.id}
-                        repair={repair}
-                        homeName={homeName(paymentHome)}
-                        installments={paymentHome.installments}
-                        handleClose={() => setPaymentHomeId(null)}
-                        onSaved={onSaved}
-                    />
-                )
-            }
-        </div >
+            {paymentHome && (
+                <ModalRepairPayment
+                    key={paymentHome.id}
+                    condominiumId={condominium.id}
+                    repair={repair}
+                    homeName={homeName(paymentHome)}
+                    installments={paymentHome.installments}
+                    handleClose={() => setPaymentHomeId(null)}
+                    onSaved={onSaved}
+                />
+            )}
+        </div>
     );
 };
 export default RepairDetails;
