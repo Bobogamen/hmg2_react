@@ -1,0 +1,14 @@
+[
+    {
+        "Path":  "src/main/java/com/model/dto/AddRepairExpenseDTO.java",
+        "Hash":  "F3007A2741356AB85850513746C109246C38EBF68AF427EDFF560BD52E47CECA"
+    },
+    {
+        "Path":  "src/main/java/com/validation/RepairExpenseMaxValueValidator.java",
+        "Hash":  "2B6C74C73AB6E27444A0B637868F623C1E7A1D52F0CF9D17AE81F6C0BF4C0F40"
+    },
+    {
+        "Path":  "src/test/java/com/web/RepairAccountingWebTest.java",
+        "Hash":  "85554CDC5B42AF4230D7329F14A693D437B88E0883A1281F5EDC8670D7C1AED4"
+    }
+]

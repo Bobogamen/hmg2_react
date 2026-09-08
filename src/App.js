@@ -14,7 +14,7 @@ import Home from "./components/management/home/Home";
 
 import Finance from "./components/finance/Finance";
 import Fund from "./components/fund/Fund";
-import Repair from "./components/repair/Repair";
+import Repairs from "./components/repair/Repairs";
 import Statistics from "./components/statistic/Statistics";
 import Cashier from "./components/cashier/Cashier";
 
@@ -107,7 +107,10 @@ const App = () => {
               }
             >
               <Route index element={<Admin />} />
-              <Route path="application-settings" element={<ApplicationSettings />} />
+              <Route
+                path="application-settings"
+                element={<ApplicationSettings />}
+              />
               <Route path="application-logs" element={<Logs />} />
             </Route>
 
@@ -119,7 +122,6 @@ const App = () => {
                 </ProtectedRoute>
               }
             >
-
               <Route index element={<Management />} />
               {/* CONDOMINIUM */}
               <Route
@@ -144,7 +146,6 @@ const App = () => {
             {[
               { path: "/finance", component: <Finance /> },
               { path: "/fund", component: <Fund /> },
-              { path: "/repair", component: <Repair /> },
               { path: "/statistics", component: <Statistics /> },
               { path: "/cashier", component: <Cashier /> },
               { path: "/profile", component: <Profile /> },
@@ -161,6 +162,21 @@ const App = () => {
               />
             ))}
 
+            <Route
+              path="/repair"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
+                  <ManagementLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Repairs />} />
+              <Route path="condominiums/:condominiumId" element={<Repairs />} />
+              <Route
+                path="condominiums/:condominiumId/repairs/:repairId"
+                element={<Repairs />}
+              />
+            </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </BreadcrumbProvider>

@@ -1,4 +1,7 @@
 {
+  "expenseInvalidValue": "Въведете положителна сума с до два знака след десетичната запетая.",
+  "expenseInvalidDate": "Изберете валидна дата, която е днес или по-рано.",
+  "expenseTextTooLong": "Въведете не повече от 255 символа.",
   "required": "Полето е задължително",
   "native": {
     "minimum": "Въведете стойност, по-голяма или равна на {{min}}.",
@@ -36,7 +39,7 @@
   "notMoreThan150": "Не повече от 150",
   "notMoreThan100 000": "Не повече от 100 000",
   "sizeIsLess": "Броят домове е повече от зададеният",
-  "notMoreThanMaxValue": "Не трябва да се повече от {{value}}",
+  "notMoreThanMaxValue": "Не трябва да е повече от {{value}}",
   "atLeastOneActiveResident": "Домът трябва да има поне ЕДИН активен живущ",
   "residentsMaxCountReached": "Домът достигна максималния брой живущи",
   "primaryFeeTimesCannotBeChanged": "Броят начислявания на основан такса не може да бъде променян",

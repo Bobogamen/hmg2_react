@@ -1,5 +1,9 @@
 {
   "required": "This field is required",
+  "expenseInvalidValue": "Enter a positive amount with up to two decimal places.",
+  "notMoreThanMaxValue": "Must not exceed {{value}}",
+  "expenseInvalidDate": "Choose a valid date that is today or earlier.",
+  "expenseTextTooLong": "Enter no more than 255 characters.",
   "native": {
     "minimum": "Enter a value greater than or equal to {{min}}.",
     "maximum": "Enter a value less than or equal to {{max}}.",

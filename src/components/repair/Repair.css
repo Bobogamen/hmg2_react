@@ -1,0 +1,144 @@
+.repair-selection-card,
+.repair-card {
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.repair-selection-card:hover,
+.repair-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.repair-card:hover .text-muted {
+    color: var(--bs-secondary-color) !important;
+}
+
+.repair-card:active,
+.repair-selection-card:active {
+    transform: translateY(0);
+}
+
+.repair-selection-card {
+    border: 2px solid var(--repair-accent);
+    border-radius: 1rem;
+    background-color: var(--repair-surface);
+    overflow: hidden;
+}
+
+.repair-selection-card--completed {
+    --repair-accent: #129e58;
+    --repair-surface: #baebd0;
+}
+
+.repair-selection-card--pending {
+    --repair-accent: #ce3042;
+    --repair-surface: #f8d3d7;
+}
+
+.repair-selection-card .text-muted {
+    color: #343a40 !important;
+}
+
+.repair-selection-card__icon {
+    display: inline-flex;
+    padding: 0.65rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--repair-accent);
+}
+
+.repair-selection-card__percentage,
+.repair-selection-card__action {
+    color: var(--repair-accent);
+}
+
+.repair-selection-card__progress {
+    height: 0.65rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 1rem;
+}
+
+.repair-selection-card__footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.repair-selection-card:focus-visible {
+    outline: 3px solid var(--repair-accent);
+    outline-offset: 4px;
+}
+
+.repair-details__title {
+    max-width: 100%;
+    background-color: #f0f0f0;
+}
+
+.repair-details__summary {
+    max-width: 100%;
+}
+
+.repair-details .layout > section {
+    min-width: 0;
+}
+
+.repair-details__paid-count {
+    min-width: 3.5rem;
+    white-space: nowrap;
+    font-size: inherit;
+}
+
+.repair-details__homes-table th {
+    vertical-align: middle;
+}
+
+.repair-details__pay-button {
+    font-size: inherit;
+    font-weight: 600;
+    min-width: 5rem;
+}
+
+.repair-details__amounts {
+    min-width: 7rem;
+}
+
+.repair-details__payment-progress {
+    height: 0.45rem;
+    border-radius: 1rem;
+    background-color: #dee2e6;
+}
+
+.repair-modal__form {
+    display: block;
+    width: 100%;
+    max-width: none;
+    padding: 1rem;
+}
+
+.repair-modal__form input,
+.repair-modal__form select {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+}
+
+.repair-modal__saving {
+    z-index: 10;
+}
+
+.repair-modal__saving .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .repair-selection-card,
+    .repair-selection-card .progress-bar {
+        transition: none;
+    }
+
+    .repair-selection-card:hover {
+        transform: none;
+    }
+}

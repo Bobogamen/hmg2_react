@@ -1,5 +1,23 @@
 import api from "../axios";
 
+export const payRepairInstallment = async ({ condominiumId, repairId, paymentId, paidDate }) => {
+    const { data } = await api.put(
+        `/management/condominiums/${condominiumId}/repairs/${repairId}/payments/${paymentId}/paid`,
+        { paidDate }
+    );
+    return data;
+};
+
+export const getRepairDetails = async ({ condominiumId, repairId }) => {
+    const { data } = await api.get(`/management/condominiums/${condominiumId}/repairs/${repairId}/details`);
+    return data;
+};
+
+export const addRepairExpense = async ({ condominiumId, repairId, name, value, documentNumber, documentDate }) => {
+    const { data } = await api.post(`/management/condominiums/${condominiumId}/repairs/${repairId}/expenses`, { name, value, documentNumber, documentDate });
+    return data;
+};
+
 export const getHomeRepairs = async ({ condominiumId, homeId }) => {
     const { data: repairs } = await api.get(
         `/management/condominiums/${condominiumId}/repairs`
