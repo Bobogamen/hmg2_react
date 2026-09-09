@@ -145,7 +145,6 @@ const App = () => {
             </Route>
             {[
               { path: "/finance", component: <Finance /> },
-              { path: "/fund", component: <Fund /> },
               { path: "/statistics", component: <Statistics /> },
               { path: "/cashier", component: <Cashier /> },
               { path: "/profile", component: <Profile /> },
@@ -162,6 +161,11 @@ const App = () => {
               />
             ))}
 
+            <Route path="/fund" element={<ProtectedRoute allowedRoles={ADMIN_MANAGER}><ManagementLayout /></ProtectedRoute>}>
+              <Route index element={<Fund />} />
+              <Route path="condominiums/:condominiumId" element={<Fund />} />
+              <Route path="condominiums/:condominiumId/funds/:fundId" element={<Fund />} />
+            </Route>
             <Route
               path="/repair"
               element={

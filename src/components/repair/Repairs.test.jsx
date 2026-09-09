@@ -55,6 +55,24 @@ beforeEach(() => {
     completeRepair.mockResolvedValue(undefined);
 });
 
+test("navigates to another repair using the separate icon and searchable modal", async () => {
+    const otherRepair = { ...repair, id: 6, name: "Lift repair" };
+    getCondominium.mockResolvedValue({ ...condo, repairs: [repair, otherRepair] });
+    getRepairDetails.mockImplementation(({ repairId }) => Promise.resolve({
+        ...details, repair: String(repairId) === "6" ? otherRepair : repair,
+    }));
+    open("/repair/condominiums/1/repairs/5");
+    fireEvent.click(await screen.findByRole("button", { name: "Browse repairs" }));
+    const modal = within(await screen.findByRole("dialog"));
+    expect(modal.getByRole("link", { name: /Roof repair/ })).toHaveAttribute("aria-current", "page");
+    fireEvent.change(modal.getByRole("searchbox"), { target: { value: "Lift" } });
+    expect(modal.queryByRole("link", { name: /Roof repair/ })).not.toBeInTheDocument();
+    fireEvent.click(modal.getByRole("link", { name: /Lift repair/ }));
+    expect(await screen.findByRole("heading", { name: "Lift repair" })).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(getRepairDetails).toHaveBeenLastCalledWith({ condominiumId: "1", repairId: "6" });
+});
+
 test("selects condominium then repair, and breadcrumbs navigate back", async () => {
     open();
     expect(getCondominium).not.toHaveBeenCalled();

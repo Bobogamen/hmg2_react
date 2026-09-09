@@ -71,8 +71,14 @@
 }
 
 .repair-details__title {
+    min-width: 0;
     max-width: 100%;
     background-color: #f0f0f0;
+}
+
+.repair-details__navigator:focus-visible {
+    outline: 3px solid var(--bs-primary);
+    outline-offset: 3px;
 }
 
 .repair-details__summary {

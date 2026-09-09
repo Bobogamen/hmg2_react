@@ -193,6 +193,19 @@
     "saved": "Installment payment recorded.",
     "refresh": "Refresh payments"
   },
+  "funds": "Funds",
+  "fundDetails": {
+    "chooseFund": "Choose a fund",
+    "browseFunds": "Browse funds",
+    "totalFee": "Total fee"
+  },
+  "repairNavigator": {
+    "open": "Browse repairs",
+    "search": "Search repairs",
+    "results": "Showing {{shown}} of {{total}} repairs",
+    "current": "Current repair",
+    "noResults": "No matching repairs. Try another search."
+  },
   "repairDetails": {
     "completeRepair": "Complete repair",
     "completeWarning": "After completing this repair, you will no longer be able to add expenses.",
