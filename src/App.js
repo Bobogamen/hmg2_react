@@ -161,7 +161,7 @@ const App = () => {
               />
             ))}
 
-            <Route path="/fund" element={<ProtectedRoute allowedRoles={ADMIN_MANAGER}><ManagementLayout /></ProtectedRoute>}>
+            <Route path="/fund" element={<ProtectedRoute allowedRoles={ALL_AUTH}><ManagementLayout /></ProtectedRoute>}>
               <Route index element={<Fund />} />
               <Route path="condominiums/:condominiumId" element={<Fund />} />
               <Route path="condominiums/:condominiumId/funds/:fundId" element={<Fund />} />
@@ -169,7 +169,7 @@ const App = () => {
             <Route
               path="/repair"
               element={
-                <ProtectedRoute allowedRoles={ADMIN_MANAGER}>
+                <ProtectedRoute allowedRoles={ALL_AUTH}>
                   <ManagementLayout />
                 </ProtectedRoute>
               }

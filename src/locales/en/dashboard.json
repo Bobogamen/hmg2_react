@@ -7,5 +7,27 @@
   "funds": "Funds",
   "repairs": "Repairs",
   "cashier": "Cashier",
-  "statistics": "Statistics"
+  "statistics": "Statistics",
+  "cashierPage": {
+    "list": "Cashiers",
+    "empty": "No cashiers registered.",
+    "register": "Register a cashier",
+    "assign": "Assign condominiums",
+    "myCondominiums": "My condominiums",
+    "noCondominiums": "No assigned condominiums.",
+    "limit": "The cashier limit has been reached.",
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "created": "Cashier registered successfully.",
+    "loadError": "Unable to load cashiers.",
+    "saveError": "Unable to register the cashier. Check the details and try again.",
+    "limitOrEmail": "The cashier limit has been reached or this email is already registered. Refresh the list and check the email.",
+    "retry": "Try again",
+    "managerDescription": "Register cashiers and assign the condominiums they manage.",
+    "cashierDescription": "Your condominiums and access to their funds and repairs.",
+    "assignedCondominiums": "Assigned condominiums",
+    "emptyHint": "Use the registration button to add your first cashier.",
+    "assignmentHint": "Select the condominiums this cashier will be able to access.",
+    "noAvailableCondominiums": "You have no condominiums to assign yet. You can register a cashier without any condominiums."
+  }
 }

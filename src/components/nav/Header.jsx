@@ -68,7 +68,7 @@ const Header = () => {
 
       saveUser(data.user, data.token, rememberMe);
       toast.success(t("auth:successfulLogin"), { transition: Bounce });
-      navigate("/management");
+      navigate(data.user.roles.some(role => ["ADMIN", "MANAGER"].includes(role)) ? "/management" : "/cashier");
 
     } catch (error) {
       if (error.message === "invalidCredentials") {
