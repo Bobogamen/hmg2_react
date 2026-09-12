@@ -1,6 +1,6 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { Info, CircleEuro, Users, Calculator, ShieldCheck, Home, UserCheck, Star } from "lucide-react";
+import { Info, CircleEuroSign, Users, Calculator, ShieldCheck, Home, UserCheck, Star } from "lucide-react";
 
 import "./PrimaryFeeInfo.css";
 
@@ -43,7 +43,7 @@ const PrimaryFeeInfo = () => {
                 <div className="formula-card">
 
                     <div className="formula-item">
-                        <CircleEuro size={36} />
+                        <CircleEuroSign size={36} />
                         <span>{t("finance:primaryFeeInfo.calculation.fee")}</span>
                         <strong>€5</strong>
                     </div>
@@ -104,7 +104,7 @@ const PrimaryFeeInfo = () => {
                         </div>
 
                         <div className="fee-value">
-                            <CircleEuro size={28} />
+                            <CircleEuroSign size={28} />
                             <strong>€5</strong>
                         </div>
 
@@ -128,7 +128,7 @@ const PrimaryFeeInfo = () => {
                         </div>
 
                         <div className="fee-value">
-                            <CircleEuro size={28} />
+                            <CircleEuroSign size={28} />
                             <strong>€5</strong>
                         </div>
 
@@ -151,7 +151,7 @@ const PrimaryFeeInfo = () => {
                         </div>
 
                         <div className="fee-value">
-                            <CircleEuro size={28} />
+                            <CircleEuroSign size={28} />
                             <strong>€7</strong>
                         </div>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Spinner } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useUser } from "../../user/UserContext";
 import { getCashiers } from "../../api/services/cashierService";
@@ -10,6 +10,7 @@ import CashierCondominiums from "./CashierCondominiums";
 import cashierIcon from "../../assets/images/app/cashier..png";
 import addIcon from "../../assets/images/app/add.png";
 import "./Cashier.css";
+import "../repair/Repair.css";
 
 export default function Cashier() {
   const { user } = useUser();
@@ -21,6 +22,7 @@ export default function Cashier() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [selectedCashier, setSelectedCashier] = useState(null);
   const [revision, setRevision] = useState(0);
 
   useEffect(() => {
@@ -33,6 +35,7 @@ export default function Cashier() {
     setData(null);
     setError(false);
     setShowRegistration(false);
+    setSelectedCashier(null);
     if (manager)
       getCashiers()
         .then((result) => {
@@ -49,19 +52,15 @@ export default function Cashier() {
   const limitReached = data && data.cashiers.length >= data.cashierLimit;
 
   return (
-    <Container fluid className="py-1">
+    <div fluid className="py-1 container-fluid">
       <Breadcrumbs />
       <section className="cashier-page">
         <header className="text-center text-bg-light w-100 rounded border border-2 border-dark p-2">
           <h2 className="fw-bold mb-1 cashier-heading">
             {t("dashboard:cashier")}
           </h2>
-          <p className="text-decoration-underline mb-1 fw-semibold text-light-emphasis">
-            {t(
-              manager
-                ? "cashierPage.managerDescription"
-                : "cashierPage.cashierDescription",
-            )}
+          <p className="mb-0 fw-semibold text-muted text-decoration-underline">
+            {t(manager ? "cashierPage.managerDescription" : "")}
           </p>
         </header>
 
@@ -88,14 +87,15 @@ export default function Cashier() {
                   </span>
                 </h3>
                 {!limitReached && (
-                  <button
-                    type="button"
-                    className="img-button cashier-add"
+                  <div
+                    className="img-button pointer"
                     onClick={() => setShowRegistration(true)}
                   >
-                    <img src={addIcon} className="icon" alt="" />
-                    <span className="ms-2">{t("cashierPage.register")}</span>
-                  </button>
+                    <img src={addIcon} className="icon" alt="addIcon" />
+                    <span className="ms-1">
+                      {t("cashierPage.register")} {t("cashier")}
+                    </span>
+                  </div>
                 )}
               </div>
               {limitReached && (
@@ -104,31 +104,55 @@ export default function Cashier() {
                 </p>
               )}
               {data.cashiers.length ? (
-                <div className="cashier-grid">
+                <div className="row g-3 justify-content-center">
                   {data.cashiers.map((cashier) => (
-                    <article className="cashier-card" key={cashier.id}>
-                      <header className="cashier-card-header">
-                        <img src={cashierIcon} className="big-icon" alt="" />
-                        <div>
-                          <h4 className="fs-5 fw-bold mb-1">{cashier.name}</h4>
-                          <p className="text-muted mb-0 cashier-email">
-                            {cashier.email}
-                          </p>
+                    <div className="col-12 col-md-6 col-xl-4" key={cashier.id}>
+                      <article
+                        className={`repair-selection-card repair-selection-card--${cashier.condominiums.length ? "completed" : "pending"} card h-100 text-dark`}
+                      >
+                        <div className="card-body d-flex flex-column gap-3 p-4">
+                          <header className="d-flex align-items-center gap-3">
+                            <span className="repair-selection-card__icon">
+                              <img
+                                src={cashierIcon}
+                                alt="cashierIcon"
+                                className="icon"
+                              />
+                            </span>
+                            <div>
+                              <h4 className="fs-5 fw-bold mb-1">
+                                {cashier.name}
+                              </h4>
+                              <p className="text-muted mb-0 cashier-email">
+                                {cashier.email}
+                              </p>
+                            </div>
+                          </header>
+                          <div>
+                            <div className="small text-muted">
+                              {t("cashierPage.assignedCondominiums")}{" "}
+                            </div>
+                            <div className="fs-3 fw-bold">
+                              {cashier.condominiums.length}
+                            </div>
+                            <CashierCondominiums
+                              items={cashier.condominiums}
+                              manager
+                            />
+                          </div>
+                          <footer className="repair-selection-card__footer pt-3 mt-auto">
+                            <button
+                              type="button"
+                              className="cashier-selection-action repair-selection-card__action"
+                              onClick={() => setSelectedCashier(cashier)}
+                            >
+                              {t("cashierPage.editAssignments")}
+                              <span aria-hidden="true">→</span>
+                            </button>
+                          </footer>
                         </div>
-                      </header>
-                      <div className="cashier-card-body">
-                        <h5 className="fs-6 fw-bold">
-                          {t("cashierPage.assignedCondominiums")}{" "}
-                          <span className="badge text-bg-secondary">
-                            {cashier.condominiums.length}
-                          </span>
-                        </h5>
-                        <CashierCondominiums
-                          items={cashier.condominiums}
-                          manager
-                        />
-                      </div>
-                    </article>
+                      </article>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -142,8 +166,12 @@ export default function Cashier() {
                 </div>
               )}
               <ModalCashier
-                show={showRegistration}
-                handleClose={() => setShowRegistration(false)}
+                show={showRegistration || !!selectedCashier}
+                cashier={selectedCashier}
+                handleClose={() => {
+                  setShowRegistration(false);
+                  setSelectedCashier(null);
+                }}
                 overview={data}
                 onSaved={setData}
               />
@@ -158,13 +186,19 @@ export default function Cashier() {
           )
         ) : (
           <>
-            <h3 className="fs-5 fw-bold mb-0">
-              {t("cashierPage.myCondominiums")}
-            </h3>
+            <div className="cashier-section-heading">
+              <h3 className="fs-5 fw-bold mb-0">
+                {t("cashierPage.myCondominiums")}
+                <span className="badge text-bg-secondary ms-2">
+                  {user?.condominiums?.length || 0}
+                </span>
+              </h3>
+              <p>{t("cashierPage.chooseBuilding")}</p>
+            </div>
             <CashierCondominiums items={user?.condominiums || []} />
           </>
         )}
       </section>
-    </Container>
+    </div>
   );
 }

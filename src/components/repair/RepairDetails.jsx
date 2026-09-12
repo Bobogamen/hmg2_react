@@ -165,11 +165,8 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
             <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 pb-2 mb-1">
               <div className="d-flex flex-grow-1 justify-content-center align-items-center gap-2">
                 <h3 className="h4 text-capitalize fw-bold mb-0">
-                  {t("home:homes")}
+                  {t("home:homes")} · {rows.length}
                 </h3>
-                <span className="h4 mb-0">
-                  {rows.length} {t("home:pcs")}
-                </span>
               </div>
               {canComplete && (
                 <Button

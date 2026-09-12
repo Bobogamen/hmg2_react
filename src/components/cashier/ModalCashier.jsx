@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Modal, Spinner } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { Bounce, toast } from "react-toastify";
-import { registerCashier } from "../../api/services/cashierService";
+import {
+  registerCashier,
+  updateCashierCondominiums,
+} from "../../api/services/cashierService";
 import renderFieldErrors from "../../utils/renderFieldErrors";
 import apartments from "../../assets/images/app/apartment_building.png";
+import { useLoading } from "../../loader/LoadingContext";
 
 const initialForm = {
   name: "",
@@ -20,7 +24,15 @@ const fields = [
   ["confirmPassword", "password", "auth:confirmPassword"],
 ];
 
-export default function ModalCashier({ show, handleClose, overview, onSaved }) {
+export default function ModalCashier({
+  show,
+  handleClose,
+  overview,
+  onSaved,
+  cashier = null,
+}) {
+  const editing = !!cashier;
+  const { setIsLoading } = useLoading();
   const { t, i18n } = useTranslation([
     "dashboard",
     "common",
@@ -30,38 +42,64 @@ export default function ModalCashier({ show, handleClose, overview, onSaved }) {
   ]);
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
+  const [saveError, setSaveError] = useState(false);
   const [saving, setSaving] = useState(false);
   const submitting = useRef(false);
-  const limitReached = overview.cashiers.length >= overview.cashierLimit;
+  const limitReached =
+    !editing && overview.cashiers.length >= overview.cashierLimit;
 
   useEffect(() => {
     if (show) {
-      setForm(initialForm);
+      setForm(
+        cashier
+          ? {
+              ...initialForm,
+              condominiumIds: cashier.condominiums
+                .filter((item) =>
+                  overview.condominiums.some(
+                    (available) => available.id === item.id,
+                  ),
+                )
+                .map((item) => item.id),
+            }
+          : initialForm,
+      );
       setErrors({});
+      setSaveError(false);
     }
-  }, [show]);
+  }, [show, cashier, overview.condominiums]);
 
   const submit = async (event) => {
     event.preventDefault();
     if (submitting.current || limitReached) return;
     submitting.current = true;
     setSaving(true);
+    setIsLoading(true);
     setErrors({});
+    setSaveError(false);
     try {
-      const result = await registerCashier({
-        ...form,
-        language: i18n.language,
-      });
+      const result = editing
+        ? await updateCashierCondominiums(cashier.id, form.condominiumIds)
+        : await registerCashier({
+            ...form,
+            language: i18n.language,
+            baseUrl: window.location.origin,
+          });
       onSaved(result);
       handleClose();
-      toast.success(t("cashierPage.created"), { transition: Bounce });
+      toast.success(
+        t(editing ? "cashierPage.assignmentsSaved" : "cashierPage.created"),
+        { transition: Bounce },
+      );
     } catch (failure) {
+      setSaveError(editing);
       setErrors(
         failure.validationErrors || failure.response?.data?.errors || {},
       );
     } finally {
       submitting.current = false;
       setSaving(false);
+      setIsLoading(false);
     }
   };
 
@@ -81,50 +119,72 @@ export default function ModalCashier({ show, handleClose, overview, onSaved }) {
       <Modal.Header closeButton={!saving} closeLabel={t("common:close")}>
         <Modal.Title
           id="cashier-modal-title"
-          className="fs-5 fw-bold d-flex align-items-center gap-2"
+          className="fs-5 fw-bold d-grid align-items-center gap-2"
         >
-          {t("cashierPage.register")}
-          <span className="bg-dark bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 rounded">
+          {t(editing ? "cashierPage.editAssignments" : "cashierPage.register")}
+          <div className="bg-dark bg-opacity-50 border border-3 border-primary border-opacity-50 px-1 rounded width-fit-content">
             {t("cashier")}
-          </span>
+          </div>
         </Modal.Title>
       </Modal.Header>
       <form onSubmit={submit} className="cashier-modal-form" aria-busy={saving}>
         <Modal.Body>
+          {editing && (
+            <p className="card">
+              <div className="card-body bg-warning-subtle bg-opacity-10">
+                <strong>{cashier.name}</strong>
+                <br />
+                {cashier.email}
+              </div>
+            </p>
+          )}
+          {saveError && (
+            <div role="alert" className="alert alert-danger">
+              {t("cashierPage.assignmentSaveError")}
+            </div>
+          )}
           <fieldset
             disabled={saving || limitReached}
             className="cashier-registration-fields"
           >
-            <div className="registrationForm bg-dark bg-opacity-50">
-              {fields.map(([name, type, label], index) => (
-                <div key={name}>
-                  <label htmlFor={`cashier-${name}`}>{t(label)}</label>
-                  <input
-                    id={`cashier-${name}`}
-                    type={type}
-                    name={name}
-                    value={form[name]}
-                    autoFocus={index === 0}
-                    placeholder={t(label)}
-                    minLength={
-                      name === "name" ? 3 : type === "password" ? 6 : undefined
-                    }
-                    maxLength={
-                      name === "name" || type === "password" ? 20 : undefined
-                    }
-                    autoComplete={type === "password" ? "new-password" : "off"}
-                    aria-invalid={Boolean(errors[name]?.length)}
-                    onChange={(event) =>
-                      setForm((previous) => ({
-                        ...previous,
-                        [name]: event.target.value,
-                      }))
-                    }
-                  />
-                  {renderFieldErrors(errors, name, t)}
-                </div>
-              ))}
-            </div>
+            {!editing && (
+              <div className="registrationForm bg-dark bg-opacity-50">
+                {fields.map(([name, type, label], index) => (
+                  <div key={name}>
+                    <label htmlFor={`cashier-${name}`}>{t(label)}</label>
+                    <input
+                      id={`cashier-${name}`}
+                      type={type}
+                      name={name}
+                      value={form[name]}
+                      autoFocus={index === 0}
+                      placeholder={t(label)}
+                      minLength={
+                        name === "name"
+                          ? 3
+                          : type === "password"
+                            ? 6
+                            : undefined
+                      }
+                      maxLength={
+                        name === "name" || type === "password" ? 20 : undefined
+                      }
+                      autoComplete={
+                        type === "password" ? "new-password" : "off"
+                      }
+                      aria-invalid={Boolean(errors[name]?.length)}
+                      onChange={(event) =>
+                        setForm((previous) => ({
+                          ...previous,
+                          [name]: event.target.value,
+                        }))
+                      }
+                    />
+                    {renderFieldErrors(errors, name, t)}
+                  </div>
+                ))}
+              </div>
+            )}
             <fieldset className="cashier-assignment mt-3">
               <legend className="fs-6 fw-bold">
                 {t("cashierPage.assign")}
@@ -132,9 +192,13 @@ export default function ModalCashier({ show, handleClose, overview, onSaved }) {
                   {form.condominiumIds.length} / {overview.condominiums.length}
                 </span>
               </legend>
-              <p className="small text-muted">
-                {t("cashierPage.assignmentHint")}
-              </p>
+              {/* <p className="small text-muted">
+                {t(
+                  editing
+                    ? "cashierPage.editAssignmentHint"
+                    : "cashierPage.assignmentHint",
+                )}
+              </p> */}
               {overview.condominiums.length ? (
                 <div className="cashier-assignment-list">
                   {overview.condominiums.map((condo) => (
@@ -172,16 +236,19 @@ export default function ModalCashier({ show, handleClose, overview, onSaved }) {
           <Button variant="secondary" onClick={handleClose} disabled={saving}>
             {t("common:cancel")}
           </Button>
-          <Button
-            variant="primary"
+          <button
+            className="authentication-button"
             type="submit"
             disabled={saving || limitReached}
           >
-            {saving && (
-              <Spinner animation="border" size="sm" className="me-2" />
+            {t(
+              saving
+                ? "cashierPage.saving"
+                : editing
+                  ? "common:save"
+                  : "auth:register",
             )}
-            {t(saving ? "cashierPage.saving" : "auth:register")}
-          </Button>
+          </button>
         </Modal.Footer>
       </form>
     </Modal>

@@ -17,6 +17,7 @@ import Fund from "./components/fund/Fund";
 import Repairs from "./components/repair/Repairs";
 import Statistics from "./components/statistic/Statistics";
 import Cashier from "./components/cashier/Cashier";
+import CashierAccounting from "./components/cashier/CashierAccounting";
 
 import Profile from "./components/nav/Profile";
 import ProfileEdit from "./components/nav/ProfileEdit";
@@ -147,6 +148,7 @@ const App = () => {
               { path: "/finance", component: <Finance /> },
               { path: "/statistics", component: <Statistics /> },
               { path: "/cashier", component: <Cashier /> },
+              { path: "/cashier/condominium/:condominiumId", component: <CashierAccounting /> },
               { path: "/profile", component: <Profile /> },
               { path: "/profile/edit", component: <ProfileEdit /> },
             ].map(({ path, component }) => (

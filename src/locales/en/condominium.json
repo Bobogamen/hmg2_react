@@ -1,4 +1,11 @@
 {
+  "accountingPeriod": {
+    "missing": "There are {{count}} missing accounting months from {{from}} through {{to}}. Create them to complete the accounting period through the end of the current year.",
+    "generate": "Create missing months",
+    "created": "Months created: {{count}}. The accounting period is complete through {{to}}.",
+    "error": "The accounting period could not be checked or updated. Please try again.",
+    "retry": "Try again"
+  },
   "title": "Condominium",
   "typeApartmentBuilding": "Apartment Building",
   "typeCondominium": "Condominium",

@@ -1,3 +1,10 @@
+.cashier-page-header { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 24px; border: 2px solid #adb5bd; border-radius: 16px; background: #f0f0f0; text-align: left; }
+.cashier-page-icon, .cashier-building-icon { display: inline-flex; align-items: center; justify-content: center; padding: 14px; background: #ffffffc9; border-radius: 14px; flex-shrink: 0; }
+.cashier-page-description { margin: 4px 0 0; max-width: 700px; color: #52606b; line-height: 1.6; }
+.cashier-page-header .cashier-heading { justify-content: flex-start; }
+.cashier-register-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 10px; padding: 10px 18px; font-weight: 600; }
+.cashier-section-heading p { margin: 8px 0 0; color: #52606b; }
+
 .cashier-page {
   display: grid;
   gap: 1.5rem;
@@ -19,39 +26,44 @@
 }
 
 .cashier-toolbar {
-  display: grid;
-  justify-content: center;
-  margin-top: 1em;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 }
-.cashier-add {
-  border: 0;
-}
-.cashier-add:focus-visible,
-.cashier-condominium-link:focus-visible {
+
+.cashier-page a:focus-visible,
+.cashier-page button:focus-visible {
   outline: 3px solid #0d6efd;
   outline-offset: 3px;
 }
 
 .cashier-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .cashier-card {
   min-width: 0;
-  border: 0.2em outset #0e1111;
-  border-radius: 0.5em;
-  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #a8c8b6;
+  border-radius: 1rem;
+  background: #f5faf7;
+  box-shadow: 0 4px 14px #263e4e0a;
   overflow: hidden;
   text-align: left;
 }
+.cashier-card--unassigned { border-color: #dec493; background: #fffcf5; }
+.cashier-card--unassigned .cashier-card-header { background: #f6ebd5; }
+.cashier-card-footer { padding: 0 20px 20px; margin-top: auto; }
 
 .cashier-card-header {
-  padding: 1rem;
-  background: #e2e3e5;
-  border-bottom: 1px solid #adb5bd;
+  padding: 20px;
+  background: #e0efe6;
+  border-bottom: 1px solid #0000000f;
 }
 
 .cashier-card-header > div {
@@ -63,14 +75,17 @@
   height: 3.5rem;
 }
 .cashier-card-body {
-  padding: 1rem;
+  padding: 20px;
 }
 .cashier-email,
 .cashier-card h4 {
   overflow-wrap: anywhere;
 }
 .cashier-empty {
-  padding: 1rem 1rem;
+  padding: 2.5rem 1rem;
+  border: 1px dashed #adb5bd;
+  border-radius: 16px;
+  background: #f8f9fa;
   text-align: center;
 }
 
@@ -79,7 +94,7 @@
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
   gap: 1rem;
 }
 
@@ -87,19 +102,22 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  gap: 0.6rem;
-  border: 0.2em outset #0e1111;
-  border-radius: 0.5em;
+  padding: 0;
+  border: 2px solid var(--cashier-building-color);
+  border-top-width: 6px;
+  border-radius: 1rem;
+  background: #f3f7fb;
+  background: color-mix(in srgb, var(--cashier-building-color) 15%, white);
+  overflow: hidden;
+  transition: transform .15s ease, box-shadow .15s ease;
 }
+.cashier-condominium:hover { transform: translateY(-2px); box-shadow: 0 8px 20px #2039541c; }
+.cashier-condominiums:not(.cashier-condominiums-compact) .cashier-condominium-link { flex: 1; flex-direction: column; align-items: flex-start; gap: 14px; width: 100%; padding: 24px; }
+.cashier-building-open { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding-top: 18px; margin-top: auto; border-top: 1px solid #00000018; color: #245b8e; font-weight: 600; font-size: .9rem; }
 
 .cashier-condominium-name {
   margin: 0;
-  padding: 0.2rem 0.5rem;
-  border: 0.15em solid lightgray;
-  border-radius: 0.3em;
-  background: lightgray;
+  padding: 0;
   color: #212529;
   font-weight: bold;
   overflow-wrap: anywhere;
@@ -115,17 +133,19 @@
 }
 .cashier-address {
   margin: 0;
-  padding: 0.15rem 0.4rem;
-  background: #ffffffdf;
-  color: #212529;
-  border-radius: 0.25rem;
+  color: #52606b;
+  font-size: .85rem;
   overflow-wrap: anywhere;
 }
 .cashier-condominium-actions {
-  justify-content: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   margin-top: auto;
+  padding: 12px 24px;
+  border-top: 1px solid #00000012;
+  background: #ffffff80;
 }
+.cashier-condominium-actions .img-button { margin: 0; border: 0; box-shadow: none; background: transparent; padding: 6px 0; }
 .cashier-condominium-actions .img-button {
   font-size: 0.85rem;
 }
@@ -135,7 +155,11 @@
 }
 .cashier-condominiums-compact .cashier-condominium {
   align-items: flex-start;
-  padding: 0.6rem;
+  padding: 12px;
+  border-width: 1px;
+  border-left: 5px solid var(--cashier-building-color);
+  border-radius: 10px;
+  gap: 6px;
 }
 
 .cashier-modal-form {
@@ -210,6 +234,11 @@
 }
 
 @media (max-width: 575px) {
+  .cashier-page-header { padding: 18px; gap: 12px; align-items: flex-start; }
+  .cashier-page-icon { padding: 8px; }
+  .cashier-page-icon img { width: 32px; height: 32px; }
+  .cashier-page-description { font-size: .85rem; }
+  .cashier-register-button { width: 100%; }
   .cashier-toolbar {
     justify-content: center;
   }
@@ -225,7 +254,14 @@
     display: block;
     padding: 0.75rem;
   }
-  .cashier-modal .registrationForm input {
-    width: 100%;
-  }
 }
+@media (prefers-reduced-motion: reduce) {
+  .cashier-condominium { transition: none; }
+  .cashier-condominium:hover { transform: none; }
+}
+.cashier-selection-action { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 4px 0; border: 0; background: transparent; font-size: .85rem; font-weight: 700; text-align: left; }
+.cashier-assigned-links { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+.cashier-assigned-links a { display: flex; align-items: center; gap: 8px; color: #212529; font-size: .9rem; text-underline-offset: 3px; }
+.cashier-assigned-links img { flex-shrink: 0; }
+.cashier-selection-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 12px 24px; border-top: 1px solid #0000001f; }
+.cashier-selection-links a { display: inline-flex; align-items: center; gap: 7px; color: #212529; font-size: .85rem; text-decoration: none; }

@@ -1,0 +1,71 @@
+.cashier-accounting { max-width: 1600px; margin-inline: auto; }
+.cashier-accounting-header { display: flex; justify-content: center; gap: 10px; margin: 12px 0 24px; }
+.cashier-accounting .cashier-accounting-heading { display: flex; align-items: center; justify-content: center; gap: 16px; min-width: 0; margin: 0; background: #f0f0f0; }
+.cashier-accounting-heading h2 { margin: 0 0 4px; font-size: 1.5rem; font-weight: 700; overflow-wrap: anywhere; }
+.cashier-accounting-heading p { margin: 0; color: #59636d; font-size: .9rem; font-weight: 400; }
+.cashier-accounting .cashier-accounting-back { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; margin: 0; text-decoration: none; color: #212529; font-size: .75rem; }
+.cashier-accounting-heading img, .cashier-accounting-back img { object-fit: contain; flex-shrink: 0; }
+.cashier-summary-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+.cashier-summary-card { display: flex; flex-direction: column; gap: 4px; padding: 18px 22px; border: 2px solid #adc6e9; border-radius: 16px; background: #edf4ff; box-shadow: 0 4px 12px #2039540a; }
+.cashier-summary-card > span { font-size: .85rem; color: #384b63; font-weight: 600; }
+.cashier-summary-card strong { font-size: clamp(1.2rem, 2.1vw, 1.8rem); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cashier-summary-card small { color: #52616d; font-size: .8rem; }
+.cashier-summary-card--paid { background: #e5f5eb; border-color: #a0d7b5; }
+.cashier-summary-card--paid strong { color: #14653b; }
+.cashier-summary-card--due { background: #fff4de; border-color: #e9ce97; }
+.cashier-summary-card--due strong { color: #855000; }
+.cashier-accounting-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 1fr); gap: 22px; align-items: start; margin-top: 20px; }
+.cashier-homes-panel, .cashier-month-panel { min-width: 0; padding: 20px; border: 2px solid #9bbfe3; border-radius: 24px; box-shadow: 0 8px 24px #20395412; }
+.cashier-homes-panel { background: #e2f3fb; }
+.cashier-month-panel { background: #e5f2e9; border-color: #a3cbb1; }
+.cashier-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.cashier-panel-heading h3 { font-size: 1.2rem; font-weight: 700; margin: 0; }
+.cashier-panel-heading p { margin: 4px 0 0; font-size: .9rem; color: #475569; text-transform: capitalize; }
+.cashier-count, .cashier-month-state { background: #ffffffb8; padding: 5px 10px; border-radius: 20px; white-space: nowrap; font-size: .8rem; font-weight: 600; }
+.cashier-month-state { color: #14653b; }
+.cashier-month-state.is-closed { color: #495057; }
+.cashier-table-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+.cashier-table-tools .form-control { flex: 1 1 210px; min-width: 0; width: auto; margin: 0; border-radius: 10px; }
+.cashier-status-filters { display: flex; flex-wrap: wrap; gap: 4px; background: #ffffff9c; padding: 4px; border-radius: 10px; }
+.cashier-status-filters button { border: 0; border-radius: 7px; background: transparent; color: #34506a; padding: 7px 10px; font-size: .82rem; font-weight: 600; }
+.cashier-status-filters button[aria-pressed="true"] { background: #245b8e; color: #fff; }
+.cashier-homes-panel .table-responsive { border-radius: 12px; background: #fff; }
+.cashier-homes-table { margin: 0; font-size: .9rem; }
+.cashier-homes-table thead th { background: #d3e6f5; color: #233e55; padding: 12px 10px; vertical-align: middle; }
+.cashier-homes-table td { padding: 12px 10px; }
+.cashier-homes-table tfoot th, .cashier-homes-table tfoot td { background: #edf3f8; padding: 12px 10px; }
+.cashier-homes-table tfoot th:nth-child(2) { text-align: right; white-space: nowrap; }
+.cashier-homes-table .cashier-row-paid { --bs-table-bg: #f0faf3; }
+.cashier-receipt-button { border: 1px solid #a8d4b7; color: #14653b; background: #e3f4e9; border-radius: 7px; padding: 6px 10px; font-size: .85rem; font-weight: 600; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+.cashier-pay-button { display: block; min-width: 85px; margin-top: 4px; border-radius: 7px; font-weight: 600; }
+.cashier-remaining { display: block; color: #855000; font-size: .75rem; margin-top: 3px; }
+.cashier-month-panel .form-select { width: 100%; max-width: none; margin: 0; text-transform: capitalize; }
+.cashier-month-navigation { display: flex; gap: 6px; margin: 10px 0 20px; }
+.cashier-month-navigation button:nth-child(2) { flex: 1; font-size: .85rem; }
+.cashier-month-navigation button:first-child, .cashier-month-navigation button:last-child { font-size: 1.4rem; line-height: 1; }
+.cashier-collection { padding-top: 18px; border-top: 1px solid #bdd2c3; }
+.cashier-collection > div:first-child { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: .85rem; }
+.cashier-collection .progress { height: 8px; background: #cbded0; }
+.cashier-collection p { margin: 16px 0 0; color: #40534a; line-height: 1.6; font-size: .82rem; }
+.cashier-empty-result { text-align: center; padding: 24px; color: #52616d; }
+.cashier-payment-modal .modal-content { border-radius: 18px; overflow: hidden; }
+.cashier-payment-modal .modal-header { background: #e2f3fb; padding: 20px 24px; }
+.cashier-payment-modal .modal-body { padding: 24px; }
+.cashier-payment-modal .modal-footer { background: #f3f6f9; padding: 16px 24px; }
+.cashier-payment-modal thead th { background: #eaf1f7; }
+.cashier-payment-modal tfoot th { background: #e5f5eb; }
+.cashier-payment-modal td:not(:first-child), .cashier-payment-modal th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.cashier-accounting button:focus-visible, .cashier-accounting a:focus-visible { outline: 3px solid #0d6efd; outline-offset: 3px; }
+@media (max-width: 1000px) { .cashier-accounting-layout { grid-template-columns: 1fr; } .cashier-month-panel { grid-row: 1; } }
+@media (max-width: 576px) {
+  .cashier-accounting-header { gap: 6px; }
+  .cashier-accounting-heading h2 { font-size: 1.15rem; }
+  .cashier-accounting-heading > img { display: none; }
+  .cashier-summary-cards { gap: 6px; }
+  .cashier-summary-card { padding: 12px 9px; border-radius: 12px; }
+  .cashier-summary-card small { font-size: .7rem; }
+  .cashier-homes-panel, .cashier-month-panel { padding: 14px; border-radius: 18px; }
+  .cashier-homes-table { min-width: 540px; }
+  .cashier-status-filters { width: 100%; }
+  .cashier-status-filters button { flex: 1; }
+}

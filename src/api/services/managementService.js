@@ -1,5 +1,15 @@
 import api from "../axios";
 
+export const getAccountingPeriod = async (condominiumId) => {
+    const { data } = await api.get(`/management/condominiums/${condominiumId}/accounting-months`);
+    return data;
+};
+
+export const generateAccountingMonths = async (condominiumId) => {
+    const { data } = await api.post(`/management/condominiums/${condominiumId}/accounting-months`);
+    return data;
+};
+
 export const addCondominium = async (condominiumData) => {
     const { data } = await api.post("/management/condominiums", condominiumData);
     return data;

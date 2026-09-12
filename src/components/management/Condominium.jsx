@@ -13,12 +13,13 @@ import { useUser } from "../../user/UserContext";
 import { useTranslation } from "react-i18next";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 import FundsTable from "./fund/FundsTable";
+import AccountingPeriodNotice from "./AccountingPeriodNotice";
 
 const Condominium = () => {
 
       const { condominiumId } = useParams();
       const { setIsLoading } = useLoading();
-      const { logout } = useUser();
+      const { logout, user } = useUser();
       const navigate = useNavigate();
       const { t, i18n } = useTranslation();
       const { setBreadcrumbs } = useBreadcrumb();
@@ -168,6 +169,8 @@ const Condominium = () => {
                               />
                         </div>
                   </button>
+                  {condominium.id && user?.roles?.some(role => ["ADMIN", "MANAGER"].includes(role)) &&
+                        <AccountingPeriodNotice key={condominiumId} condominiumId={condominiumId} />}
                   <div className="layout">
                         <section className="homes-section">
                               <HomesTable
