@@ -59,7 +59,7 @@ const ModalRepairExpense = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (repair?.completed) return;
+    if (repair?.completeAt) return;
     setIsLoading(true);
 
     try {
@@ -125,7 +125,7 @@ const ModalRepairExpense = ({
   };
 
   return (
-    <Modal show={show && !repair?.completed} onHide={closeModal} centered>
+    <Modal show={show && !repair?.completeAt} onHide={closeModal} centered>
       <Modal.Header closeButton>
         <Modal.Title className="fw-bold">
           <div className="fw-bold fs-5">

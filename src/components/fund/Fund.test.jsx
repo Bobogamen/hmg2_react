@@ -52,8 +52,8 @@ test("selects a building and fund, shows fees and finances without payment contr
     fireEvent.click(screen.getByRole("button", { name: "Browse funds" }));
     const modal = within(await screen.findByRole("dialog"));
     getFundDetails.mockResolvedValue({ ...details, fund: { id: 6, name: "Garden" } });
-    fireEvent.click(modal.getByRole("link", { name: "Garden" }));
-    await screen.findByRole("heading", { name: "Garden" });
+    fireEvent.click(modal.getByRole("link", { name: /Garden/ }));
+    await screen.findByRole("heading", { name: /Garden/ });
     expect(getFundDetails).toHaveBeenLastCalledWith({ condominiumId: "1", fundId: "6" });
 });
 test("saves a fund expense and refreshes its financial totals", async () => {

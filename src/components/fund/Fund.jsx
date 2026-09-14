@@ -1,3 +1,4 @@
+import FinancePeriod from "../common/FinancePeriod";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -150,6 +151,7 @@ const Fund = () => {
                 <div className="card-body p-4">
                   <img src={fundIcon} className="medium-icon mb-2" alt="" />
                   <h3 className="h5 fw-bold text-break">{fund.name}</h3>
+                  <FinancePeriod startDate={fund.startDate} fund />
                   <div className="small">{t("finance:availableFunds")}</div>
                   <strong className="fs-3">
                     {repairAmount(fund.availableFunds)}

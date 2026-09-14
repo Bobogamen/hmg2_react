@@ -11,8 +11,8 @@ jest.mock("react-i18next", () => ({
         t: (key, options = {}) => {
             const translations = require("../../../locales/en/finance.json");
             const value = key.replace("finance:", "").split(".")
-                .reduce((result, part) => result[part], translations);
-            return value.replace(/{{(\w+)}}/g, (_, name) => options[name]);
+                .reduce((result, part) => result?.[part], translations);
+            return (value || key).replace(/{{(\w+)}}/g, (_, name) => options[name]);
         },
     }),
 }));
@@ -21,8 +21,8 @@ beforeEach(() => api.get.mockReset());
 
 test("loads only assigned repairs and counts payments for the current home", async () => {
     api.get.mockResolvedValueOnce({ data: [
-        { id: 1, name: "Roof", budget: "1000.01", homeIds: [7, 8], completed: false },
-        { id: 2, name: "Lift", budget: 300, homeIds: [8], completed: false },
+        { id: 1, name: "Roof", budget: "1000.01", homeIds: [7, 8], completeAt: null },
+        { id: 2, name: "Lift", budget: 300, homeIds: [8], completeAt: null },
     ] }).mockResolvedValueOnce({ data: [
         { id: 11, homeId: 7, value: "33.33", paidDate: "2026-09-01" },
         { id: 12, homeId: "7", value: "33.34", paidDate: null },
@@ -46,9 +46,9 @@ test("loads only assigned repairs and counts payments for the current home", asy
 
 test("repair completion is independent of this home's payment progress", () => {
     render(<HomeRepairsTable repairs={[
-        { id: 1, name: "Roof", budget: 100, completed: false,
+        { id: 1, name: "Roof", budget: 100, completeAt: null,
             payments: [{ value: 50, paidDate: "2026-09-01" }] },
-        { id: 2, name: "Entrance", budget: 200, completed: true,
+        { id: 2, name: "Entrance", budget: 200, completeAt: "2026-01-15",
             payments: [{ value: 100, paidDate: null }] },
     ]} />);
     const roof = within(screen.getByRole("rowheader", { name: /Roof/ }).closest("tr"));

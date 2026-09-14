@@ -66,20 +66,13 @@ const ModalRepairNavigator = ({ show, handleClose, condominium, repairId }) => {
                     to={`/repair/condominiums/${condominium.id}/repairs/${repair.id}`}
                     onClick={handleClose}
                     aria-current={current ? "page" : undefined}
-                    className={`repair-selection-card repair-selection-card--${repair.completed ? "completed" : "pending"} d-flex align-items-center gap-3 p-3 text-decoration-none text-dark`}
+                    className={`repair-selection-card repair-selection-card--${repair.completeAt ? "completed" : "pending"} d-flex align-items-center gap-3 p-3 text-decoration-none text-dark`}
                   >
                     <img src={repairIcon} width={32} height={32} alt="" />
                     <div className="flex-grow-1 text-break">
                       <div className="fw-bold">{repair.name}</div>
                       <div className="small mt-1">
                         {t("finance:budget")}: {repairAmount(repair.budget)}
-                      </div>
-                      <div className="small mt-1">
-                        {t(
-                          repair.completed
-                            ? "finance:homeRepairs.completed"
-                            : "finance:homeRepairs.notCompleted",
-                        )}
                       </div>
                       {current && (
                         <span className="badge bg-primary mt-2">

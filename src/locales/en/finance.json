@@ -1,4 +1,5 @@
 {
+  "period": {"startDate": "Start date", "untilToday": "Today", "activeFor": "Active for {{duration}}", "duration": "Duration: {{duration}}", "planned": "Upcoming", "unknown": "No start date", "completedOn": "Completed on", "inProgress": "In progress"},
   "incomes": "Income",
   "fee": "Fee",
   "fees": "Fees",
@@ -175,6 +176,8 @@
   "repair": "Repair",
   "repairs": "Repairs",
   "repairPayments": {
+    "installmentsRemaining_one": "{{count}} installment remaining",
+    "installmentsRemaining_other": "{{count}} installments remaining",
     "paidOfTotal": "Paid / total",
     "percentPaid": "{{percent}}% paid",
     "progressForHome": "Payment progress for {{home}}",

@@ -1,0 +1,273 @@
+import React, { useRef, useState } from "react";
+import { Button, Modal } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
+import { format } from "date-fns";
+import { saveCashierFinanceEntry } from "../../api/services/cashierService";
+import renderFieldErrors from "../../utils/renderFieldErrors";
+
+const requestId = () => {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 15) | 64;
+  bytes[8] = (bytes[8] & 63) | 128;
+  const hex = Array.from(bytes, (value) =>
+    value.toString(16).padStart(2, "0"),
+  ).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+};
+
+export default function ModalCashierFinance({
+  mode,
+  billId,
+  bills,
+  condominiumId,
+  month,
+  onClose,
+  onSaved,
+  onRefresh,
+}) {
+  const { t, i18n } = useTranslation();
+  const label = (key) => t(`dashboard:cashierFinance.${key}`);
+  const [data, setData] = useState({
+    billId: billId ? String(billId) : "",
+    name: "",
+    value: "",
+    documentNumber: "",
+    documentDate: format(new Date(), "yyyy-MM-dd"),
+  });
+  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [uncertain, setUncertain] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const pending = useRef(false);
+  const submission = useRef(null);
+  const [id] = useState(requestId);
+  const title = label(
+    mode === "bill"
+      ? "payBill"
+      : mode === "income"
+        ? "addIncome"
+        : "addExpense",
+  );
+  const period = new Intl.DateTimeFormat(i18n.language, {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(month.year, month.number - 1, 1));
+  const change = (event) => {
+    const { name, value } = event.target;
+    setData((current) => ({ ...current, [name]: value }));
+    setErrors((current) => ({ ...current, [name]: null }));
+  };
+  const submit = async (event) => {
+    event.preventDefault();
+    if (pending.current || blocked || month.completed) return;
+    pending.current = true;
+    setSaving(true);
+    setErrors({});
+    setError("");
+    const payload = submission.current || {
+      condominiumId,
+      monthId: month.id,
+      mode,
+      requestId: id,
+      ...(mode === "bill"
+        ? { billId: Number(data.billId) }
+        : { name: data.name.trim() }),
+      value: data.value,
+      documentNumber: data.documentNumber.trim(),
+      documentDate: data.documentDate,
+    };
+    try {
+      const result = await saveCashierFinanceEntry(payload);
+      onSaved(result);
+    } catch (failure) {
+      const fields = failure.validationErrors || failure.response?.data?.errors;
+      const code = failure.response?.data?.message;
+      if (fields && Object.keys(fields).length) setErrors(fields);
+      else if (
+        [
+          "accountingMonthCompleted",
+          "cashierBillAlreadyPaid",
+          "cashierRequestChanged",
+          "cashierAmountLimit",
+        ].includes(code)
+      ) {
+        setError(code);
+        setBlocked(true);
+      } else if (failure.response?.status === 400) {
+        setError("invalidEntry");
+      } else if ([403, 404].includes(failure.response?.status)) {
+        setError("entryUnavailable");
+        setBlocked(true);
+      } else {
+        // Keep the identical request on retry: the server may already have saved it.
+        submission.current = payload;
+        setUncertain(true);
+        setError("saveUnconfirmed");
+      }
+    } finally {
+      pending.current = false;
+      setSaving(false);
+    }
+  };
+  const close = () => {
+    if (!pending.current) onClose();
+  };
+  return (
+    <Modal
+      show
+      onHide={close}
+      centered
+      backdrop={saving ? "static" : true}
+      keyboard={!saving}
+      aria-labelledby="cashier-finance-modal-title"
+    >
+      <Modal.Header closeButton={!saving}>
+        <Modal.Title id="cashier-finance-modal-title" className="fs-5">
+          {title}
+          <small className="d-block text-muted fs-6 mt-1 text-capitalize">
+            {period}
+          </small>
+        </Modal.Title>
+      </Modal.Header>
+      <form onSubmit={submit} className="cashier-finance-form">
+        <Modal.Body>
+          <fieldset
+            disabled={saving || uncertain || blocked || month.completed}
+          >
+            {mode === "bill" ? (
+              <div className="mb-3">
+                <label className="form-label" htmlFor="cashier-finance-billId">
+                  {label("bill")}
+                </label>
+                <select
+                  className="form-select"
+                  id="cashier-finance-billId"
+                  name="billId"
+                  required
+                  value={data.billId}
+                  onChange={change}
+                >
+                  <option value="">{label("selectBill")}</option>
+                  {bills.map((bill) => (
+                    <option key={bill.id} value={bill.id}>
+                      {bill.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div className="mb-3">
+                <label className="form-label" htmlFor="cashier-finance-name">
+                  {label("name")}
+                </label>
+                <input
+                  className="form-control"
+                  id="cashier-finance-name"
+                  name="name"
+                  required
+                  maxLength={100}
+                  value={data.name}
+                  onChange={change}
+                  autoFocus
+                />
+                {renderFieldErrors(errors, "name", t)}
+              </div>
+            )}
+            <div className="mb-3">
+              <label className="form-label" htmlFor="cashier-finance-value">
+                {label("amount")} (€)
+              </label>
+              <input
+                className="form-control"
+                id="cashier-finance-value"
+                name="value"
+                type="number"
+                inputMode="decimal"
+                required
+                min="0.01"
+                max="9999999999.99"
+                step="0.01"
+                value={data.value}
+                onChange={change}
+              />
+              {renderFieldErrors(errors, "value", t)}
+            </div>
+            <div className="row g-3">
+              <div className="col-12 col-sm-6">
+                <label
+                  className="form-label"
+                  htmlFor="cashier-finance-documentNumber"
+                >
+                  {label("documentNumber")}
+                </label>
+                <input
+                  className="form-control"
+                  id="cashier-finance-documentNumber"
+                  name="documentNumber"
+                  required
+                  maxLength={30}
+                  value={data.documentNumber}
+                  onChange={change}
+                />
+                {renderFieldErrors(errors, "documentNumber", t)}
+              </div>
+              <div className="col-12 col-sm-6">
+                <label
+                  className="form-label"
+                  htmlFor="cashier-finance-documentDate"
+                >
+                  {label("documentDate")}
+                </label>
+                <input
+                  className="form-control"
+                  id="cashier-finance-documentDate"
+                  name="documentDate"
+                  type="date"
+                  required
+                  max={format(new Date(), "yyyy-MM-dd")}
+                  value={data.documentDate}
+                  onChange={change}
+                />
+                {renderFieldErrors(errors, "documentDate", t)}
+              </div>
+            </div>
+          </fieldset>
+          {error && (
+            <div className="alert alert-danger mt-3 mb-0" role="alert">
+              {label(error)}
+              {blocked && (
+                <button
+                  type="button"
+                  className="btn btn-outline-dark btn-sm d-block mt-2"
+                  onClick={() => {
+                    onClose();
+                    onRefresh();
+                  }}
+                >
+                  {label("refresh")}
+                </button>
+              )}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" disabled={saving} onClick={close}>
+            {t("common:close")}
+          </Button>
+          <Button
+            type="submit"
+            variant={mode === "income" ? "success" : "primary"}
+            disabled={saving || blocked || month.completed}
+          >
+            {saving
+              ? label("saving")
+              : uncertain
+                ? label("retrySameEntry")
+                : title}
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
+  );
+}

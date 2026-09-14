@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
 import { Trans, useTranslation } from "react-i18next";
@@ -7,6 +8,7 @@ import renderFieldErrors from "../../../utils/renderFieldErrors";
 
 const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
     const { t } = useTranslation();
+    const [startDate, setStartDate] = useState("");
     const [name, setName] = useState("");
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
@@ -33,6 +35,7 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
     useEffect(() => {
         if (!show) return;
         setName(fund?.name || "");
+        setStartDate(fund?.startDate || format(new Date(), "yyyy-MM-dd"));
         setErrors({});
         setStep(1);
         setSelectedFeeIds(
@@ -42,14 +45,14 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                     .map((fee) => fee.id)
                 : []
         );
-    }, [show, fund?.id, fund?.name, condominium?.fees]);
+    }, [show, fund?.id, fund?.name, fund?.startDate, condominium?.fees]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (step === 1) {
             setSaving(true);
             try {
-                await validateFund({ condominiumId: condominium.id, name, fundId: fund?.id });
+                await validateFund({ condominiumId: condominium.id, startDate, name, fundId: fund?.id });
                 setErrors({});
                 setStep(2);
             } catch (error) {
@@ -67,7 +70,7 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
         }
         setSaving(true);
         try {
-            const payload = { condominiumId: condominium.id, name, feeIds: selectedFeeIds };
+            const payload = { condominiumId: condominium.id, startDate, name, feeIds: selectedFeeIds };
             if (isEditing) await editFund({ ...payload, fundId: fund.id });
             else await addFund(payload);
             handleClose();
@@ -164,6 +167,11 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                                         if (errors.name) setErrors((current) => ({ ...current, name: null }));
                                     }} placeholder={t("name")} autoFocus maxLength={50} />
                                 {renderFieldErrors(errors, "name", t)}
+                                {!isEditing && <div className="mb-2">
+                                    <label htmlFor="fund-start-date">{t("finance:period.startDate")}</label>
+                                    <input id="fund-start-date" type="date" required value={startDate} onChange={(event) => setStartDate(event.target.value)} />
+                                    {renderFieldErrors(errors, "startDate", t)}
+                                </div>}
                             </div>
                         </div> :
                             <div>

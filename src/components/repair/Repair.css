@@ -85,14 +85,110 @@
     max-width: 100%;
 }
 
+.finance-details-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+    max-width: 780px;
+    margin: 0 auto 1.5rem;
+    text-align: start;
+}
+
+.finance-details-overview__period,
+.finance-balance-card {
+    min-width: 0;
+    border: 1px solid #dce4eb;
+    border-radius: 1rem;
+    box-shadow: 0 3px 12px rgba(30, 55, 75, 0.05);
+}
+
+.finance-details-overview__period {
+    display: flex;
+    align-items: center;
+    padding: 1.15rem;
+    background: #f8fafc;
+}
+
+.finance-details-overview__period .finance-period {
+    flex: 1;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 0.9rem;
+}
+
+.finance-details-overview__period .finance-period__label {
+    font-size: 0.78rem;
+}
+
+.finance-balance-card {
+    --balance-color: #17623f;
+    --balance-tint: #e8f5ed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.15rem;
+    background: #fff;
+}
+
+.finance-balance-card--negative {
+    --balance-color: #a52c3c;
+    --balance-tint: #fcecef;
+}
+
+.finance-balance-card__heading {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #586574;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.finance-balance-card__icon {
+    display: inline-flex;
+    padding: 0.5rem;
+    border-radius: 0.65rem;
+    color: var(--balance-color);
+    background: var(--balance-tint);
+}
+
+.finance-balance-card__value {
+    color: var(--balance-color);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.finance-balance-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e6ebef;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 575.98px) {
+    .finance-details-overview {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.75rem;
+    }
+}
+
 .repair-details .layout > section {
     min-width: 0;
 }
 
-.repair-details__paid-count {
-    min-width: 3.5rem;
-    white-space: nowrap;
-    font-size: inherit;
+.repair-details__remaining-installments {
+    font-size: 0.75rem;
+    text-underline-offset: 3px;
 }
 
 .repair-details__homes-table th {

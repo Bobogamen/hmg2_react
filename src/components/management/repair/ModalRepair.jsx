@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { Trans, useTranslation } from "react-i18next";
@@ -58,6 +59,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
         } else {
             setData({
                 ...initialState,
+                startDate: format(new Date(), "yyyy-MM-dd"),
             });
             setSelectedHomes(homes.map((home) => home.id));
         }
@@ -208,6 +210,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                 condominiumId: condominium.id,
                 name: data.name.trim(),
                 budget: data.budget,
+                startDate: data.startDate,
                 repairId: repair?.id,
             });
             setErrors({});
@@ -216,7 +219,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
             const fieldErrors = error.validationErrors || error.errors || {};
             if (error.isValidationError && Object.keys(fieldErrors).length > 0) {
                 setErrors(fieldErrors);
-                if (fieldErrors.name || fieldErrors.budget) setStep(1);
+                if (fieldErrors.name || fieldErrors.budget || fieldErrors.startDate) setStep(1);
                 else requestError(error);
             } else {
                 requestError(error);
@@ -292,6 +295,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                 condominiumId: condominium.id,
                 name: data.name.trim(),
                 budget: data.budget,
+                startDate: data.startDate,
                 homeIds: selectedHomes,
                 distributionType: data.distributionType,
                 homePercentages:
@@ -322,7 +326,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
             const fieldErrors = error.validationErrors || error.errors || {};
             if (error.isValidationError && Object.keys(fieldErrors).length > 0) {
                 setErrors(fieldErrors);
-                if (fieldErrors.name || fieldErrors.budget) setStep(1);
+                if (fieldErrors.name || fieldErrors.budget || fieldErrors.startDate) setStep(1);
                 else requestError(error);
             } else {
                 requestError(error);
@@ -366,6 +370,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
     const resetForm = () => {
         setData({
             ...initialState,
+                startDate: format(new Date(), "yyyy-MM-dd"),
         });
         setErrors({});
         setSelectedHomes([]);
@@ -460,6 +465,11 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                                                 maxLength={30}
                                             />
                                             {renderFieldErrors(errors, "name", t)}
+                                            {!isEditing && <div className="fee-form-field">
+                                                <label htmlFor="repair-start-date">{t("finance:period.startDate")}</label>
+                                                <input id="repair-start-date" name="startDate" type="date" required value={data.startDate || ""} onChange={handleChange} />
+                                                {renderFieldErrors(errors, "startDate", t)}
+                                            </div>}
                                         </div>
                                         <div className="fee-form-field">
                                             <label htmlFor="repair-budget">

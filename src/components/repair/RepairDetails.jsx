@@ -1,3 +1,5 @@
+import FinancePeriod from "../common/FinancePeriod";
+import { Wallet } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -24,7 +26,7 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
   const [completionError, setCompletionError] = useState(null);
   const completionPending = useRef(false);
   const canComplete =
-    !repair.completed &&
+    !repair.completeAt &&
     payments.length > 0 &&
     payments.every((payment) => payment.paidDate != null);
   const handleComplete = async () => {
@@ -107,10 +109,7 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
         <div className="hg-title repair-details__title">
           <div className="d-flex justify-content-center align-items-center gap-3">
             <div className="text-center">
-              <h2 className="fw-bold fs-4 text-break mb-1">{repair.name}</h2>
-              <div className="text-muted small fw-normal">
-                {condominium.name}
-              </div>
+              <h2 className="fw-bold text-break mb-1">{repair.name}</h2>
             </div>
           </div>
         </div>
@@ -131,32 +130,40 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
         condominium={condominium}
         repairId={repair.id}
       />
-      <div className="d-flex justify-content-center mb-3">
-        <div className="repair-details__summary d-flex justify-content-center align-items-center flex-wrap gap-3 bg-light border border-2 border-primary border-opacity-50 rounded-3 shadow-sm px-3 py-2 text-center">
-          <div className="px-2">
-            <div className="small text-muted">{t("finance:budget")}</div>
-            <strong className="fs-5">{repairAmount(repair.budget)}</strong>
+      <div className="finance-details-overview">
+        <div className="finance-details-overview__period">
+          <FinancePeriod
+            startDate={repair.startDate}
+            completeAt={repair.completeAt}
+          />
+        </div>
+        <div
+          className={`finance-balance-card${Number(repair.balance) < 0 ? " finance-balance-card--negative" : ""}`}
+        >
+          <div className="finance-balance-card__heading">
+            <span className="finance-balance-card__icon">
+              <Wallet size={20} aria-hidden="true" />
+            </span>
+            <span>{t("finance:availableFunds")}</span>
           </div>
-          <div className="vr align-self-stretch" aria-hidden="true" />
-          <div className="px-2">
-            <div className="small text-muted">
-              {t("finance:availableFunds")}
+          <strong className="finance-balance-card__value">
+            {repairAmount(repair.balance)}
+          </strong>
+          <div className="finance-balance-card__footer">
+            <div>
+              <span className="text-muted">{t("finance:budget")}: </span>
+              <strong>{repairAmount(repair.budget)}</strong>
             </div>
-            <strong
-              className={`fs-5 ${Number(repair.balance) < 0 ? "text-danger" : "text-success"}`}
+            <span
+              className={`badge ${repair.completeAt ? "bg-success" : "bg-danger"}`}
             >
-              {repairAmount(repair.balance)}
-            </strong>
+              {t(
+                repair.completeAt
+                  ? "finance:homeRepairs.completed"
+                  : "finance:homeRepairs.notCompleted",
+              )}
+            </span>
           </div>
-          <span
-            className={`badge ${repair.completed ? "bg-success" : "bg-danger"}`}
-          >
-            {t(
-              repair.completed
-                ? "finance:homeRepairs.completed"
-                : "finance:homeRepairs.notCompleted",
-            )}
-          </span>
         </div>
       </div>
       <div className="layout">
@@ -209,9 +216,6 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                       <th scope="col">
                         {t("finance:repairPayments.paidOfTotal")}
                       </th>
-                      <th scope="col">
-                        {t("finance:homeRepairs.paidInstallments")}
-                      </th>
                       <th scope="col">{t("finance:repairPayments.payment")}</th>
                     </tr>
                   </thead>
@@ -248,10 +252,10 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                           </td>
                           <td className="repair-details__amounts">
                             <div className="text-nowrap mb-2">
-                              <strong className="text-success">
+                              <span className="text-success fw-semibold">
                                 {repairAmount(row.amountPaid)}
-                              </strong>
-                              <span className="text-muted">
+                              </span>
+                              <span className="text-muted fw-bold">
                                 {" "}
                                 / {repairAmountValue(row.total)}
                               </span>
@@ -281,40 +285,44 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                             </div>
                           </td>
                           <td>
-                            <button
-                              type="button"
-                              className={`repair-details__paid-count btn btn-sm fw-bold ${row.paid === row.installments.length ? "btn-success" : "btn-outline-primary"}`}
-                              onClick={() => setSelectedHomeId(row.id)}
-                              aria-label={t(
-                                "finance:repairDetails.viewPayments",
-                                { home: homeName(row) },
+                            <div className="d-flex flex-column align-items-center gap-1 py-1">
+                              {row.paid < row.installments.length ? (
+                                <button
+                                  type="button"
+                                  className="btn btn-danger btn-sm repair-details__pay-button"
+                                  onClick={() => setPaymentHomeId(row.id)}
+                                  aria-label={t(
+                                    "finance:repairPayments.payForHome",
+                                    { home: homeName(row) },
+                                  )}
+                                >
+                                  {t("finance:repairPayments.pay")}{" "}
+                                  {row.installments.length - row.paid}
+                                  {"/"}
+                                  {row.installments.length}
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn btn-success btn-sm repair-details__pay-button"
+                                  disabled
+                                >
+                                  {t("finance:repairPayments.paidInFull")}
+                                </button>
                               )}
-                            >
-                              {row.paid} / {row.installments.length}
-                            </button>
-                          </td>
-                          <td>
-                            {row.paid < row.installments.length ? (
                               <button
                                 type="button"
-                                className="btn btn-danger btn-sm repair-details__pay-button"
-                                onClick={() => setPaymentHomeId(row.id)}
+                                className="btn btn-link btn-sm p-0 text-muted repair-details__remaining-installments"
+                                onClick={() => setSelectedHomeId(row.id)}
                                 aria-label={t(
-                                  "finance:repairPayments.payForHome",
+                                  "finance:repairDetails.viewPayments",
                                   { home: homeName(row) },
                                 )}
-                              >
-                                {t("finance:repairPayments.payInstallment")}
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                className="btn btn-success btn-sm repair-details__pay-button"
-                                disabled
-                              >
-                                {t("finance:repairPayments.paidInFull")}
-                              </button>
-                            )}
+                                title={t(
+                                  "finance:repairDetails.paymentDetails",
+                                )}
+                              ></button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -427,7 +435,7 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
                 </p>
               )}
             </div>
-            {!repair.completed && (
+            {!repair.completeAt && (
               <div
                 className="img-button pointer d-flex align-items-center m-auto mt-3"
                 role="button"
@@ -573,7 +581,7 @@ const RepairDetails = ({ condominium, details, onSaved }) => {
         </Modal.Footer>
       </Modal>
       <ModalRepairExpense
-        show={showExpense && !repair.completed}
+        show={showExpense && !repair.completeAt}
         handleClose={() => setShowExpense(false)}
         condominiumId={condominium.id}
         repair={repair}

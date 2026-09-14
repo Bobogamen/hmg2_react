@@ -1,3 +1,4 @@
+import FinancePeriod from "../common/FinancePeriod";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -157,7 +158,7 @@ const Repairs = () => {
                 ? Math.min(100, Math.floor((collected / budget) * 100))
                 : 0;
             const remaining = Math.max(0, budget - collected);
-            const status = repair.completed ? "completed" : "pending";
+            const status = repair.completeAt ? "completed" : "pending";
             return (
               <div className="col-12 col-md-6 col-xl-4" key={repair.id}>
                 <Link
@@ -176,9 +177,10 @@ const Repairs = () => {
                         {repair.name}
                       </h3>
                     </div>
+                    <FinancePeriod startDate={repair.startDate} completeAt={repair.completeAt} />
                     <span className="visually-hidden">
                       {t(
-                        repair.completed
+                        repair.completeAt
                           ? "finance:homeRepairs.completed"
                           : "finance:homeRepairs.notCompleted",
                       )}
@@ -203,7 +205,7 @@ const Repairs = () => {
                       </div>
                       <div className="progress repair-selection-card__progress">
                         <div
-                          className={`progress-bar ${repair.completed ? "bg-success" : "bg-danger"}`}
+                          className={`progress-bar ${repair.completeAt ? "bg-success" : "bg-danger"}`}
                           style={{ width: `${progress}%` }}
                           role="progressbar"
                           aria-valuemin={0}

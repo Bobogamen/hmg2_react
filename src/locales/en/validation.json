@@ -1,4 +1,5 @@
 {
+  "cashierInvalidAmount": "Enter a positive amount with up to 2 decimal places and 10 digits before the decimal point.",
   "required": "This field is required",
   "expenseInvalidValue": "Enter a positive amount with up to two decimal places.",
   "notMoreThanMaxValue": "Must not exceed {{value}}",

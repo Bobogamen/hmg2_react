@@ -1,4 +1,5 @@
 {
+  "period": {"startDate": "Начална дата", "untilToday": "До днес", "activeFor": "Работи от {{duration}}", "duration": "Продължителност: {{duration}}", "planned": "Предстои", "unknown": "Няма начална дата", "completedOn": "Приключен на", "inProgress": "В изпълнение"},
   "incomes": "Приходи",
   "fee": "Такса",
   "fees": "Такси",
@@ -175,6 +176,8 @@
   "repair": "Ремонт",
   "repairs": "Ремонти",
   "repairPayments": {
+    "installmentsRemaining_one": "Остава {{count}} вноска",
+    "installmentsRemaining_other": "Остават {{count}} вноски",
     "paidOfTotal": "Платено / общо",
     "percentPaid": "Платени {{percent}}%",
     "progressForHome": "Напредък на плащанията за {{home}}",

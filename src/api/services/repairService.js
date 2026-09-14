@@ -45,6 +45,7 @@ export const validateRepair = async ({
     condominiumId,
     name,
     budget,
+    startDate,
     repairId,
 }) => {
     const { data } = await api.post(
@@ -52,6 +53,7 @@ export const validateRepair = async ({
         {
             name,
             budget,
+    startDate,
             repairId,
         }
     );
@@ -63,6 +65,7 @@ export const addRepair = async ({
     condominiumId,
     name,
     budget,
+    startDate,
     homeIds,
     distributionType,
     homePercentages,
@@ -74,6 +77,7 @@ export const addRepair = async ({
         {
             name,
             budget,
+    startDate,
             homeIds,
             distributionType,
             homePercentages,

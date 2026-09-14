@@ -1,3 +1,4 @@
+import FinancePeriod from "../../common/FinancePeriod";
 import React from "react";
 import { Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -35,6 +36,7 @@ const HomeRepairsTable = ({ repairs = [] }) => {
                                     <tr key={repair.id}>
                                         <th scope="row" className="text-start fw-normal col-10">
                                             <div className="fw-bold text-break">{repair.name}</div>
+                                            <FinancePeriod startDate={repair.startDate} completeAt={repair.completeAt} />
                                             <div className="small text-muted fst-italic">
                                                 {t("finance:budget")}: <span className="text-nowrap fw-semibold">€ {formatAmount(repair.budget)}</span>
                                             </div>
@@ -48,8 +50,8 @@ const HomeRepairsTable = ({ repairs = [] }) => {
                                             </span>
                                         </td>
                                         <td>
-                                            <span className={`badge ${repair.completed ? "bg-success" : "bg-warning text-dark"}`}>
-                                                {t(repair.completed ? "finance:homeRepairs.completed" : "finance:homeRepairs.notCompleted")}
+                                            <span className={`badge ${repair.completeAt ? "bg-success" : "bg-warning text-dark"}`}>
+                                                {t(repair.completeAt ? "finance:homeRepairs.completed" : "finance:homeRepairs.notCompleted")}
                                             </span>
                                         </td>
                                     </tr>

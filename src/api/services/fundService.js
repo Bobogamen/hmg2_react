@@ -10,18 +10,18 @@ export const addFundExpense = async ({ condominiumId, fundId, ...expense }) => {
     return data;
 };
 
-export const validateFund = async ({ condominiumId, name, fundId }) => {
-    const { data } = await api.post(`/management/condominiums/${condominiumId}/funds/validation`, { name, fundId });
+export const validateFund = async ({ condominiumId, name, startDate, fundId }) => {
+    const { data } = await api.post(`/management/condominiums/${condominiumId}/funds/validation`, { name, startDate, fundId });
     return data;
 };
 
-export const addFund = async ({ condominiumId, name, feeIds }) => {
-    const { data } = await api.post(`/management/condominiums/${condominiumId}/funds`, { name, feeIds });
+export const addFund = async ({ condominiumId, name, startDate, feeIds }) => {
+    const { data } = await api.post(`/management/condominiums/${condominiumId}/funds`, { name, startDate, feeIds });
     return data;
 };
 
-export const editFund = async ({ condominiumId, fundId, name, feeIds }) => {
-    const { data } = await api.put(`/management/condominiums/${condominiumId}/funds/${fundId}`, { name, feeIds });
+export const editFund = async ({ condominiumId, fundId, name, startDate, feeIds }) => {
+    const { data } = await api.put(`/management/condominiums/${condominiumId}/funds/${fundId}`, { name, startDate, feeIds });
     return data;
 };
 

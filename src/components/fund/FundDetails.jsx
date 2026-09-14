@@ -1,3 +1,4 @@
+import FinancePeriod from "../common/FinancePeriod";
 import React, { useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -7,6 +8,7 @@ import { formatDate } from "../../utils/formatDate";
 import fundIcon from "../../assets/images/app/fund.png";
 import addIcon from "../../assets/images/app/add.png";
 import ModalFundExpense from "./ModalFundExpense";
+import { Wallet } from "lucide-react";
 
 const FundDetails = ({ condominium, details, onSaved }) => {
   const { t, i18n } = useTranslation();
@@ -17,8 +19,7 @@ const FundDetails = ({ condominium, details, onSaved }) => {
     <div className="repair-details">
       <div className="d-flex justify-content-center align-items-stretch gap-2 mb-3 mb-lg-4">
         <div className="hg-title repair-details__title text-center">
-          <h2 className="fw-bold fs-4 text-break mb-1">{fund.name}</h2>
-          <div className="text-muted small fw-normal">{condominium.name}</div>
+          <h2 className="fw-bold text-break">{fund.name}</h2>
         </div>
         <button
           type="button"
@@ -31,12 +32,20 @@ const FundDetails = ({ condominium, details, onSaved }) => {
           <img src={fundIcon} className="medium-icon" alt="" />
         </button>
       </div>
-      <div className="d-flex justify-content-center mb-3">
-        <div className="repair-details__summary bg-light border border-2 border-primary border-opacity-50 rounded-3 shadow-sm px-3 py-2 text-center">
-          <div className="small text-muted">{t("finance:availableFunds")}</div>
-          <strong
-            className={`fs-5 ${Number(balance) < 0 ? "text-danger" : "text-success"}`}
-          >
+      <div className="finance-details-overview">
+        <div className="finance-details-overview__period">
+          <FinancePeriod startDate={fund.startDate} fund />
+        </div>
+        <div
+          className={`finance-balance-card${Number(balance) < 0 ? " finance-balance-card--negative" : ""}`}
+        >
+          <div className="finance-balance-card__heading">
+            <span className="finance-balance-card__icon">
+              <Wallet size={20} aria-hidden="true" />
+            </span>
+            <span>{t("finance:availableFunds")}</span>
+          </div>
+          <strong className="finance-balance-card__value">
             {repairAmount(balance)}
           </strong>
         </div>
@@ -232,6 +241,7 @@ const FundDetails = ({ condominium, details, onSaved }) => {
                   className={`d-block border rounded p-3 text-break text-decoration-none ${item.id === fund.id ? "border-primary bg-primary-subtle fw-bold" : "text-dark"}`}
                 >
                   {item.name}
+                  <FinancePeriod startDate={item.startDate} fund />
                 </Link>
               </li>
             ))}

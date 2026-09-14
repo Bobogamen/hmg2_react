@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
   getCashierMonths,
   getCashierMonth,
   payCashierHomeFees,
+  getCashierFinance,
 } from "../../api/services/cashierService";
 import { useLoading } from "../../loader/LoadingContext";
 import { useUser } from "../../user/UserContext";
@@ -13,11 +14,30 @@ import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 import Breadcrumbs from "../breadcrumb/Breadcrumbs";
 import AccountingPeriodNotice from "../management/AccountingPeriodNotice";
 import apartments from "../../assets/images/app/apartment_building.png";
-import cashierIcon from "../../assets/images/app/cashier..png";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Search,
+  Wallet,
+  ReceiptText,
+} from "lucide-react";
 import "./CashierAccounting.css";
+import CashierFinancePanel from "./CashierFinancePanel";
 
 const keyOfMonth = (month) =>
   `${month.year}-${String(month.number).padStart(2, "0")}`;
+
+const feeOrder = (fee) =>
+  fee.fund ? 3 : fee.primary ? 0 : fee.monthly ? 1 : 2;
+const feePresentation = (fee) =>
+  fee.fund
+    ? { emoji: "💰", label: "fund" }
+    : fee.primary
+      ? { emoji: "⭐", label: "primary" }
+      : fee.monthly
+        ? { emoji: "📅", label: "monthlyFee" }
+        : { emoji: "💶", label: "oneTimeFee" };
 
 export default function CashierAccounting() {
   const { condominiumId } = useParams();
@@ -28,6 +48,11 @@ export default function CashierAccounting() {
   const [overview, setOverview] = useState(null);
   const [monthId, setMonthId] = useState("");
   const [details, setDetails] = useState(null);
+  const [finance, setFinance] = useState(null);
+  const [closeActionContainer, setCloseActionContainer] = useState(null);
+  const [financeError, setFinanceError] = useState(false);
+  const selection = useRef("");
+  selection.current = `${condominiumId}:${monthId}`;
   const [error, setError] = useState(false);
   const [modal, setModal] = useState(null);
   const [payError, setPayError] = useState("");
@@ -45,9 +70,9 @@ export default function CashierAccounting() {
     ["MANAGER", "ADMIN"].includes(role),
   );
   const money = (value) =>
-    new Intl.NumberFormat(i18n.language, {
-      style: "currency",
-      currency: "EUR",
+    "€ " + new Intl.NumberFormat(i18n.language, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(value || 0);
   const date = (value) =>
     value
@@ -88,6 +113,8 @@ export default function CashierAccounting() {
   useEffect(() => {
     setOverview(null);
     setDetails(null);
+    setFinance(null);
+    setFinanceError(false);
     setMonthId("");
     setModal(null);
     loadOverview();
@@ -101,9 +128,17 @@ export default function CashierAccounting() {
     setIsLoading(true);
     setError(false);
     setDetails(null);
+    setFinance(null);
+    setFinanceError(false);
     try {
       const data = await getCashierMonth(condominiumId, monthId);
       if (requestId === requests.current) setDetails(data);
+      try {
+        const financialData = await getCashierFinance(condominiumId, monthId);
+        if (requestId === requests.current) setFinance(financialData);
+      } catch {
+        if (requestId === requests.current) setFinanceError(true);
+      }
     } catch {
       if (requestId === requests.current) setError(true);
     } finally {
@@ -118,7 +153,10 @@ export default function CashierAccounting() {
   useEffect(() => {
     setBreadcrumbs([
       { label: t("cashier"), path: "/cashier" },
-      { label: overview?.name || t("cashier"), color: overview?.backgroundColor },
+      {
+        label: overview?.name || t("cashier"),
+        color: overview?.backgroundColor,
+      },
     ]);
     return () => setBreadcrumbs([]);
   }, [overview?.name, overview?.backgroundColor, setBreadcrumbs, t]);
@@ -145,6 +183,18 @@ export default function CashierAccounting() {
       if (requestId === requests.current) {
         setDetails(data);
         setModal(null);
+        try {
+          const financialData = await getCashierFinance(
+            condominiumId,
+            data.month.id,
+          );
+          if (requestId === requests.current) {
+            setFinance(financialData);
+            setFinanceError(false);
+          }
+        } catch {
+          if (requestId === requests.current) setFinanceError(true);
+        }
       }
     } catch (failure) {
       const reason = failure.response?.data?.message;
@@ -182,8 +232,6 @@ export default function CashierAccounting() {
         .includes(search.trim().toLocaleLowerCase())
     );
   });
-  const monthIndex =
-    overview?.months.findIndex((month) => String(month.id) === monthId) ?? -1;
   const currentMonth = overview?.months.find(
     (month) => keyOfMonth(month) === overview.currentMonth,
   );
@@ -191,51 +239,151 @@ export default function CashierAccounting() {
     total("total") > 0
       ? Math.min(100, Math.round((total("paid") / total("total")) * 100))
       : 0;
+  const monthIndex =
+    overview?.months.findIndex((month) => String(month.id) === monthId) ?? -1;
   return (
     <div className="container-fluid py-2">
       <Breadcrumbs />
       <header className="cashier-accounting-header">
-        <div className="hg-title cashier-accounting-heading">
+        <div className="cashier-accounting-heading">
           <img src={apartments} width="48" height="48" alt="" />
           <div>
             <h2>{overview?.name || label("title")}</h2>
-            <p>{label("title")}</p>
+            {overview?.address && (
+              <p>
+                <MapPin size={16} aria-hidden="true" />
+                <span>{overview.address}</span>
+              </p>
+            )}
           </div>
         </div>
-        <Link
-          to="/cashier"
-          className="hg-title cashier-accounting-back"
-          aria-label={label("backToCashier")}
-          title={label("backToCashier")}
-        >
-          <img src={cashierIcon} width="42" height="42" alt="" />
-          <span>{label("backToCashier")}</span>
-        </Link>
+        {overview?.months.length > 0 && (
+          <section
+            className="cashier-month-panel cashier-collection-panel"
+            aria-label={label("collection")}
+          >
+            <div className="cashier-panel-heading">
+              <div>
+                <h3>
+                  <Wallet size={21} aria-hidden="true" /> {label("collection")}
+                </h3>
+                <p>{details ? monthName(details.month) : label("loading")}</p>
+              </div>
+            </div>
+            {details && (
+              <>
+                <div className="cashier-collected-total">
+                  <span>{label("collectedIncome")}</span>
+                  <strong>{money(total("paid"))}</strong>
+                  <small>
+                    {paidCount} / {allHomes.length} {label("paidHomes")}
+                  </small>
+                </div>
+                <dl className="cashier-summary-ledger">
+                  <div>
+                    <dt>{label("chargedFees")}</dt>
+                    <dd>{money(total("total"))}</dd>
+                  </div>
+                  <div className="cashier-summary-ledger__due">
+                    <dt>{label("due")}</dt>
+                    <dd>{money(total("due"))}</dd>
+                  </div>
+                </dl>
+              </>
+            )}
+            {details && (
+              <div className="cashier-collection">
+                <div>
+                  <span>{label("collection")}</span>
+                  <strong>{progress}%</strong>
+                </div>
+                <div
+                  className="progress"
+                  role="progressbar"
+                  aria-label={label("collection")}
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <div
+                    className="progress-bar bg-success"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </section>
+        )}
       </header>
-      {details && (
-        <div className="cashier-summary-cards">
-          <div className="cashier-summary-card">
-            <span>{label("total")}</span>
-            <strong>{money(total("total"))}</strong>
-            <small>
-              {allHomes.length} {label("homes")}
-            </small>
+      {overview?.months.length > 0 && (
+        <div className="cashier-period-toolbar">
+          <div className="cashier-period-picker">
+            <button
+              type="button"
+              disabled={saving || monthIndex <= 0}
+              onClick={() =>
+                setMonthId(String(overview.months[monthIndex - 1].id))
+              }
+              aria-label={label("previousMonth")}
+              title={label("previousMonth")}
+            >
+              <ChevronLeft size={18} aria-hidden="true" />
+            </button>
+            <select
+              id="cashier-month"
+              className="cashier-period-select"
+              value={monthId}
+              disabled={saving}
+              onChange={(event) => setMonthId(event.target.value)}
+              aria-label={label("month")}
+            >
+              {overview.months.map((month) => (
+                <option key={month.id} value={month.id}>
+                  {monthName(month)}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              disabled={
+                saving ||
+                monthIndex < 0 ||
+                monthIndex >= overview.months.length - 1
+              }
+              onClick={() =>
+                setMonthId(String(overview.months[monthIndex + 1].id))
+              }
+              aria-label={label("nextMonth")}
+              title={label("nextMonth")}
+            >
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
           </div>
-          <div className="cashier-summary-card cashier-summary-card--paid">
-            <span>{label("paid")}</span>
-            <strong>{money(total("paid"))}</strong>
-            <small>
-              {paidCount} {label("paidHomes")}
-            </small>
-          </div>
-          <div className="cashier-summary-card cashier-summary-card--due">
-            <span>{label("due")}</span>
-            <strong>{money(total("due"))}</strong>
-            <small>
-              {dueCount} {label("unpaidHomes")}
-            </small>
-          </div>
+          <button
+            type="button"
+            className="cashier-current-month"
+            disabled={
+              saving || !currentMonth || String(currentMonth.id) === monthId
+            }
+            onClick={() => setMonthId(String(currentMonth.id))}
+          >
+            {label("currentMonth")}
+          </button>
+          {details && (
+            <span
+              className={`cashier-month-state ${details.month.completed ? "is-closed" : ""}`}
+            >
+              {label(details.month.completed ? "closedStatus" : "openStatus")}
+            </span>
+          )}
+          <span ref={setCloseActionContainer} className="cashier-close-action" />
         </div>
+      )}
+      {overview?.months.length > 0 && !currentMonth && (
+        <p className="alert alert-warning">{label("currentMonthMissing")}</p>
+      )}
+      {details?.month.completed && (
+        <p className="alert alert-info">{label("closed")}</p>
       )}
       {manager && overview && (
         <AccountingPeriodNotice
@@ -261,10 +409,17 @@ export default function CashierAccounting() {
       )}
       {overview?.months.length > 0 && (
         <div className="cashier-accounting-layout">
-          <section className="cashier-homes-panel" aria-label={label("homes")}>
+          <section
+            className="cashier-homes-panel"
+            aria-label={label("homes")}
+            aria-busy={!details && !error}
+          >
             <div className="cashier-panel-heading">
               <div>
-                <h3>{label("homes")}</h3>
+                <h3 id="cashier-homes-heading" tabIndex={-1}>
+                  <ReceiptText size={21} aria-hidden="true" />{" "}
+                  {label("payments")}
+                </h3>
                 <p>{details ? monthName(details.month) : label("loading")}</p>
               </div>
               <span className="cashier-count">
@@ -272,14 +427,17 @@ export default function CashierAccounting() {
               </span>
             </div>
             <div className="cashier-table-tools">
-              <input
-                type="search"
-                className="form-control"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={label("searchHomes")}
-                aria-label={label("searchHomes")}
-              />
+              <div className="cashier-search">
+                <Search size={18} aria-hidden="true" />
+                <input
+                  type="search"
+                  className="form-control"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder={label("searchHomes")}
+                  aria-label={label("searchHomes")}
+                />
+              </div>
               <div
                 className="cashier-status-filters"
                 role="group"
@@ -293,10 +451,22 @@ export default function CashierAccounting() {
                     onClick={() => setFilter(value)}
                   >
                     {label(value)}
+                    <span className="cashier-filter-count" aria-hidden="true">
+                      {value === "allHomes"
+                        ? allHomes.length
+                        : value === "unpaidHomes"
+                          ? dueCount
+                          : paidCount}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
+            {!details && !error && (
+              <p role="status" className="cashier-loading">
+                {label("loading")}
+              </p>
+            )}
             {details && (
               <div className="table-responsive">
                 <table className="table table-bordered table-hover align-middle cashier-homes-table">
@@ -321,10 +491,15 @@ export default function CashierAccounting() {
                             : ""
                         }
                       >
-                        <td>{home.floor}</td>
-                        <td className="fw-bold">{home.name}</td>
-                        <td>{home.owner || "—"}</td>
-                        <td className="text-nowrap text-end fw-semibold">
+                        <td data-label={label("floor")}>{home.floor}</td>
+                        <td data-label={label("home")} className="fw-bold">
+                          {home.name}
+                        </td>
+                        <td data-label={label("owner")}>{home.owner || "—"}</td>
+                        <td
+                          data-label={label("total")}
+                          className="text-nowrap fw-semibold"
+                        >
                           {money(home.total)}
                           {Number(home.paid) > 0 && Number(home.due) > 0 && (
                             <small className="cashier-remaining">
@@ -332,8 +507,8 @@ export default function CashierAccounting() {
                             </small>
                           )}
                         </td>
-                        <td>
-                          {home.paidDate && (
+                        <td data-label={label("paidDate")}>
+                          {home.paidDate && Number(home.due) === 0 && (
                             <button
                               className="cashier-receipt-button"
                               title={label("viewReceipt")}
@@ -364,8 +539,10 @@ export default function CashierAccounting() {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <th colSpan={3}>{label("periodTotal")}</th>
-                      <th>{money(total("total"))}</th>
+                      <th colSpan={3}>{label("total")}</th>
+                      <th>
+                        {money(visibleHomes.reduce((sum, home) => sum + Number(home.total), 0))}
+                      </th>
                       <td />
                     </tr>
                   </tfoot>
@@ -390,103 +567,24 @@ export default function CashierAccounting() {
               </div>
             )}
           </section>
-          <aside className="cashier-month-panel">
-            <div className="cashier-panel-heading">
-              <h3>{label("month")}</h3>
-              <span
-                className={`cashier-month-state ${details?.month.completed ? "is-closed" : ""}`}
-              >
-                {label(
-                  details?.month.completed ? "closedStatus" : "openStatus",
-                )}
-              </span>
-            </div>
-            <label htmlFor="cashier-month" className="fw-bold mb-2">
-              {label("month")}
-            </label>
-            <select
-              id="cashier-month"
-              className="form-select mb-3"
-              value={monthId}
-              disabled={saving}
-              onChange={(event) => setMonthId(event.target.value)}
-            >
-              {overview.months.map((month) => (
-                <option key={month.id} value={month.id}>
-                  {monthName(month)}
-                </option>
-              ))}
-            </select>
-            <div className="cashier-month-navigation">
-              <button
-                type="button"
-                className="btn btn-light border"
-                disabled={saving || monthIndex <= 0}
-                onClick={() =>
-                  setMonthId(String(overview.months[monthIndex - 1].id))
-                }
-                aria-label={label("previousMonth")}
-                title={label("previousMonth")}
-              >
-                ‹
-              </button>
-              <button
-                type="button"
-                className="btn btn-light border"
-                disabled={
-                  saving || !currentMonth || String(currentMonth.id) === monthId
-                }
-                onClick={() => setMonthId(String(currentMonth.id))}
-              >
-                {label("currentMonth")}
-              </button>
-              <button
-                type="button"
-                className="btn btn-light border"
-                disabled={
-                  saving ||
-                  monthIndex < 0 ||
-                  monthIndex >= overview.months.length - 1
-                }
-                onClick={() =>
-                  setMonthId(String(overview.months[monthIndex + 1].id))
-                }
-                aria-label={label("nextMonth")}
-                title={label("nextMonth")}
-              >
-                ›
-              </button>
-            </div>
-            {!overview.months.some(
-              (month) => keyOfMonth(month) === overview.currentMonth,
-            ) && (
-              <p className="alert alert-warning">
-                {label("currentMonthMissing")}
-              </p>
-            )}
-            {details?.month.completed && (
-              <p className="alert alert-info">{label("closed")}</p>
-            )}
-            <div className="cashier-collection">
-              <div>
-                <span>{label("collection")}</span>
-                <strong>{progress}%</strong>
-              </div>
-              <div
-                className="progress"
-                role="progressbar"
-                aria-label={label("collection")}
-                aria-valuenow={progress}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <div
-                  className="progress-bar bg-success"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p>{label("paymentHint")}</p>
-            </div>
+          <aside className="cashier-right-column" aria-label={label("summary")}>
+            <CashierFinancePanel
+              key={`${condominiumId}:${monthId}`}
+              finance={finance}
+              closeActionContainer={closeActionContainer}
+              homesPaid={!!details && dueCount === 0}
+              error={financeError}
+              condominiumId={condominiumId}
+              onRefresh={loadMonth}
+              onMonthSelect={setMonthId}
+              onSaved={(result) => {
+                if (
+                  `${result.summary.condominiumId}:${result.summary.id}` ===
+                  selection.current
+                )
+                  setFinance(result);
+              }}
+            />
           </aside>
         </div>
       )}
@@ -505,15 +603,29 @@ export default function CashierAccounting() {
         <Modal.Header closeButton={!saving}>
           <Modal.Title className="fs-5" id="cashier-payment-title">
             {modal?.mode === "pay" ? label("payTitle") : label("receiptTitle")}{" "}
-            — {activeHome?.name}
+            {details?.month && <>— {monthName(details.month)}</>}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {activeHome && (
             <>
-              <p className="fw-semibold">
-                {activeHome.owner} · {monthName(details.month)}
+              <p className="fw-semibold text-break mb-1">
+                {activeHome.owner || "—"}
               </p>
+              <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
+                <span>
+                  {t("home:floor")}:{" "}
+                  <strong className="text-dark">
+                    {activeHome.floor ?? "—"}
+                  </strong>
+                </span>
+                <span>
+                  {label("home")}:{" "}
+                  <strong className="text-dark">
+                    {activeHome.name || "—"}
+                  </strong>
+                </span>
+              </div>
               {payError && (
                 <div role="alert" className="alert alert-danger">
                   {label(payError)}{" "}
@@ -532,13 +644,7 @@ export default function CashierAccounting() {
                 <table className="table table-bordered align-middle">
                   <thead>
                     <tr>
-                      {[
-                        "fee",
-                        "value",
-                        "times",
-                        "total",
-                        ...(modal.mode === "receipt" ? ["paidDate"] : []),
-                      ].map((key) => (
+                      {["fee", "value", "times", "total"].map((key) => (
                         <th key={key}>{label(key)}</th>
                       ))}
                     </tr>
@@ -547,17 +653,40 @@ export default function CashierAccounting() {
                     {(modal.mode === "pay"
                       ? activeHome.charges
                       : activeHome.receipts
-                    ).map((item) => (
-                      <tr key={item.homeFeeId || item.id}>
-                        <td>{item.name}</td>
-                        <td>{money(item.value)}</td>
-                        <td>{item.times}</td>
-                        <td>{money(item.amount)}</td>
-                        {modal.mode === "receipt" && (
-                          <td>{date(item.paidDate)}</td>
-                        )}
-                      </tr>
-                    ))}
+                    )
+                      .slice()
+                      .sort((a, b) => feeOrder(a) - feeOrder(b))
+                      .map((item) => (
+                        <tr key={item.homeFeeId || item.id}>
+                          <td>
+                            <div className="d-flex align-items-start gap-2">
+                              <span
+                                title={t(
+                                  `finance:${feePresentation(item).label}`,
+                                )}
+                                aria-label={t(
+                                  `finance:${feePresentation(item).label}`,
+                                )}
+                                role="img"
+                              >
+                                {feePresentation(item).emoji}
+                              </span>
+                              <div className="text-start">
+                                <div>{item.name}</div>
+                                {item.fund && item.fundName && (
+                                  <div className="small fst-italic text-muted">
+                                    {t("finance:fund")} &quot;{item.fundName}
+                                    &quot;
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td>{money(item.value)}</td>
+                          <td>{item.times}</td>
+                          <td>{money(item.amount)}</td>
+                        </tr>
+                      ))}
                   </tbody>
                   <tfoot>
                     <tr>
@@ -569,7 +698,6 @@ export default function CashierAccounting() {
                             : activeHome.paid,
                         )}
                       </th>
-                      {modal.mode === "receipt" && <td />}
                     </tr>
                   </tfoot>
                 </table>
@@ -577,7 +705,7 @@ export default function CashierAccounting() {
             </>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="d-flex justify-content-between">
           <Button
             variant="secondary"
             disabled={saving}
@@ -587,7 +715,7 @@ export default function CashierAccounting() {
           </Button>
           {modal?.mode === "pay" && (
             <Button disabled={saving || !!payError} onClick={pay}>
-              {label("payAll")} {money(activeHome?.due)}
+              {label("pay")}
             </Button>
           )}
         </Modal.Footer>

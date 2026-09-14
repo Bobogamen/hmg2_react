@@ -19,13 +19,16 @@ jest.mock("react-i18next", () => {
     };
     const t = (key, options = {}) => {
         const [namespace, path] = key.includes(":") ? key.split(":") : ["common", key];
-        const value = path.split(".").reduce((result, part) => result?.[part], translations[namespace]);
+        const lookup = (name) => name.split(".").reduce((result, part) => result?.[part], translations[namespace]);
+        const value = options.count != null
+            ? lookup(`${path}_${options.count === 1 ? "one" : "other"}`) ?? lookup(path)
+            : lookup(path);
         return typeof value === "string" ? value.replace(/{{(\w+)}}/g, (_, name) => options[name]) : key;
     };
     return { useTranslation: () => ({ t, i18n: { language: "en" } }) };
 });
 
-const repair = { id: 5, name: "Roof repair", budget: "1000", totalPaid: "33.34", totalExpenses: "10", balance: "23.34", completed: false };
+const repair = { id: 5, name: "Roof repair", budget: "1000", totalPaid: "33.34", totalExpenses: "10", balance: "23.34", completeAt: null };
 const details = { repair, payments: [
     { id: 1, homeId: 10, installmentNumber: 1, value: "33.34", paidDate: "2026-01-01" },
     { id: 2, homeId: 10, installmentNumber: 2, value: "33.33", paidDate: null },
@@ -90,7 +93,7 @@ test("selects condominium then repair, and breadcrumbs navigate back", async () 
 test("shows each home's paid installments in a modal without unpaid or other-home payments", async () => {
     open("/repair/condominiums/1/repairs/5");
     const count = await screen.findByRole("button", { name: "View paid installments for floor 1 • apt 1" });
-    expect(count).toHaveTextContent("1 / 2");
+    expect(count).toHaveTextContent("1 installment remaining");
     expect(screen.getByText("Anna Ivanova")).toBeInTheDocument();
     fireEvent.click(count);
     const modal = within(await screen.findByRole("dialog"));
@@ -178,14 +181,14 @@ test("shows the configured expense maximum from backend validation and allows a 
 test.each([
     ["unpaid installments", details],
     ["no installments", { ...details, payments: [] }],
-    ["an already completed repair", { ...details, repair: { ...repair, completed: true },
+    ["an already completed repair", { ...details, repair: { ...repair, completeAt: "2026-01-15" },
         payments: details.payments.map((payment) => ({ ...payment, paidDate: "2026-01-04" })) }],
 ])("hides completion for %s", async (_, result) => {
     getRepairDetails.mockResolvedValueOnce(result);
     open("/repair/condominiums/1/repairs/5");
     await screen.findByRole("region", { name: "homes" });
     expect(screen.queryByRole("button", { name: "Complete repair" })).not.toBeInTheDocument();
-    if (result.repair.completed) {
+    if (result.repair.completeAt) {
         expect(screen.queryByRole("button", { name: "Add expense" })).not.toBeInTheDocument();
     }
 });
@@ -209,7 +212,7 @@ test("completes a fully paid repair, prevents duplicate clicks, and refreshes th
     expect(modal.getByRole("button", { name: "Cancel" })).toBeDisabled();
     expect(completeRepair).toHaveBeenCalledTimes(1);
     expect(completeRepair).toHaveBeenCalledWith({ condominiumId: 1, repairId: 5 });
-    getRepairDetails.mockResolvedValueOnce({ ...paidDetails, repair: { ...repair, completed: true } });
+    getRepairDetails.mockResolvedValueOnce({ ...paidDetails, repair: { ...repair, completeAt: "2026-01-15" } });
     await act(async () => finish());
     expect(await screen.findByText("Completed")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Complete repair" })).not.toBeInTheDocument();
@@ -236,7 +239,7 @@ test("refreshes a stale expense form when the repair was completed elsewhere", a
     fireEvent.change(modal.getByLabelText(/^name$/i), { target: { value: "Materials" } });
     fireEvent.change(modal.getByLabelText("Document number"), { target: { value: "INV-2" } });
     fireEvent.change(modal.getByLabelText(/Value/), { target: { value: "25" } });
-    getRepairDetails.mockResolvedValueOnce({ ...details, repair: { ...repair, completed: true } });
+    getRepairDetails.mockResolvedValueOnce({ ...details, repair: { ...repair, completeAt: "2026-01-15" } });
     fireEvent.click(modal.getByRole("button", { name: "Add" }));
     expect(await screen.findByText("Completed")).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -267,9 +270,9 @@ test("failed requests show an error and support retry instead of empty financial
 
 test("repair cards show collection progress while their colors follow completion status", async () => {
     getCondominium.mockResolvedValueOnce({ ...condo, repairs: [
-        { ...repair, name: "Partly funded", budget: 1000, totalPaid: 250, completed: false },
-        { ...repair, id: 6, name: "Fully funded", budget: 1000, totalPaid: 1000, completed: false },
-        { ...repair, id: 7, name: "Finished work", budget: 1000, totalPaid: 1000, completed: true },
+        { ...repair, name: "Partly funded", budget: 1000, totalPaid: 250, completeAt: null },
+        { ...repair, id: 6, name: "Fully funded", budget: 1000, totalPaid: 1000, completeAt: null },
+        { ...repair, id: 7, name: "Finished work", budget: 1000, totalPaid: 1000, completeAt: "2026-01-15" },
     ] });
     open("/repair/condominiums/1");
     const partlyFunded = await screen.findByRole("link", { name: /Partly funded/ });
@@ -304,6 +307,8 @@ test("shows each home's paid/total and changes the red payment control to green 
     expect(pay).toHaveClass("btn-danger");
     expect(screen.getByRole("columnheader", { name: "Paid / total" })).toBeInTheDocument();
     const cells = within(pay.closest("tr")).getAllByRole("cell");
+    expect(cells).toHaveLength(6);
+    expect(cells[5]).toHaveTextContent("Pay1 installment remaining");
     expect(cells.slice(3, 5).map((cell) => cell.textContent)).toEqual(["€ 33.34", "€ 33.34 / 66.67"]);
     expect(within(pay.closest("tr")).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
     fireEvent.click(pay);
@@ -319,7 +324,7 @@ test("shows each home's paid/total and changes the red payment control to green 
     await waitFor(() => expect(payRepairInstallment).toHaveBeenCalledWith({ condominiumId: 1, repairId: 5, paymentId: 2, paidDate: "2026-01-04" }));
     expect(await screen.findByText("Paid in full")).toBeInTheDocument();
     const refreshed = screen.getByRole("button", { name: "View paid installments for floor 1 • apt 1" });
-    expect(refreshed).toHaveTextContent("2 / 2");
+    expect(refreshed).toHaveTextContent("0 installments remaining");
     expect(within(refreshed.closest("tr")).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
     expect(within(refreshed.closest("tr")).getAllByRole("cell")[4]).toHaveTextContent("€ 66.67 / 66.67");
     const fullyPaid = screen.getByRole("button", { name: "Paid in full" });

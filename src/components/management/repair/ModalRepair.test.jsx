@@ -29,12 +29,13 @@ beforeEach(() => {
 
 test("validates step one and submits all setup from step two", async () => {
     setup();
+    fireEvent.change(screen.getByLabelText("finance:period.startDate"), { target: { value: "2025-06-15" } });
     await continueToSchedule();
-    expect(validateRepair).toHaveBeenCalledWith({ condominiumId: 1, name: "Roof repair", budget: "120", repairId: undefined });
+    expect(validateRepair).toHaveBeenCalledWith({ condominiumId: 1, name: "Roof repair", budget: "120", startDate: "2025-06-15", repairId: undefined });
     expect(screen.getByLabelText("Home 1").checked).toBe(true);
     fireEvent.change(screen.getByLabelText("finance:numberOfInstallments"), { target: { value: "3" } });
     fireEvent.click(screen.getByRole("button", { name: "save" }));
-    await waitFor(() => expect(addRepair).toHaveBeenCalledWith({ condominiumId: 1, name: "Roof repair", budget: "120", homeIds: [10, 11], distributionType: "EQUAL", homePercentages: {}, installments: 3 }));
+    await waitFor(() => expect(addRepair).toHaveBeenCalledWith({ condominiumId: 1, name: "Roof repair", budget: "120", startDate: "2025-06-15", homeIds: [10, 11], distributionType: "EQUAL", homePercentages: {}, installments: 3, homeInstallmentValues: { 10: 20, 11: 20 } }));
     await waitFor(() => expect(toast.success).toHaveBeenCalled());
 });
 
