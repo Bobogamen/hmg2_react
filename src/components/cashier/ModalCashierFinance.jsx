@@ -45,12 +45,14 @@ export default function ModalCashierFinance({
   const submission = useRef(null);
   const [id] = useState(requestId);
   const title = label(
-    mode === "bill"
-      ? "payBill"
-      : mode === "income"
-        ? "addIncome"
-        : "addExpense",
+    mode === "bill" ? "pay" : mode === "income" ? "addIncome" : "addExpense",
   );
+  const formColor =
+    mode === "bill"
+      ? "bg-warning"
+      : mode === "income"
+        ? "bg-success"
+        : "bg-danger";
   const period = new Intl.DateTimeFormat(i18n.language, {
     month: "long",
     year: "numeric",
@@ -120,31 +122,46 @@ export default function ModalCashierFinance({
       show
       onHide={close}
       centered
-      className={`cashier-management-modal cashier-management-modal--${mode}`}
       backdrop={saving ? "static" : true}
       keyboard={!saving}
       aria-labelledby="cashier-finance-modal-title"
     >
       <Modal.Header closeButton={!saving}>
         <Modal.Title id="cashier-finance-modal-title" className="fs-5 fw-bold">
-          <span className="cashier-modal-title-badge">{title}</span>
-          {condominiumName && <div className="cashier-modal-building">{condominiumName}</div>}
+          {mode === "bill" ? label("pay") : t("common:add")}{" "}
+          <span
+            className={`${formColor} bg-opacity-50 border border-3 border-primary px-1 rounded`}
+          >
+            {label(
+              mode === "bill"
+                ? "bill"
+                : mode === "income"
+                  ? "income"
+                  : "expense",
+            )}
+          </span>
+          {condominiumName && (
+            <div className="mt-2">
+              {t("common:in")}
+              <span className="fst-italic text-primary border border-3 border-primary rounded px-1 ms-1">
+                {condominiumName}
+              </span>
+            </div>
+          )}
           <small className="d-block text-muted fs-6 mt-1 text-capitalize">
             {period}
           </small>
         </Modal.Title>
       </Modal.Header>
-      <form onSubmit={submit} className="cashier-finance-form">
+      <form onSubmit={submit}>
         <Modal.Body>
           <fieldset
-            className="registrationForm cashier-entry-fields"
+            className={`registrationForm mb-3 ${formColor} bg-opacity-50`}
             disabled={saving || uncertain || blocked || month.completed}
           >
             {mode === "bill" ? (
-              <div className="mb-3">
-                <label className="form-label" htmlFor="cashier-finance-billId">
-                  {label("bill")}
-                </label>
+              <div className="mb-2">
+                <label htmlFor="cashier-finance-billId">{label("bill")}</label>
                 <select
                   className="form-select"
                   id="cashier-finance-billId"
@@ -162,15 +179,11 @@ export default function ModalCashierFinance({
                 </select>
               </div>
             ) : (
-              <div className="mb-3">
-                <label className="form-label" htmlFor="cashier-finance-name">
-                  {label("name")}
-                </label>
+              <div className="mb-2">
+                <label htmlFor="cashier-finance-name">{label("name")}</label>
                 <input
-                  className="form-control"
                   id="cashier-finance-name"
                   name="name"
-                  required
                   maxLength={100}
                   value={data.name}
                   onChange={change}
@@ -179,17 +192,15 @@ export default function ModalCashierFinance({
                 {renderFieldErrors(errors, "name", t)}
               </div>
             )}
-            <div className="mb-3">
-              <label className="form-label" htmlFor="cashier-finance-value">
+            <div className="mb-2">
+              <label htmlFor="cashier-finance-value">
                 {label("amount")} (€)
               </label>
               <input
-                className="form-control"
                 id="cashier-finance-value"
                 name="value"
                 type="number"
                 inputMode="decimal"
-                required
                 min="0.01"
                 max="9999999999.99"
                 step="0.01"
@@ -198,38 +209,28 @@ export default function ModalCashierFinance({
               />
               {renderFieldErrors(errors, "value", t)}
             </div>
-            <div className="row g-3">
-              <div className="col-12 col-sm-6">
-                <label
-                  className="form-label"
-                  htmlFor="cashier-finance-documentNumber"
-                >
+            <div className="cashier-document-fields">
+              <div className="mb-2">
+                <label htmlFor="cashier-finance-documentNumber">
                   {label("documentNumber")}
                 </label>
                 <input
-                  className="form-control"
                   id="cashier-finance-documentNumber"
                   name="documentNumber"
-                  required
                   maxLength={30}
                   value={data.documentNumber}
                   onChange={change}
                 />
                 {renderFieldErrors(errors, "documentNumber", t)}
               </div>
-              <div className="col-12 col-sm-6">
-                <label
-                  className="form-label"
-                  htmlFor="cashier-finance-documentDate"
-                >
+              <div className="mb-2">
+                <label htmlFor="cashier-finance-documentDate">
                   {label("documentDate")}
                 </label>
                 <input
-                  className="form-control"
                   id="cashier-finance-documentDate"
                   name="documentDate"
                   type="date"
-                  required
                   max={format(new Date(), "yyyy-MM-dd")}
                   value={data.documentDate}
                   onChange={change}
@@ -266,7 +267,9 @@ export default function ModalCashierFinance({
               ? label("saving")
               : uncertain
                 ? label("retrySameEntry")
-                : title}
+                : mode === "bill"
+                  ? title
+                  : t("common:add")}
           </button>
         </div>
         <Modal.Footer>

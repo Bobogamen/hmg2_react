@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Cashier from "./Cashier";
 import { useUser } from "../../user/UserContext";
@@ -27,6 +27,12 @@ beforeEach(() => {
   getCashiers.mockResolvedValue(overview);
 });
 
+test("manager can open accounting without any registered cashier", async () => {
+  open();
+  const buildings = await screen.findByRole("region", { name: "cashierPage.myCondominiums" });
+  expect(within(buildings).getByRole("link", { name: /Building Seven/ })).toHaveAttribute("href", "/cashier/condominium/7");
+});
+
 test.each([true, false])("updates existing cashier assignments at the limit, assign replacement: %s", async (assignReplacement) => {
   const second = { id: 8, name: "Building Eight" };
   const cashier = { id: 2, name: "Existing Cashier", email: "cashier@example.com", condominiums: [building] };
@@ -44,7 +50,8 @@ test.each([true, false])("updates existing cashier assignments at the limit, ass
   expect(updateCashierCondominiums).toHaveBeenCalledWith(2, assignReplacement ? [8] : []);
   expect(registerCashier).not.toHaveBeenCalled();
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-  expect(screen.queryByText("Building Seven")).not.toBeInTheDocument();
+  const buildings = screen.getByRole("region", { name: "cashierPage.myCondominiums" });
+  expect(within(buildings).getByRole("link", { name: /Building Seven/ })).toHaveAttribute("href", "/cashier/condominium/7");
 });
 
 test("keeps assignment choices when saving fails", async () => {

@@ -97,6 +97,8 @@ button {
 
 .registrationForm select {
   font-size: small;
+  border: 0.12em solid black;
+  border-style: inset;
 }
 
 .width-fit-content {

@@ -80,7 +80,7 @@ test.each([["income", "Add income"], ["expense", "Pay expense"]])("saves %s for 
   const props = setup();
   fireEvent.click(screen.getByRole("button", { name: title }));
   const dialog = fill(mode);
-  fireEvent.click(dialog.getByRole("button", { name: title }));
+  fireEvent.click(dialog.getByRole("button", { name: "Add", exact: true }));
   await waitFor(() => expect(props.onSaved).toHaveBeenCalledWith(finance));
   expect(saveCashierFinanceEntry).toHaveBeenCalledWith(expect.objectContaining({
     mode, monthId: 9, condominiumId: 1, name: "Rent income", value: "15.25", documentNumber: "INV-9", requestId: expect.any(String),

@@ -79,6 +79,18 @@ export default function Cashier() {
         {manager ? (
           data ? (
             <>
+              <section aria-label={t("cashierPage.myCondominiums")}>
+                <div className="cashier-section-heading">
+                  <h3 className="fs-5 fw-bold mb-0">
+                    {t("cashierPage.myCondominiums")}
+                    <span className="badge text-bg-secondary ms-2">
+                      {data.condominiums?.length || 0}
+                    </span>
+                  </h3>
+                  <p>{t("cashierPage.chooseBuilding")}</p>
+                </div>
+                <CashierCondominiums items={data.condominiums || []} />
+              </section>
               <div className="cashier-toolbar">
                 <h3 className="fs-5 fw-bold mb-0">
                   {t("cashierPage.list")}

@@ -124,6 +124,8 @@
     "bills": "Bills",
     "incomes": "Single incomes",
     "addExpense": "Pay expense",
+    "expense": "expense",
+    "income": "income",
     "payBill": "Pay bill",
     "allBillsPaid": "All bills paid",
     "addIncome": "Add income",

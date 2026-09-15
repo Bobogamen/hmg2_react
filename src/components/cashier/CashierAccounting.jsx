@@ -13,11 +13,10 @@ import { useUser } from "../../user/UserContext";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 import Breadcrumbs from "../breadcrumb/Breadcrumbs";
 import AccountingPeriodNotice from "../management/AccountingPeriodNotice";
-import apartments from "../../assets/images/app/apartment_building.png";
+import CashierCondominiumCard from "./CashierCondominiumCard";
 import {
   ChevronLeft,
   ChevronRight,
-  MapPin,
   Search,
   Wallet,
   ReceiptText,
@@ -251,18 +250,14 @@ export default function CashierAccounting() {
     <div className="container-fluid py-2 cashier-accounting cashier-management">
       <Breadcrumbs />
       <header className="cashier-accounting-header">
-        <div className="cashier-accounting-heading">
-          <img src={apartments} width="48" height="48" alt="" />
-          <div>
-            <h2>{overview?.name || label("title")}</h2>
-            {overview?.address && (
-              <p>
-                <MapPin size={16} aria-hidden="true" />
-                <span>{overview.address}</span>
-              </p>
-            )}
-          </div>
-        </div>
+        <CashierCondominiumCard
+          heading
+          condominium={{
+            ...user?.condominiums?.find((item) => String(item.id) === String(condominiumId)),
+            ...overview,
+            name: overview?.name || label("title"),
+          }}
+        />
         {overview?.months.length > 0 && (
           <section
             className="cashier-month-panel cashier-collection-panel"

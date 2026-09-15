@@ -235,8 +235,8 @@ export default function CashierFinancePanel({
                 <th
                   scope="row"
                   className={
-                    window.innerWidth <= 650 && field === "monthlyDifference"
-                      ? ""
+                    field === "monthlyDifference"
+                      ? "cashier-monthly-difference-label"
                       : "d-flex justify-content-start align-items-center gap-1"
                   }
                 >
