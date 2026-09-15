@@ -1,0 +1,8 @@
+.print-page { max-width: 1500px; margin: auto; padding: 20px 16px; color: #263f4b; }
+.print-page header h2 { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; }
+.print-page header p, .print-hint { color: #63747d; font-size: .85rem; }
+.print-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 20px 0 12px; padding: 16px; border: 1px solid #dbe5e9; border-radius: 14px; background: #fff; }
+.print-controls label { flex: 1 1 200px; font-size: .85rem; }
+.print-controls .form-select { width: 100%; max-width: none; margin: 5px 0 0; }
+.print-preview { width: 100%; height: 75vh; margin-top: 16px; border: 1px solid #dbe5e9; border-radius: 8px; background: white; }
+@media(max-width: 600px) { .print-page { padding: 12px 8px; } .print-controls button { width: 100%; } }

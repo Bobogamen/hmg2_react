@@ -13,6 +13,7 @@ import Management from "./components/management/Management";
 import Home from "./components/management/home/Home";
 
 import Finance from "./components/finance/Finance";
+import Print from "./components/print/Print";
 import Fund from "./components/fund/Fund";
 import Repairs from "./components/repair/Repairs";
 import Statistics from "./components/statistic/Statistics";
@@ -146,6 +147,7 @@ const App = () => {
             </Route>
             {[
               { path: "/finance", component: <Finance /> },
+              { path: "/print", component: <Print /> },
               { path: "/statistics", component: <Statistics /> },
               { path: "/cashier", component: <Cashier /> },
               { path: "/cashier/condominium/:condominiumId", component: <CashierAccounting /> },

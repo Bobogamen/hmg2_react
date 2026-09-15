@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { saveCashierFinanceEntry } from "../../api/services/cashierService";
 import renderFieldErrors from "../../utils/renderFieldErrors";
+import "./CashierManagement.css";
 
 const requestId = () => {
   const bytes = crypto.getRandomValues(new Uint8Array(16));
@@ -20,6 +21,7 @@ export default function ModalCashierFinance({
   billId,
   bills,
   condominiumId,
+  condominiumName,
   month,
   onClose,
   onSaved,
@@ -118,13 +120,15 @@ export default function ModalCashierFinance({
       show
       onHide={close}
       centered
+      className={`cashier-management-modal cashier-management-modal--${mode}`}
       backdrop={saving ? "static" : true}
       keyboard={!saving}
       aria-labelledby="cashier-finance-modal-title"
     >
       <Modal.Header closeButton={!saving}>
-        <Modal.Title id="cashier-finance-modal-title" className="fs-5">
-          {title}
+        <Modal.Title id="cashier-finance-modal-title" className="fs-5 fw-bold">
+          <span className="cashier-modal-title-badge">{title}</span>
+          {condominiumName && <div className="cashier-modal-building">{condominiumName}</div>}
           <small className="d-block text-muted fs-6 mt-1 text-capitalize">
             {period}
           </small>
@@ -133,6 +137,7 @@ export default function ModalCashierFinance({
       <form onSubmit={submit} className="cashier-finance-form">
         <Modal.Body>
           <fieldset
+            className="registrationForm cashier-entry-fields"
             disabled={saving || uncertain || blocked || month.completed}
           >
             {mode === "bill" ? (
@@ -251,13 +256,10 @@ export default function ModalCashierFinance({
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" disabled={saving} onClick={close}>
-            {t("common:close")}
-          </Button>
-          <Button
+        <div className="d-flex justify-content-center mb-3">
+          <button
             type="submit"
-            variant={mode === "income" ? "success" : "primary"}
+            className="authentication-button"
             disabled={saving || blocked || month.completed}
           >
             {saving
@@ -265,6 +267,11 @@ export default function ModalCashierFinance({
               : uncertain
                 ? label("retrySameEntry")
                 : title}
+          </button>
+        </div>
+        <Modal.Footer>
+          <Button variant="secondary" disabled={saving} onClick={close}>
+            {t("common:close")}
           </Button>
         </Modal.Footer>
       </form>

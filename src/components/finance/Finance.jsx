@@ -5,6 +5,7 @@ import { Wallet, Landmark, Wrench, RefreshCw, Building2 } from "lucide-react";
 import { useUser } from "../../user/UserContext";
 import { getFinanceOverview } from "../../api/services/financeService";
 import "./Finance.css";
+import { downloadCsv } from "./financeExport";
 
 export default function Finance() {
   const { user } = useUser();
@@ -17,6 +18,7 @@ export default function Finance() {
   const [error, setError] = useState(false);
   const [revision, setRevision] = useState(0);
   const [direction, setDirection] = useState("all");
+  const [source, setSource] = useState("all");
   const [search, setSearch] = useState("");
   const [allMonths, setAllMonths] = useState(false);
   useEffect(() => {
@@ -24,6 +26,7 @@ export default function Finance() {
     setResult(null);
     setError(false);
     setDirection("all");
+    setSource("all");
     setSearch("");
     setAllMonths(false);
     if (selected)
@@ -60,12 +63,24 @@ export default function Finance() {
   const movements =
     data?.movements.filter(
       (m) =>
+        (source === "all" || source === m.type) &&
         (direction === "all" ||
           (direction === "income") === incomeTypes.includes(m.type)) &&
         `${m.name} ${m.documentNumber || ""} ${label(m.type)}`
           .toLocaleLowerCase()
           .includes(search.trim().toLocaleLowerCase()),
     ) || [];
+  const exportMonths = () => downloadCsv(`finance-${selected}-months.csv`, [
+    ["building", "month", "income_EUR", "funds_EUR", "expenses_EUR", "difference_EUR", "carried_EUR", "balance_EUR", "status"],
+    ...data.months.map(m => [data.name, `${m.year}-${String(m.number).padStart(2, "0")}`,
+      ...[m.income, m.forFunds, m.expenses, m.difference, m.carried, m.balance].map(Number),
+      label(m.completed ? "closed" : "open")]),
+  ]);
+  const exportMovements = () => downloadCsv(`finance-${selected}-recent-filtered.csv`, [
+    ["building", "type", "name", "amount_EUR", "recorded_date", "document_number", "document_date"],
+    ...movements.map(m => [data.name, label(m.type), m.name,
+      Number(m.value) * (incomeTypes.includes(m.type) ? 1 : -1), m.date, m.documentNumber, m.documentDate]),
+  ]);
   const accounts = (kind) => (
     <section className="finance-panel">
       <h3>{label(kind)}</h3>
@@ -204,7 +219,10 @@ export default function Finance() {
             {accounts("repairs")}
           </div>
           <section className="finance-panel">
-            <h3>{label("monthly")}</h3>
+            <div className="finance-section-toolbar">
+              <h3>{label("monthly")}</h3>
+              <button className="btn btn-sm btn-outline-secondary" disabled={!data.months.length} onClick={exportMonths}>{label("exportMonths")}</button>
+            </div>
             <p className="finance-muted">{label("monthlyHint")}</p>
             {!data.months.length ? (
               <p>{label("noMonths")}</p>
@@ -274,9 +292,16 @@ export default function Finance() {
             )}
           </section>
           <section className="finance-panel">
-            <h3>{label("recent")}</h3>
+            <div className="finance-section-toolbar">
+              <h3>{label("recent")}</h3>
+              <button className="btn btn-sm btn-outline-secondary" disabled={!movements.length} onClick={exportMovements}>{label("exportMovements")}</button>
+            </div>
             <p className="finance-muted">{label("recentHint")}</p>
             <div className="finance-filters">
+              <select aria-label={label("source")} className="form-select" value={source} onChange={e => setSource(e.target.value)}>
+                {["all", "fee", "income", "bill", "expense", "fundExpense", "repairIncome", "repairExpense"].map(key =>
+                  <option key={key} value={key}>{label(key === "all" ? "allSources" : key)}</option>)}
+              </select>
               <select
                 aria-label={label("filter")}
                 className="form-select"
@@ -297,6 +322,12 @@ export default function Finance() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+            </div>
+            <div className="finance-section-toolbar finance-muted" role="status">
+              <span>{label("shown")}: {movements.length} / {data.movements.length}</span>
+              {(direction !== "all" || source !== "all" || search) && (
+                <button className="btn btn-link btn-sm" onClick={() => { setDirection("all"); setSource("all"); setSearch(""); }}>{label("clearFilters")}</button>
+              )}
             </div>
             {!movements.length ? (
               <p className="finance-muted">

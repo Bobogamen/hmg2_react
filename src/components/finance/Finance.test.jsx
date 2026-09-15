@@ -2,6 +2,8 @@ import React from "react";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Finance from "./Finance";
+import { downloadCsv } from "./financeExport";
+jest.mock("./financeExport", () => ({ downloadCsv: jest.fn() }));
 import { getFinanceOverview } from "../../api/services/financeService";
 jest.mock("../../api/services/financeService", () => ({ getFinanceOverview: jest.fn() }));
 jest.mock("../../user/UserContext", () => ({ useUser: () => ({ user: { id: 1, condominiums: [{ id: 1, name: "First" }, { id: 2, name: "Second" }] } }) }));
@@ -41,4 +43,17 @@ test("shows a retry after failed loading", async () => {
   open(); await screen.findByRole("alert");
   fireEvent.click(screen.getAllByRole("button", { name: "Refresh" })[0]);
   await waitFor(() => expect(screen.getByText("€ 160.00")).toBeInTheDocument());
+});
+
+test("exports only filtered movements and restores the list after clearing filters", async () => {
+  open(); await screen.findByText("Materials");
+  fireEvent.change(screen.getByRole("combobox", { name: "Source" }), { target: { value: "expense" } });
+  expect(screen.queryByText("Cleaning")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Shown movements · CSV" }));
+  expect(downloadCsv).toHaveBeenCalledWith("finance-1-recent-filtered.csv", [
+    ["building", "type", "name", "amount_EUR", "recorded_date", "document_number", "document_date"],
+    ["First", "Expense", "Materials", -5, "2026-09-02", "INV-1", "2026-09-01"],
+  ]);
+  fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+  expect(screen.getByText("Cleaning")).toBeInTheDocument();
 });

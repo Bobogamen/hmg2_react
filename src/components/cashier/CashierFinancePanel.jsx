@@ -3,14 +3,21 @@ import { createPortal } from "react-dom";
 import { Modal, Button } from "react-bootstrap";
 import { closeCashierMonth } from "../../api/services/cashierService";
 import { useTranslation } from "react-i18next";
-import { Wallet, ArrowDownLeft, ArrowUpRight, Plus } from "lucide-react";
+import {
+  Wallet,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Plus,
+  CircleCheck,
+  CalendarCheck,
+} from "lucide-react";
 import ModalCashierFinance from "./ModalCashierFinance";
 
 function EntryTable({ entries, label, money, date, empty }) {
   if (!entries.length) return <p className="cashier-finance-empty">{empty}</p>;
   return (
     <div className="table-responsive">
-      <table className="table table-sm align-middle cashier-finance-table">
+      <table className="table table-sm table-bordered table-hover align-middle cashier-finance-table">
         <thead>
           <tr>
             {["name", "amount", "documentNumber", "documentDate"].map((key) => (
@@ -26,7 +33,9 @@ function EntryTable({ entries, label, money, date, empty }) {
               key={`${entry.kind || "income"}-${entry.id}`}
               className={entry.kind ? `cashier-entry-${entry.kind}` : undefined}
             >
-              <td data-label={label("name")}>{entry.name}</td>
+              <td data-label={label("name")}>
+                {entry.kind === "bill" ? <em>{entry.name}</em> : entry.name}
+              </td>
               <td data-label={label("amount")} className="fw-semibold">
                 {money(entry.value)}
               </td>
@@ -50,6 +59,7 @@ export default function CashierFinancePanel({
   closeActionContainer,
   error,
   condominiumId,
+  condominiumName,
   onSaved,
   onRefresh,
   onMonthSelect,
@@ -126,7 +136,7 @@ export default function CashierFinancePanel({
             "income",
           )}
           <span>+</span>
-          {amountChip(singleIncome, "incomePart", "income")}
+          {amountChip(singleIncome, "singleIncomePart", "income")}
         </>
       );
     if (field === "totalExpenses")
@@ -199,7 +209,10 @@ export default function CashierFinancePanel({
           {label("saved")}
         </div>
       )}
-      <section className="cashier-month-panel" aria-label={label("summary")}>
+      <section
+        className="cashier-month-panel cashier-finance-overview"
+        aria-label={label("summary")}
+      >
         <div className="cashier-panel-heading">
           <div>
             <h3>
@@ -208,15 +221,8 @@ export default function CashierFinancePanel({
             </h3>
             <p>{period(summary)}</p>
           </div>
-          <span
-            className={`cashier-month-state ${summary.completed ? "is-closed" : ""}`}
-          >
-            {t(
-              `dashboard:cashierAccounting.${summary.completed ? "closedStatus" : "openStatus"}`,
-            )}
-          </span>
         </div>
-        <table className="table table-sm cashier-finance-summary">
+        <table className="table table-sm table-bordered cashier-finance-summary">
           <tbody>
             {[
               "currentIncome",
@@ -228,7 +234,11 @@ export default function CashierFinancePanel({
               <tr key={field}>
                 <th
                   scope="row"
-                  className="d-flex justify-content-start align-items-center gap-2"
+                  className={
+                    window.innerWidth <= 650 && field === "monthlyDifference"
+                      ? ""
+                      : "d-flex justify-content-start align-items-center gap-1"
+                  }
                 >
                   {label(field)}
                   {[
@@ -251,9 +261,16 @@ export default function CashierFinancePanel({
                           )
                         }
                       >
-                        {new Intl.DateTimeFormat(i18n.language, { month: "long" }).format(
-                          new Date(summary.previousAccountingMonth.year, summary.previousAccountingMonth.number - 1, 1),
-                        )}{" "}{summary.previousAccountingMonth.year}
+                        {new Intl.DateTimeFormat(i18n.language, {
+                          month: "long",
+                        }).format(
+                          new Date(
+                            summary.previousAccountingMonth.year,
+                            summary.previousAccountingMonth.number - 1,
+                            1,
+                          ),
+                        )}{" "}
+                        {summary.previousAccountingMonth.year}
                       </button>
                     )}
                 </th>
@@ -296,9 +313,13 @@ export default function CashierFinancePanel({
             ))}
         </p>
       </section>
-      {canClose && closeActionContainer && createPortal(
+      {canClose &&
+        closeActionContainer &&
+        createPortal(
           <button
-            className="btn btn-outline-success btn-sm"
+            className="btn btn-outline-success btn-sm cashier-close-month"
+            title={label("closeMonth")}
+            aria-label={label("closeMonth")}
             type="button"
             disabled={closing}
             aria-haspopup="dialog"
@@ -307,10 +328,10 @@ export default function CashierFinancePanel({
               setConfirmClose(true);
             }}
           >
-            {label("closeMonth")}
+            <CalendarCheck size={19} aria-hidden="true" />
           </button>,
-          closeActionContainer
-      )}
+          closeActionContainer,
+        )}
       <Modal
         show={confirmClose}
         onHide={() => {
@@ -323,10 +344,11 @@ export default function CashierFinancePanel({
       >
         <Modal.Header closeButton={!closing}>
           <Modal.Title id="close-month-title">
-            {label("closeMonth")} · {period(summary)}
+            {label("closeMonth")}
+            <div className="fs-5 fst-italic">{period(summary)}</div>
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="text-center">
           <p>{label("closeExplanation")}</p>
           {closeError && (
             <p className="alert alert-danger mb-0" role="alert">
@@ -334,7 +356,7 @@ export default function CashierFinancePanel({
             </p>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="d-flex justify-content-between">
           <Button
             variant="secondary"
             disabled={closing}
@@ -353,16 +375,23 @@ export default function CashierFinancePanel({
       </Modal>
       <section
         className="cashier-month-panel cashier-finance-expenses"
-        aria-label={label("expenses")}
+        aria-label={label("expensesAnd") + " " + label("bills")}
       >
         <div className="cashier-panel-heading">
           <h3>
             <ArrowUpRight size={21} aria-hidden="true" />
-            {label("expenses")}
+            {label("expensesAnd")} <em>{label("bills")}</em>
           </h3>
           <div className="cashier-finance-actions">
-            {unpaidBills.length > 0 && addButton("bill", label("payBill"))}
-            {addButton("expense", label("addExpense"))}
+            {unpaidBills.length > 0 ? (
+              addButton("bill", label("payBill"))
+            ) : (
+              <span className="cashier-bills-paid" role="status">
+                <CircleCheck size={18} aria-hidden="true" />
+                {label("allBillsPaid")}
+              </span>
+            )}
+            {!summary.completed && addButton("expense", label("addExpense"))}
           </div>
         </div>
         <EntryTable
@@ -382,13 +411,16 @@ export default function CashierFinancePanel({
           </strong>
         </div>
       </section>
-      <section className="cashier-month-panel" aria-label={label("incomes")}>
+      <section
+        className="cashier-month-panel cashier-finance-incomes"
+        aria-label={label("incomes")}
+      >
         <div className="cashier-panel-heading">
           <h3>
             <ArrowDownLeft size={21} aria-hidden="true" />
             {label("incomes")}
           </h3>
-          {addButton("income", label("addIncome"))}
+          {!summary.completed && addButton("income", label("addIncome"))}
         </div>
         <EntryTable
           entries={incomes}
@@ -412,6 +444,7 @@ export default function CashierFinancePanel({
           {...modal}
           bills={unpaidBills}
           condominiumId={condominiumId}
+          condominiumName={condominiumName}
           month={summary}
           onClose={() => setModal(null)}
           onRefresh={onRefresh}

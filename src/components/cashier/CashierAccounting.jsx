@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
@@ -21,8 +21,13 @@ import {
   Search,
   Wallet,
   ReceiptText,
+  Printer,
+  CalendarDays,
+  LockKeyhole,
+  LockKeyholeOpen,
 } from "lucide-react";
 import "./CashierAccounting.css";
+import "./CashierManagement.css";
 import CashierFinancePanel from "./CashierFinancePanel";
 
 const keyOfMonth = (month) =>
@@ -70,7 +75,8 @@ export default function CashierAccounting() {
     ["MANAGER", "ADMIN"].includes(role),
   );
   const money = (value) =>
-    "€ " + new Intl.NumberFormat(i18n.language, {
+    "€ " +
+    new Intl.NumberFormat(i18n.language, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value || 0);
@@ -242,7 +248,7 @@ export default function CashierAccounting() {
   const monthIndex =
     overview?.months.findIndex((month) => String(month.id) === monthId) ?? -1;
   return (
-    <div className="container-fluid py-2">
+    <div className="container-fluid py-2 cashier-accounting cashier-management">
       <Breadcrumbs />
       <header className="cashier-accounting-header">
         <div className="cashier-accounting-heading">
@@ -362,21 +368,46 @@ export default function CashierAccounting() {
           <button
             type="button"
             className="cashier-current-month"
+            title={label("currentMonth")}
+            aria-label={label("currentMonth")}
             disabled={
               saving || !currentMonth || String(currentMonth.id) === monthId
             }
             onClick={() => setMonthId(String(currentMonth.id))}
           >
-            {label("currentMonth")}
+            <CalendarDays size={19} aria-hidden="true" />
           </button>
           {details && (
             <span
               className={`cashier-month-state ${details.month.completed ? "is-closed" : ""}`}
+              title={label(
+                details.month.completed ? "closedStatus" : "openStatus",
+              )}
+              aria-label={label(
+                details.month.completed ? "closedStatus" : "openStatus",
+              )}
             >
-              {label(details.month.completed ? "closedStatus" : "openStatus")}
+              {details.month.completed ? (
+                <LockKeyhole size={19} aria-hidden="true" />
+              ) : (
+                <LockKeyholeOpen size={19} aria-hidden="true" />
+              )}
             </span>
           )}
-          <span ref={setCloseActionContainer} className="cashier-close-action" />
+          <span
+            ref={setCloseActionContainer}
+            className="cashier-close-action"
+          />
+          {details && (
+            <Link
+              className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center justify-content-center cashier-print-link"
+              to={`/print?condominium=${condominiumId}&month=${monthId}`}
+              title={t("dashboard:printPage.print")}
+              aria-label={t("dashboard:printPage.print")}
+            >
+              <Printer size={20} aria-hidden="true" />
+            </Link>
+          )}
         </div>
       )}
       {overview?.months.length > 0 && !currentMonth && (
@@ -469,7 +500,7 @@ export default function CashierAccounting() {
             )}
             {details && (
               <div className="table-responsive">
-                <table className="table table-bordered table-hover align-middle cashier-homes-table">
+                <table className="table table-sm table-bordered table-striped table-hover align-middle cashier-homes-table">
                   <thead>
                     <tr>
                       {["floor", "home", "owner", "total", "paidDate"].map(
@@ -541,7 +572,12 @@ export default function CashierAccounting() {
                     <tr>
                       <th colSpan={3}>{label("total")}</th>
                       <th>
-                        {money(visibleHomes.reduce((sum, home) => sum + Number(home.total), 0))}
+                        {money(
+                          visibleHomes.reduce(
+                            (sum, home) => sum + Number(home.total),
+                            0,
+                          ),
+                        )}
                       </th>
                       <td />
                     </tr>
@@ -567,10 +603,12 @@ export default function CashierAccounting() {
               </div>
             )}
           </section>
+          {/* RIGHT SIDE PANEL */}
           <aside className="cashier-right-column" aria-label={label("summary")}>
             <CashierFinancePanel
               key={`${condominiumId}:${monthId}`}
               finance={finance}
+              condominiumName={overview?.name}
               closeActionContainer={closeActionContainer}
               homesPaid={!!details && dueCount === 0}
               error={financeError}

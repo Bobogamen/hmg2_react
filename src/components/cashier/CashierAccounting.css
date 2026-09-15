@@ -1,5 +1,5 @@
 .cashier-accounting {
-  max-width: 1600px;
+  --cashier-income-background: #83dca5;
   margin-inline: auto;
 }
 
@@ -31,8 +31,8 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 7px;
+  gap: 3px;
+  margin-top: 5px;
   font-weight: 500;
   color: #61717b;
 }
@@ -40,10 +40,11 @@
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  padding: 5px 8px;
+  padding: 3px 5px;
   border-radius: 8px;
-  background: #eef3f6;
-  color: #344957;
+  background: #b9d8f2;
+  color: #193b59;
+  border: 1px solid #759fc2;
   font-variant-numeric: tabular-nums;
 }
 .cashier-formula-amount > span {
@@ -57,20 +58,24 @@
   line-height: 1.2;
 }
 .cashier-formula-amount.is-income {
-  background: #e8f5ed;
-  color: #17623f;
+  background: var(--cashier-income-background, #83dca5);
+  color: #123f28;
+  border-color: #39995e;
 }
 .cashier-formula-amount.is-bill {
-  background: #fff6d5;
-  color: #785900;
+  background: #ffd65a;
+  color: #513b00;
+  border-color: #bc8a0c;
 }
 .cashier-formula-amount.is-expense {
-  background: #fdebec;
-  color: #a03543;
+  background: #ff9caa;
+  color: #651c2a;
+  border-color: #cc5065;
 }
 .cashier-formula-amount.is-fund {
-  background: #edf0fb;
-  color: #525c8d;
+  background: #b7b4f5;
+  color: #302968;
+  border-color: #7b74c9;
 }
 @media (max-width: 400px) {
   .cashier-finance-summary tr {
@@ -119,13 +124,13 @@
   gap: 8px;
 }
 .cashier-finance-table .cashier-entry-bill {
-  --bs-table-bg: #fff6d5;
-  background-color: #fff6d5;
+  --bs-table-bg: #ffe083;
+  background-color: #ffe083;
   border-left: 3px solid #d6a323;
 }
 .cashier-finance-table .cashier-entry-expense {
-  --bs-table-bg: #fdebec;
-  background-color: #fdebec;
+  --bs-table-bg: #ffb1bb;
+  background-color: #ffb1bb;
   border-left: 3px solid #cd6570;
 }
 .cashier-finance-empty {
@@ -632,8 +637,9 @@
   flex: 0 0 30px;
   width: 30px;
   height: 30px;
+  margin: 0 0.3em 0 0.3em;
   padding: 0;
-  border: 0;
+  border: 1px solid black;
   border-radius: 7px;
   color: #21676a;
   background: #fff;
@@ -654,6 +660,11 @@
   cursor: pointer;
 }
 .cashier-current-month {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
   padding: 6px 9px;
   border: 1px solid #c7dedd;
   border-radius: 8px;
@@ -665,6 +676,33 @@
 .cashier-period-toolbar button:disabled {
   opacity: 0.45;
   cursor: default;
+}
+.cashier-month-state.is-closed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+.cashier-period-toolbar .cashier-month-state,
+.cashier-close-month {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+.cashier-bills-paid {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #78b88a;
+  border-radius: 8px;
+  background: #e0f3e5;
+  color: #215c32;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 .cashier-period-toolbar button:not(:disabled):hover {
   background: #dcefee;
@@ -1018,3 +1056,4 @@
     display: none;
   }
 }
+.cashier-print-link { min-width: 36px; min-height: 36px; }

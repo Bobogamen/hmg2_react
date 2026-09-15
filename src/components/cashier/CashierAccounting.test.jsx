@@ -29,6 +29,15 @@ beforeEach(() => {
   getCashierFinance.mockResolvedValue(null);
 });
 
+test("cashier can open print documents for the selected month using the print icon", async () => {
+  open();
+  await screen.findByText("Apartment 2");
+  const printLink = screen.getByRole("link", { name: "dashboard:printPage.print" });
+  expect(printLink).toHaveAttribute("href", "/print?condominium=1&month=9");
+  expect(printLink.querySelector("svg")).toBeInTheDocument();
+  expect(printLink).toHaveTextContent("");
+});
+
 test("opens current month and pays all fees once after reviewing the modal", async () => {
   let complete;
   payCashierHomeFees.mockImplementation(() => new Promise(resolve => { complete = resolve; }));

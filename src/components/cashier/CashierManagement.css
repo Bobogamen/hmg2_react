@@ -1,0 +1,240 @@
+/* Cashier uses the same coloured, bordered sections as condominium management. */
+.cashier-management .cashier-accounting-header {
+  gap: 12px;
+}
+.cashier-management .cashier-accounting-heading {
+  border: 2px solid #4b5563;
+  border-radius: 8px;
+  background: #f8f9fa;
+  box-shadow: none;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+}
+.cashier-management .cashier-accounting-heading > img {
+  background: lightgray;
+  border: 0;
+  box-shadow: none;
+}
+.cashier-management .cashier-accounting-heading p {
+  justify-content: center;
+}
+.cashier-management .cashier-homes-panel,
+.cashier-management .cashier-month-panel {
+  border: 3px solid rgba(13, 110, 253, 0.5);
+  border-radius: 2rem;
+  padding: 16px;
+  box-shadow: 0 0.6rem 1.2rem rgba(0, 0, 0, 0.12);
+}
+.cashier-management .cashier-homes-panel {
+  background: rgba(13, 202, 240, 0.5);
+}
+.cashier-management .cashier-finance-overview {
+  background: #f8f9fa;
+}
+.cashier-management .cashier-finance-expenses {
+  background: cornsilk;
+}
+.cashier-management .cashier-finance-expenses > .table-responsive,
+.cashier-management .cashier-finance-incomes > .table-responsive {
+  padding: 8px;
+  border: 1px solid #8098b5;
+  border-radius: 10px;
+  background: #fff;
+}
+.cashier-management .cashier-finance-expenses .cashier-finance-table,
+.cashier-management .cashier-finance-incomes .cashier-finance-table {
+  margin-bottom: 0;
+}
+.cashier-management .cashier-finance-incomes {
+  background: lightgreen;
+}
+.cashier-management .cashier-finance-incomes .cashier-finance-table tbody tr {
+  --bs-table-bg: var(--cashier-income-background, #83dca5);
+  background-color: var(--cashier-income-background, #83dca5);
+}
+.cashier-management .cashier-collection-panel {
+  background: #d4edda;
+}
+.cashier-management .cashier-right-column {
+  gap: 12px;
+}
+.cashier-management .cashier-panel-heading {
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  gap: 8px 12px;
+}
+.cashier-management .cashier-panel-heading h3 {
+  color: #212529;
+  font-size: 1.2rem;
+}
+.cashier-management .cashier-panel-heading p {
+  text-align: center;
+  margin-top: 2px;
+  font-size: 0.8rem;
+}
+.cashier-management .cashier-finance-actions {
+  justify-content: center;
+}
+.cashier-management .cashier-finance-add {
+  color: #212529;
+  background: #ffffffc9;
+  border-color: #677b94;
+  font-weight: 600;
+}
+.cashier-management .cashier-finance-add:hover:not(:disabled) {
+  background: #fff;
+}
+.cashier-management .cashier-finance-total {
+  padding-top: 8px;
+}
+.cashier-management .cashier-finance-table {
+  background: #fff;
+  margin-bottom: 8px;
+}
+.cashier-management .cashier-finance-table th {
+  font-weight: 700;
+  color: #212529;
+  background: #f1f3f5;
+}
+.cashier-management .cashier-finance-summary {
+  background: #fff;
+  margin-bottom: 8px;
+}
+.cashier-management .cashier-finance-summary th,
+.cashier-management .cashier-finance-summary td {
+  padding: 7px;
+}
+.cashier-management .cashier-period-toolbar {
+  border-radius: 8px;
+  border-color: #8398b0;
+  background: #f8f9fa;
+}
+.cashier-management .cashier-pay-button {
+  background: #0d6efd;
+  border-color: #0d6efd;
+}
+.cashier-management .cashier-pay-button:hover:not(:disabled) {
+  background: #0b5ed7;
+}
+.cashier-management .cashier-collection-panel {
+  padding: 1em;
+}
+@media (min-width: 1101px) {
+  .cashier-management .cashier-accounting-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+@media (min-width: 768px) {
+  .cashier-management .cashier-homes-table {
+    font-size: 0.85rem;
+  }
+  .cashier-management .cashier-homes-table th,
+  .cashier-management .cashier-homes-table td {
+    padding: 6px;
+  }
+  .cashier-management .cashier-homes-table thead th {
+    background: #f1f3f5;
+    color: #212529;
+  }
+  .cashier-management .cashier-homes-table tfoot > tr > * {
+    background: #fff8e1;
+  }
+}
+@media (max-width: 767.98px) {
+  .cashier-management .cashier-homes-panel,
+  .cashier-management .cashier-month-panel {
+    padding: 12px;
+    border-radius: 20px;
+  }
+  .cashier-management .cashier-homes-table > tbody > tr > * {
+    --bs-table-accent-bg: transparent;
+    --bs-table-striped-bg: transparent;
+    box-shadow: none;
+  }
+  .cashier-management .cashier-finance-table {
+    background: transparent;
+  }
+}
+
+/* Match ModalHome/ModalBill: coloured registration form and central submit action. */
+.cashier-management-modal {
+  --entry-background: #f8d7da;
+}
+.cashier-management-modal--bill {
+  --entry-background: #ffe69c;
+}
+.cashier-management-modal--income {
+  --entry-background: #d1e7dd;
+}
+.cashier-management-modal .modal-content {
+  border-radius: 8px;
+}
+.cashier-management-modal .modal-header {
+  background: #fff;
+}
+.cashier-management-modal .cashier-modal-title-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 3px solid #0d6efd;
+  border-radius: 6px;
+  background: var(--entry-background);
+}
+.cashier-management-modal .cashier-modal-building {
+  width: fit-content;
+  margin-top: 10px;
+  padding: 1px 5px;
+  color: #0d6efd;
+  border: 2px solid #0d6efd;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.cashier-management-modal .cashier-finance-form {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.cashier-management-modal .cashier-entry-fields {
+  display: block;
+  width: 100%;
+  max-width: none;
+  padding: 16px;
+  margin: 0;
+  border: 3px solid #8b939b;
+  border-radius: 6px;
+  background: var(--entry-background);
+}
+.cashier-management-modal .registrationForm div {
+  display: block;
+  text-align: left;
+}
+.cashier-management-modal .registrationForm .row {
+  display: flex;
+}
+.cashier-management-modal .registrationForm label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.cashier-management-modal .registrationForm input,
+.cashier-management-modal .registrationForm select {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+.cashier-management-modal .authentication-button {
+  min-height: 38px;
+  justify-content: center;
+}
+.cashier-management-modal .authentication-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

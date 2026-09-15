@@ -69,7 +69,8 @@ test("shows the stored accounting balance, scoped history and only unpaid bill a
   expect(within(billRow).getAllByRole("cell")).toHaveLength(4);
   expect(billRow).toHaveTextContent("9/1/2026");
   expect(billRow).not.toHaveTextContent("9/2/2026");
-  expect(screen.getByRole("region", { name: "Expenses" })).toHaveTextContent(/€\s*17\.00/);
+  expect(screen.getByRole("region", { name: "Expenses and Bills" })).toHaveTextContent(/€\s*17\.00/);
+  expect(screen.getByText("Lift").tagName).toBe("EM");
   expect(screen.getByRole("button", { name: "Pay bill" })).toBeEnabled();
   fireEvent.click(screen.getByRole("button", { name: "August 2026" }));
   expect(props.onMonthSelect).toHaveBeenCalledWith("8");
@@ -104,16 +105,18 @@ test("bill payment uses the selected unpaid bill and retains the same request af
   expect(saveCashierFinanceEntry.mock.calls[0][0]).toEqual(expect.objectContaining({ billId: 2, mode: "bill" }));
 });
 
-test("closed month leaves history readable and disables every entry action", () => {
+test("closed month leaves history readable and hides income and expense actions", () => {
   setup({ finance: { ...finance, summary: { ...finance.summary, completed: true } } });
-  for (const name of ["Add income", "Pay expense", "Pay bill"]) {
-    expect(screen.getByRole("button", { name, exact: true })).toBeDisabled();
+  for (const name of ["Add income", "Pay expense"]) {
+    expect(screen.queryByRole("button", { name, exact: true })).not.toBeInTheDocument();
   }
+  expect(screen.getByRole("button", { name: "Pay bill", exact: true })).toBeDisabled();
   expect(screen.getByText("EXP-1")).toBeInTheDocument();
 });
 
-test("hides bill payment when every bill is paid while retaining expense payment", () => {
+test("confirms every bill is paid while retaining expense payment", () => {
   setup({ finance: { ...finance, bills: [{ id: 3, name: "Lift" }] } });
   expect(screen.queryByRole("button", { name: "Pay bill" })).not.toBeInTheDocument();
+  expect(screen.getByText("All bills paid")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Pay expense" })).toBeEnabled();
 });

@@ -45,3 +45,7 @@
 .finance-movements li{flex-wrap:wrap;gap:8px}
 .finance-movements li>strong{margin-left:auto}
 }
+.finance-section-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.finance-section-toolbar h3 { margin: 0; }
+.finance-filters { flex-wrap: wrap; }
+.finance-filters .form-control { flex: 1 1 200px; min-width: 0; }
