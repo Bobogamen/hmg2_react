@@ -1,0 +1,52 @@
+.statistics-page { margin: auto; padding: 20px 16px; color: #263f4b; }
+.statistics-heading { margin-bottom: 20px; }
+.statistics-heading h2 { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: clamp(1.35rem, 2.5vw, 2rem); line-height: 1.25; }
+.statistics-heading svg { flex-shrink: 0; }
+.statistics-intro { max-width: 760px; margin-inline: auto; font-size: .95rem; line-height: 1.5; }
+.statistics-controls { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.statistics-controls label { font-size: .85rem; font-weight: 600; flex: 1 1 160px; }
+.statistics-page .form-select { width: 100%; max-width: none; margin: 6px 0 0; min-height: 44px; }
+.statistics-controls button { min-width: 44px; min-height: 44px; }
+.statistics-context, .statistics-period { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.statistics-context h3 { font-size: 1.2rem; }
+.statistics-context { overflow-wrap: anywhere; }
+.statistics-context p, .statistics-muted, .statistics-card p { color: #63747d; font-size: .85rem; }
+.statistics-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+.statistics-card, .statistics-panel { border: 1px solid #cbdde9; border-radius: 14px; background: #fff; padding: 18px; }
+.statistics-panel { margin-bottom: 18px; }
+.statistics-card { border-top: 4px solid #527f99; }
+.statistics-card-income { border-top-color: #27816e; }
+.statistics-card-expenses { border-top-color: #c16b3b; }
+.statistics-card-forFunds { border-top-color: #7670ad; }
+.statistics-card h3 { font-size: .95rem; }
+.statistics-card strong { display: block; font-size: clamp(1.2rem, 2vw, 1.7rem); margin: 12px 0; overflow-wrap: anywhere; }
+.statistics-card p { margin: 0; }
+.statistics-panel h3 { font-size: 1.1rem; }
+.statistics-page .statistics-negative { color: #b42332; }
+.statistics-legend, .statistics-legend span { display: flex; align-items: center; gap: 8px; }
+.statistics-legend { gap: 20px; margin: 16px 0; font-size: .85rem; flex-wrap: wrap; }
+.statistics-legend i { width: 12px; height: 12px; border-radius: 3px; }
+.statistics-income { background: #27816e; }
+.statistics-expenses { background: #c16b3b; }
+.statistics-chart { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+.statistics-chart-month { min-width: 44px; flex: 1; text-align: center; font-size: .75rem; }
+.statistics-bars { height: 180px; display: flex; justify-content: center; align-items: end; gap: 4px; border-bottom: 1px solid #cad5dc; margin-bottom: 8px; }
+.statistics-bars > div { width: 28%; max-width: 28px; border-radius: 4px 4px 0 0; }
+.statistics-table-scroll { overflow-x: auto; }
+.statistics-table { margin: 0; font-size: .85rem; }
+.statistics-table th, .statistics-table td { padding: 12px; white-space: nowrap; text-align: right; vertical-align: middle; }
+.statistics-table th:first-child, .statistics-table td:nth-child(2) { text-align: left; }
+.statistics-table tfoot { font-weight: 700; border-top: 2px solid #cad5dc; }
+.statistics-sections { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.statistics-sections button { min-height: 44px; }
+.statistics-search { max-width: 650px; margin: 18px 0; }
+.statistics-search label { display: block; margin-bottom: 6px; font-weight: 600; }
+.statistics-page .statistics-search input { width: 100%; max-width: none; margin: 0 0 8px; }
+.statistics-archived, .statistics-account-detail { display: block; font-size: .75rem; color: #63747d; font-weight: normal; }
+.statistics-breakdown th:first-child { white-space: normal; min-width: 150px; overflow-wrap: anywhere; }
+@media (max-width: 1000px) { .statistics-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) {
+  .statistics-page { padding: 14px 8px; }
+  .statistics-cards { grid-template-columns: 1fr; }
+  .statistics-period { align-items: start; flex-direction: column; }
+}

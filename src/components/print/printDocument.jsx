@@ -50,7 +50,13 @@ export function buildPrintModel(details) {
   };
 }
 
-export function createPrintDocument({ condominium, details, locale, labels, section = "all" }) {
+export function createPrintDocument({
+  condominium,
+  details,
+  locale,
+  labels,
+  section = "all",
+}) {
   const model = buildPrintModel(details);
   const residentCounts = new Map(
     (condominium.homes || []).map((home) => [
@@ -87,18 +93,29 @@ export function createPrintDocument({ condominium, details, locale, labels, sect
   const rows = Array.from({ length: Math.ceil(parts.length / 3) }, (_, index) =>
     parts.slice(index * 3, index * 3 + 3),
   );
-  const css = ` @page properties {
+  const pageStyles =
+    section === "all"
+      ? `
+  @page properties {
       size: A4 portrait;
-      margin: 6mm 6mm 6mm 15mm;
+      margin: 6mm 6mm 6mm 16mm;
   }
 
   @page receipts {
       size: A4 landscape;
       margin: 6mm;
   }
+  `
+      : `
+  @page {
+      size: A4 ${section === "receipts" ? "landscape" : "portrait"};
+      margin: ${section === "receipts" ? "6mm" : "6mm 6mm 6mm 16mm"};
+  }
+  `;
+  const css = `${pageStyles}
 
   .properties-document {
-      page: properties;
+      page: ${section === "all" ? "properties" : "auto"};
   }
 
   @media print {
@@ -140,7 +157,7 @@ export function createPrintDocument({ condominium, details, locale, labels, sect
   }
 
   .receipts-document {
-      page: receipts;
+      page: ${section === "all" ? "receipts" : "auto"};
       break-before: ${section === "receipts" ? "auto" : "page"};
   }
 
@@ -210,6 +227,12 @@ export function createPrintDocument({ condominium, details, locale, labels, sect
   .number {
       text-align: center;
       white-space: nowrap;
+  }
+
+  .properties-table .home-amount {
+      color: #b0b0b0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
   }
 
   .center {
@@ -319,7 +342,8 @@ export function createPrintDocument({ condominium, details, locale, labels, sect
       font-weight: bold;
       margin: 0 !important;
       padding: 1mm;
-      font-size: 14pt;
+      font-size: 12pt;
+      background-color: lightgray;
   }
 
   @media screen {
@@ -348,158 +372,169 @@ export function createPrintDocument({ condominium, details, locale, labels, sect
   `;
   const content = (
     <>
-      {section !== "receipts" && <section className="properties-document">
-        <h1>
-          {text("documentTitle")}
-          <br />
-          {address || condominium.name}
-        </h1>
-        <p className="period">{period}</p>
-        <table className="properties-table">
-          <colgroup>
-            {["10%", "10%", "24%", "8%", "8%", "16%", "12%", "12%"].map(
-              (width, i) => (
-                <col key={i} style={{ width }} />
-              ),
-            )}
-          </colgroup>
-          <thead>
-            <tr>
-              {[
-                "floor",
-                "home",
-                "owner",
-                "home:residents",
-                "total",
-                "date",
-                "signature",
-                "note",
-              ].map((k) => (
-                <th key={k}>{k === "total" ? `${text(k)} €` : text(k)}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {model.homes.map((home) => (
-              <tr key={home.id}>
-                <td className="center">{home.floor}</td>
-                <td className="center">{home.name}</td>
-                <td>{home.owner || "—"}</td>
-                <td className="center">
-                  {residentCounts.get(String(home.id)) ?? "—"}
-                </td>
-                <td className="number text-muted">{amount(home.total)}</td>
-                <td></td>
-                <td></td>
-                <td></td>
+      {section !== "receipts" && (
+        <section className="properties-document">
+          <h1>
+            {text("documentTitle")}
+            <br />
+            {address || condominium.name}
+          </h1>
+          <p className="period">{period}</p>
+          <table className="properties-table">
+            <colgroup>
+              {["10%", "10%", "23%", "9%", "8%", "16%", "14%", "10%"].map(
+                (width, i) => (
+                  <col key={i} style={{ width }} />
+                ),
+              )}
+            </colgroup>
+            <thead>
+              <tr>
+                {[
+                  "floor",
+                  "home",
+                  "owner",
+                  "home:residents",
+                  "total",
+                  "date",
+                  "signature",
+                  "note",
+                ].map((k) => (
+                  <th key={k}>{k === "total" ? `${text(k)} €` : text(k)}</th>
+                ))}
               </tr>
-            ))}
-            <tr className="total">
-              <td colSpan={4}>{text("total")}</td>
-              <td className="number">€ {amount(model.total)}</td>
-              <td colSpan={3}></td>
-            </tr>
-          </tbody>
-        </table>
-        <div className="fee-summaries">
-          {[false, true].map((fund) => {
-            const fees = model.fees.filter((fee) => fee.fund === fund);
-            const total =
-              fees.reduce((sum, fee) => sum + fee.amountCents, 0) / 100;
-            return (
-              <table className="fee-summary" key={String(fund)}>
-                <caption>{text(fund ? "fundsSummary" : "feesSummary")}</caption>
-                <colgroup>
-                  <col style={{ width: "56%" }} />
-                  <col style={{ width: "16%" }} />
-                  <col style={{ width: "12%" }} />
-                  <col style={{ width: "16%" }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    {["fee", "€", "homeCount", "total"].map((k) => (
-                      <th key={k}>{k === "€" ? "€" : text(k)}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {fees.map((f) => (
-                    <tr key={f.key} className={f.fund ? "fund-fee" : undefined}>
-                      <td>
-                        <FeeLabel fee={f} fundLabel={text("fund")} />
-                      </td>
-                      <td className="number">{amount(f.value)}</td>
-                      <td className="center">{f.homeCount}</td>
-                      <td className="number">{amount(f.amount)}</td>
-                    </tr>
-                  ))}
-                  <tr className="total">
-                    <td colSpan={3}>{text("total")}</td>
-                    <td className="number">€ {amount(total)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            );
-          })}
-        </div>
-      </section>
-      }
-      {section !== "properties" && <section className="receipts-document">
-        {rows.map((row, rowIndex) => (
-          <div className="receipt-row" key={rowIndex}>
-            {row.map(({ home, fees, index, count }) => (
-              <section className="receipt" key={home.id + "-" + index}>
-                <div className="receipt-home">
-                  <span>{text("receiptFloor")}</span> <b>{home.floor}</b>
-                  <span>{text("receiptHome")}</span> <b>{home.name}</b>
-                </div>
-                <p className="period">{period}</p>
-                {count > 1 && (
-                  <p>
-                    {text("part")} {index + 1}/{count}
-                  </p>
-                )}
-                <table>
+            </thead>
+            <tbody>
+              {model.homes.map((home) => (
+                <tr key={home.id}>
+                  <td className="center">{home.floor}</td>
+                  <td className="center">{home.name}</td>
+                  <td>{home.owner || "—"}</td>
+                  <td className="center">
+                    {residentCounts.get(String(home.id)) ?? "—"}
+                  </td>
+                  <td className="number home-amount">{amount(home.total)}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              ))}
+              <tr className="total">
+                <td colSpan={4}>{text("total")}</td>
+                <td className="number">€ {amount(model.total)}</td>
+                <td colSpan={3}></td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="fee-summaries">
+            {[false, true].map((fund) => {
+              const fees = model.fees.filter((fee) => fee.fund === fund);
+              const total =
+                fees.reduce((sum, fee) => sum + fee.amountCents, 0) / 100;
+              return (
+                <table className="fee-summary" key={String(fund)}>
+                  <caption>
+                    {text(fund ? "fundsSummary" : "feesSummary")}
+                  </caption>
                   <colgroup>
-                    <col style={{ width: "62%" }} />
-                    <col style={{ width: "15%" }} />
-                    <col style={{ width: "8%" }} />
-                    <col style={{ width: "15%" }} />
+                    <col style={{ width: "56%" }} />
+                    <col style={{ width: "16%" }} />
+                    <col style={{ width: "12%" }} />
+                    <col style={{ width: "16%" }} />
                   </colgroup>
                   <thead>
                     <tr>
-                      <th>{text("fee")}</th>
-                      <th>€</th>
-                      <th>{text("homeCount")}</th>
-                      <th>{text("total")}</th>
+                      {["fee", "€", "homeCount", "total"].map((k) => (
+                        <th key={k}>{k === "€" ? "€" : text(k)}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {fees.map((fee, i) => (
-                      <tr key={i} className={fee.fund ? "fund-fee" : undefined}>
+                    {fees.map((f) => (
+                      <tr
+                        key={f.key}
+                        className={f.fund ? "fund-fee" : undefined}
+                      >
                         <td>
-                          <FeeLabel fee={fee} fundLabel={text("fund")} />
+                          <FeeLabel fee={f} fundLabel={text("fund")} />
                         </td>
-                        <td className="number">{amount(fee.value)}</td>
-                        <td className="center">{fee.times}</td>
-                        <td className="number">{amount(fee.amount)}</td>
+                        <td className="number">{amount(f.value)}</td>
+                        <td className="center">{f.homeCount}</td>
+                        <td className="number">{amount(f.amount)}</td>
                       </tr>
                     ))}
+                    <tr className="total">
+                      <td colSpan={3}>{text("total")}</td>
+                      <td className="number">€ {amount(total)}</td>
+                    </tr>
                   </tbody>
                 </table>
-                {index === count - 1 && (
-                  <>
-                    <p className="receipt-total">
-                      <span>{text("total")}</span>
-                      <span>€ {amount(home.total)}</span>
-                    </p>
-                  </>
-                )}
-              </section>
-            ))}
+              );
+            })}
           </div>
-        ))}
-      </section>}
+        </section>
+      )}
+      {section !== "properties" && (
+        <section className="receipts-document">
+          {rows.map((row, rowIndex) => (
+            <div className="receipt-row" key={rowIndex}>
+              {row.map(({ home, fees, index, count }) => (
+                <section className="receipt" key={home.id + "-" + index}>
+                  <div className="receipt-home">
+                    <span>{text("receiptFloor")}</span> <b>{home.floor}</b>
+                    <span>{text("receiptHome")}</span> <b>{home.name}</b>
+                  </div>
+                  <p className="period">{period}</p>
+                  {count > 1 && (
+                    <p>
+                      {text("part")} {index + 1}/{count}
+                    </p>
+                  )}
+                  <table>
+                    <colgroup>
+                      <col style={{ width: "62%" }} />
+                      <col style={{ width: "15%" }} />
+                      <col style={{ width: "8%" }} />
+                      <col style={{ width: "15%" }} />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>{text("fee")}</th>
+                        <th>€</th>
+                        <th>{text("homeCount")}</th>
+                        <th>{text("total")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {fees.map((fee, i) => (
+                        <tr
+                          key={i}
+                          className={fee.fund ? "fund-fee" : undefined}
+                        >
+                          <td>
+                            <FeeLabel fee={fee} fundLabel={text("fund")} />
+                          </td>
+                          <td className="number">{amount(fee.value)}</td>
+                          <td className="center">{fee.times}</td>
+                          <td className="number">{amount(fee.amount)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {index === count - 1 && (
+                    <>
+                      <p className="receipt-total">
+                        <span>{text("total")}</span>
+                        <span>€ {amount(home.total)}</span>
+                      </p>
+                    </>
+                  )}
+                </section>
+              ))}
+            </div>
+          ))}
+        </section>
+      )}
     </>
   );
   return (

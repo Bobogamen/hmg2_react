@@ -58,7 +58,7 @@ test("sorts fee types across homes and styles funds in both summary and slips", 
 test("combined document uses portrait properties and landscape slips with narrow margins and escaped text", () => {
   const html = createPrintDocument({ ...options, mode: "landscape", condominium: { ...options.condominium, address: "<script>alert(1)</script>" } });
   const normalized = html.replace(/\s+/g, " ");
-  expect(normalized).toContain("@page properties { size: A4 portrait; margin: 6mm 6mm 6mm 15mm; }");
+  expect(normalized).toContain("@page properties { size: A4 portrait; margin: 6mm 6mm 6mm 16mm; }");
   expect(normalized).toContain("@page receipts { size: A4 landscape; margin: 6mm; }");
   const dom = new DOMParser().parseFromString(html, "text/html");
   expect(dom.body.children[0].className).toBe("properties-document");
