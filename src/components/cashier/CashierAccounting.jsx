@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import FeeLabel from "../../utils/FeeLabel";
 import { Link, useParams } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -705,13 +706,7 @@ export default function CashierAccounting() {
                                 {feePresentation(item).emoji}
                               </span>
                               <div className="text-start">
-                                <div>{item.name}</div>
-                                {item.fund && item.fundName && (
-                                  <div className="small fst-italic text-muted">
-                                    {t("finance:fund")} &quot;{item.fundName}
-                                    &quot;
-                                  </div>
-                                )}
+                                <FeeLabel fee={item} fundLabel={t("finance:fund")} />
                               </div>
                             </div>
                           </td>

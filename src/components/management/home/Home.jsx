@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import FeeLabel from "../../../utils/FeeLabel";
 import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { TriangleAlert } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -448,12 +449,7 @@ const FeeDashboard = ({
                                                 <span title={t("finance:oneTimeFee")}>💶</span>
                                             )}
                                             <div className="text-start">
-                                                <div>{fee.name}</div>
-                                                {fee.fund && fee.fundId != null && fee.fundName && (
-                                                    <div className="smaller-text fst-italic text-muted">
-                                                        {t("finance:fund")} &quot;{fee.fundName}&quot;
-                                                    </div>
-                                                )}
+                                                <FeeLabel fee={fee} fundLabel={t("finance:fund")} />
                                             </div>
                                             {fee.fund && fee.fundId == null && (
                                                 <OverlayTrigger

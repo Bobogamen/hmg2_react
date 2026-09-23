@@ -156,7 +156,7 @@ test.each(["pay", "receipt"])("%s modal groups fees and shows matching icons and
   const dialog = within(screen.getByRole("dialog"));
   const rows = dialog.getAllByRole("row").slice(1, -1);
   expect(rows.map(row => within(row).getAllByRole("cell")[0].textContent)).toEqual([
-    "⭐Basic fee", "📅Monthly electricity", "💶One-off cleaning", '💰Reserve contributionfinance:fund "Roof reserve"',
+    "⭐Basic fee", "📅Monthly electricity", "💶One-off cleaning", '💰finance:fund "Roof reserve"Reserve contribution',
   ]);
   expect(entries[0].name).toBe("Reserve contribution");
 });

@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Wallet, Landmark, Wrench, RefreshCw, Building2 } from "lucide-react";
+import {
+  Wallet,
+  Landmark,
+  Wrench,
+  RefreshCw,
+  Building2,
+  CalendarDays,
+  ArrowDownLeft,
+  ArrowUpRight,
+  ReceiptText,
+} from "lucide-react";
 import { useUser } from "../../user/UserContext";
 import { getFinanceOverview } from "../../api/services/financeService";
 import "./Finance.css";
-import { downloadCsv } from "./financeExport";
 
 export default function Finance() {
   const { user } = useUser();
@@ -21,16 +30,19 @@ export default function Finance() {
   const [source, setSource] = useState("all");
   const [search, setSearch] = useState("");
   const [allMonths, setAllMonths] = useState(false);
+  const [movementLimit, setMovementLimit] = useState(50);
   useEffect(() => {
-    let active = true;
-    setResult(null);
-    setError(false);
     setDirection("all");
     setSource("all");
     setSearch("");
     setAllMonths(false);
+  }, [selected, user?.id]);
+  useEffect(() => {
+    let active = true;
+    setResult(null);
+    setError(false);
     if (selected)
-      getFinanceOverview(selected)
+      getFinanceOverview(selected, movementLimit)
         .then((data) => {
           if (active) setResult({ id: selected, data });
         })
@@ -40,7 +52,7 @@ export default function Finance() {
     return () => {
       active = false;
     };
-  }, [selected, revision, user?.id]);
+  }, [selected, revision, user?.id, movementLimit]);
   const data = result?.id === selected ? result.data : null;
   const money = (value) =>
     "€ " +
@@ -66,21 +78,13 @@ export default function Finance() {
         (source === "all" || source === m.type) &&
         (direction === "all" ||
           (direction === "income") === incomeTypes.includes(m.type)) &&
-        `${m.name} ${m.documentNumber || ""} ${label(m.type)}`
+        `${m.name} ${m.documentNumber || ""} ${label(m.type)} ${m.homeName || ""} ${m.accountName || ""} ${m.year || ""} ${m.ownerName || ""}`
           .toLocaleLowerCase()
           .includes(search.trim().toLocaleLowerCase()),
     ) || [];
-  const exportMonths = () => downloadCsv(`finance-${selected}-months.csv`, [
-    ["building", "month", "income_EUR", "funds_EUR", "expenses_EUR", "difference_EUR", "carried_EUR", "balance_EUR", "status"],
-    ...data.months.map(m => [data.name, `${m.year}-${String(m.number).padStart(2, "0")}`,
-      ...[m.income, m.forFunds, m.expenses, m.difference, m.carried, m.balance].map(Number),
-      label(m.completed ? "closed" : "open")]),
-  ]);
-  const exportMovements = () => downloadCsv(`finance-${selected}-recent-filtered.csv`, [
-    ["building", "type", "name", "amount_EUR", "recorded_date", "document_number", "document_date"],
-    ...movements.map(m => [data.name, label(m.type), m.name,
-      Number(m.value) * (incomeTypes.includes(m.type) ? 1 : -1), m.date, m.documentNumber, m.documentDate]),
-  ]);
+  const sortedMonths = [...(data?.months || [])].sort(
+    (a, b) => b.year - a.year || b.number - a.number,
+  );
   const accounts = (kind) => (
     <section className="finance-panel">
       <h3>{label(kind)}</h3>
@@ -122,13 +126,31 @@ export default function Finance() {
   );
   return (
     <main className="finance-overview">
-      <header className="finance-header">
-        <div>
-          <p className="finance-muted">{label("title")}</p>
-          <h2>{data?.name || label("intro")}</h2>
-          <p className="finance-muted">{data?.address}</p>
-        </div>
+      <header className="finance-page-heading text-center text-bg-light w-100 rounded border border-2 border-dark p-3">
+        <h2 className="fw-bold mb-2">
+          <Wallet size={25} aria-hidden="true" />
+          {label("title")}
+        </h2>
+        <p className="finance-intro mb-0 fw-semibold text-light-emphasis">
+          {label("intro")}
+        </p>
+      </header>
+      <div className="finance-header">
+        {data && (
+          <div className="finance-building-heading">
+            <h3>{data.name}</h3>
+            <p className="finance-muted mb-0">{data.address}</p>
+          </div>
+        )}
         <div className="finance-controls">
+          {selected && (
+            <Link
+              className="btn btn-outline-primary finance-current-month"
+              to={`/cashier/condominium/${selected}`}
+            >
+              <CalendarDays size={18} aria-hidden="true" />{" "}
+            </Link>
+          )}
           <label>
             {label("building")}
             <select
@@ -151,11 +173,12 @@ export default function Finance() {
             disabled={!selected || (!data && !error)}
             onClick={() => setRevision((r) => r + 1)}
             aria-label={label("refresh")}
+            title={label("refresh")}
           >
-            <RefreshCw size={18} />
+            <RefreshCw size={18} className="mb-1" />
           </button>
         </div>
-      </header>
+      </div>
       {!selected ? (
         <p className="finance-panel">{label("noBuildings")}</p>
       ) : error ? (
@@ -207,21 +230,20 @@ export default function Finance() {
                 </>
               )}
             </p>
-            <Link
-              className="btn btn-sm btn-outline-primary"
-              to={`/cashier/condominium/${selected}`}
-            >
-              {label("openCashier")}
-            </Link>
           </div>
           <div className="finance-account-columns">
             {accounts("funds")}
             {accounts("repairs")}
           </div>
-          <section className="finance-panel">
+          <section className="finance-panel finance-ledger-panel">
             <div className="finance-section-toolbar">
-              <h3>{label("monthly")}</h3>
-              <button className="btn btn-sm btn-outline-secondary" disabled={!data.months.length} onClick={exportMonths}>{label("exportMonths")}</button>
+              <h3>
+                <CalendarDays size={21} aria-hidden="true" />
+                {label("monthly")}
+              </h3>
+              <span className="finance-count">
+                {label("monthCount")}: {data.months.length}
+              </span>
             </div>
             <p className="finance-muted">{label("monthlyHint")}</p>
             {!data.months.length ? (
@@ -229,7 +251,10 @@ export default function Finance() {
             ) : (
               <>
                 <div className="table-responsive">
-                  <table className="table finance-months">
+                  <table className="table table-hover finance-months">
+                    <caption className="visually-hidden">
+                      {label("monthly")}
+                    </caption>
                     <thead>
                       <tr>
                         {[
@@ -249,8 +274,7 @@ export default function Finance() {
                       </tr>
                     </thead>
                     <tbody>
-                      {[...data.months]
-                        .reverse()
+                      {sortedMonths
                         .slice(0, allMonths ? undefined : 12)
                         .map((m) => (
                           <tr key={m.id}>
@@ -274,7 +298,13 @@ export default function Finance() {
                                 {money(v)}
                               </td>
                             ))}
-                            <td>{label(m.completed ? "closed" : "open")}</td>
+                            <td>
+                              <span
+                                className={`finance-status ${m.completed ? "is-closed" : "is-open"}`}
+                              >
+                                {label(m.completed ? "closed" : "open")}
+                              </span>
+                            </td>
                           </tr>
                         ))}
                     </tbody>
@@ -282,7 +312,8 @@ export default function Finance() {
                 </div>
                 {data.months.length > 12 && (
                   <button
-                    className="btn btn-link btn-sm"
+                    className="btn btn-outline-secondary finance-month-toggle"
+                    aria-expanded={allMonths}
                     onClick={() => setAllMonths((v) => !v)}
                   >
                     {label(allMonths ? "fewerMonths" : "allMonths")}
@@ -291,46 +322,96 @@ export default function Finance() {
               </>
             )}
           </section>
-          <section className="finance-panel">
+          <section className="finance-panel finance-ledger-panel">
             <div className="finance-section-toolbar">
-              <h3>{label("recent")}</h3>
-              <button className="btn btn-sm btn-outline-secondary" disabled={!movements.length} onClick={exportMovements}>{label("exportMovements")}</button>
+              <h3>
+                <ReceiptText size={21} aria-hidden="true" />
+                {label("recent")}
+              </h3>
+              <span className="finance-count">
+                {label("shown")}: {movements.length}
+              </span>
             </div>
-            <p className="finance-muted">{label("recentHint")}</p>
+            <p className="finance-muted">{t("dashboard:financeOverview.recentHint", { limit: movementLimit })}</p>
             <div className="finance-filters">
-              <select aria-label={label("source")} className="form-select" value={source} onChange={e => setSource(e.target.value)}>
-                {["all", "fee", "income", "bill", "expense", "fundExpense", "repairIncome", "repairExpense"].map(key =>
-                  <option key={key} value={key}>{label(key === "all" ? "allSources" : key)}</option>)}
-              </select>
-              <select
-                aria-label={label("filter")}
-                className="form-select"
-                value={direction}
-                onChange={(e) => setDirection(e.target.value)}
-              >
-                {["all", "income", "expense"].map((k) => (
-                  <option key={k} value={k}>
-                    {label(k)}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="search"
-                className="form-control"
-                aria-label={label("search")}
-                placeholder={label("search")}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+              <label>{label("movementLimit")}
+                <select className="form-select" value={movementLimit} onChange={(e) => setMovementLimit(Number(e.target.value))}>
+                  {[50, 100, 200].map((limit) => <option key={limit} value={limit}>{t("dashboard:financeOverview.lastOperations", { limit })}</option>)}
+                </select>
+              </label>
+              <label>
+                {label("source")}
+                <select
+                  aria-label={label("source")}
+                  className="form-select"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                >
+                  {[
+                    "all",
+                    "fee",
+                    "income",
+                    "bill",
+                    "expense",
+                    "fundExpense",
+                    "repairIncome",
+                    "repairExpense",
+                  ].map((key) => (
+                    <option key={key} value={key}>
+                      {label(key === "all" ? "allSources" : key)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                {label("filter")}
+                <select
+                  aria-label={label("filter")}
+                  className="form-select"
+                  value={direction}
+                  onChange={(e) => setDirection(e.target.value)}
+                >
+                  {["all", "income", "expense"].map((k) => (
+                    <option key={k} value={k}>
+                      {label(k)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="finance-search">
+                {label("searchLabel")}
+                <input
+                  type="search"
+                  className="form-control"
+                  aria-label={label("search")}
+                  placeholder={label("search")}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </label>
             </div>
-            <div className="finance-section-toolbar finance-muted" role="status">
-              <span>{label("shown")}: {movements.length} / {data.movements.length}</span>
+            <div
+              className="finance-section-toolbar finance-muted"
+              role="status"
+            >
+              <span>
+                {label("shown")}: {movements.length} / {data.movements.length}
+              </span>
               {(direction !== "all" || source !== "all" || search) && (
-                <button className="btn btn-link btn-sm" onClick={() => { setDirection("all"); setSource("all"); setSearch(""); }}>{label("clearFilters")}</button>
+                <button
+                  className="btn btn-link btn-sm"
+                  onClick={() => {
+                    setDirection("all");
+                    setSource("all");
+                    setSearch("");
+                  }}
+                >
+                  {label("clearFilters")}
+                </button>
               )}
             </div>
             {!movements.length ? (
-              <p className="finance-muted">
+              <p className="finance-empty">
                 {label(data.movements.length ? "noMatches" : "noMovements")}
               </p>
             ) : (
@@ -338,23 +419,109 @@ export default function Finance() {
                 {movements.map((m) => {
                   const incoming = incomeTypes.includes(m.type);
                   return (
-                    <li key={`${m.type}-${m.id}`}>
-                      <div className="finance-movement-main">
-                        <strong>{m.name || label(m.type)}</strong>
-                        <span>
-                          {label(m.type)} · {date(m.date)}
-                        </span>
-                        {m.documentNumber && (
-                          <small>
-                            {label("document")}: {m.documentNumber} ·{" "}
-                            {date(m.documentDate)}
-                          </small>
+                    <li
+                      key={`${m.type}-${m.id}`}
+                      className={incoming ? "is-income" : "is-expense"}
+                    >
+                      <span
+                        className="finance-direction-icon"
+                        aria-hidden="true"
+                      >
+                        {incoming ? (
+                          <ArrowDownLeft size={21} />
+                        ) : (
+                          <ArrowUpRight size={21} />
                         )}
+                      </span>
+                      <div className="finance-movement-main">
+                        <div className="finance-movement-tags">
+                          <span className="finance-status finance-direction-label">
+                            {label(incoming ? "income" : "expense")}
+                          </span>
+                          <span
+                            className={`finance-source-label source-${m.type}`}
+                          >
+                            {label(m.type)}
+                          </span>
+                        </div>
+                        <strong className="finance-operation-name">
+                          {m.name || label(m.type)}
+                        </strong>
+                        {(m.homeName != null ||
+                          m.accountName ||
+                          (m.year && m.number)) && (
+                          <div className="finance-operation-context">
+                            {m.homeName != null && (
+                              <span>
+                                <Building2 size={16} aria-hidden="true" />
+                                {m.floor != null && (
+                                  <>
+                                    {" "}
+                                    · {label("floor")}: <b>{m.floor}</b>
+                                  </>
+                                )}
+                                {label("apt")}: <b>{m.homeName}</b>
+                              </span>
+                            )}
+                            {m.year && m.number && (
+                              <span>
+                                <CalendarDays size={16} aria-hidden="true" />
+                                {label("accountingMonth")}:{" "}
+                                <b>{monthName(m)}</b>
+                              </span>
+                            )}
+                            {m.accountName && (
+                              <span>
+                                {label(
+                                  m.type === "fundExpense"
+                                    ? "fundAccount"
+                                    : "repairAccount",
+                                )}
+                                : <b>{m.accountName}</b>
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        <dl className="finance-movement-details">
+                          <div>
+                            <dt>{label("recordedDate")}</dt>
+                            <dd>{date(m.date)}</dd>
+                          </div>
+                          {m.type === "fee" ? (
+                            <div>
+                              <dt>{t("home:owner")}</dt>
+                              <dd>{m.ownerName || label("notProvided")}</dd>
+                            </div>
+                          ) : (
+                            <div>
+                              <dt>{label("document")}</dt>
+                              <dd>{m.documentNumber || label("notProvided")}</dd>
+                            </div>
+                          )}
+                          {m.type !== "fee" && m.documentDate && (
+                            <div>
+                              <dt>{label("documentDate")}</dt>
+                              <dd>{date(m.documentDate)}</dd>
+                            </div>
+                          )}
+                          {m.installmentNumber != null && (
+                            <div>
+                              <dt>{label("installment")}</dt>
+                              <dd>№ {m.installmentNumber}</dd>
+                            </div>
+                          )}
+                          {m.unitValue != null && m.quantity != null && (
+                            <div>
+                              <dt>{label("calculation")}</dt>
+                              <dd>
+                                {money(m.unitValue)} × {m.quantity}
+                              </dd>
+                            </div>
+                          )}
+                        </dl>
                       </div>
                       <strong
-                        className={
-                          incoming ? "finance-positive" : "finance-negative"
-                        }
+                        className={`finance-operation-amount ${incoming ? "finance-positive" : "finance-negative"}`}
                       >
                         {incoming ? "+" : "−"}
                         {money(m.value)}

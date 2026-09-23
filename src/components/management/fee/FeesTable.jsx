@@ -7,6 +7,9 @@ import add from "../../../assets/images/app/add.png";
 import edit from "../../../assets/images/app/edit.png";
 import ModalFee from "./ModalFee";
 import ModalFeeTypesInfo from "./ModalFeeTypesInfo";
+import FeeLabel from "../../../utils/FeeLabel";
+
+const feeTypeOrder = (fee) => fee.fund ? 3 : fee.primary ? 0 : fee.monthly ? 1 : 2;
 
 const FeesTable = ({
       condominium,
@@ -19,6 +22,9 @@ const FeesTable = ({
       const [selectedFee, setSelectedFee] = useState(null);
       const [showFeeInfo, setShowFeeInfo] = useState(false);
       const { t } = useTranslation();
+      const sortedFees = [...(condominium?.fees || [])].sort(
+            (a, b) => feeTypeOrder(a) - feeTypeOrder(b),
+      );
 
       const handleOpenAdd = () => {
             setSelectedFee(null);
@@ -75,7 +81,7 @@ const FeesTable = ({
                                     </tr>
                               </thead>
                               <tbody className="align-middle">
-                                    {condominium?.fees?.map((fee) => (
+                                    {sortedFees.map((fee) => (
                                           <tr
                                                 key={`f${fee.id}`}
                                                 className={selectedFeeId === fee.id || highlightedFeeIds.includes(fee.id) ? "table-primary" : ""}
@@ -94,12 +100,7 @@ const FeesTable = ({
                                                                   )}
                                                             </div>
                                                             <div className="text-start">
-                                                                  <div>{fee.name}</div>
-                                                                  {fee.fund && fee.fundId != null && fee.fundName && (
-                                                                        <div className="smaller-text fst-italic text-muted">
-                                                                              {t("finance:fund")} &quot;{fee.fundName}&quot;
-                                                                        </div>
-                                                                  )}
+                                                                  <FeeLabel fee={fee} fundLabel={t("finance:fund")} />
                                                             </div>
                                                             {fee.fund && !fee.fundId && (
                                                                   <OverlayTrigger

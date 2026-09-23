@@ -91,6 +91,7 @@ export default function Cashier() {
                 </div>
                 <CashierCondominiums items={data.condominiums || []} />
               </section>
+              <hr className="mb-0" />
               <div className="cashier-toolbar">
                 <h3 className="fs-5 fw-bold mb-0">
                   {t("cashierPage.list")}

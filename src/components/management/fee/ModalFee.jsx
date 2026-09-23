@@ -36,7 +36,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
     const homes = condominium?.homes || [];
     const assignableHomes = feeData.primary
         ? homes.filter((home) =>
-            !home.hasPrimaryFee || (isEditing && fee?.homeIds?.includes(home.id))
+            !home.hasPrimaryFee || (isEditing && fee?.primary && fee?.homeIds?.includes(home.id))
         )
         : homes;
 
@@ -170,7 +170,7 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         setSelectedHomes((previousHomeIds) => previousHomeIds.filter((homeId) =>
             homes.some((home) =>
                 home.id === homeId
-                && (!home.hasPrimaryFee || (isEditing && fee?.homeIds?.includes(home.id)))
+                && (!home.hasPrimaryFee || (isEditing && fee?.primary && fee?.homeIds?.includes(home.id)))
             )
         ));
         setTimeout(() => {
