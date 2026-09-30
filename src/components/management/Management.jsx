@@ -71,7 +71,7 @@ const Management = () => {
         )}
 
         {/* ADD BUTTON */}
-        {user?.condominiumLimit > condominiums.length && (
+        {(user?.condominiumLimit <= 0 || user?.condominiumLimit > condominiums.length) && (
           <div className="img-button pointer" onClick={handleOpen}>
             <img src={add} className="icon" alt="add" />
 

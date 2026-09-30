@@ -39,7 +39,7 @@ const AuthorizationButtons = ({ roles, show, close }) => {
                     <Link to={path} className="text-decoration-none">
                         <button className={`authorization-button d-flex align-items-center ${color}`}>
                             <img src={img} className="icon authorization-button-icon" alt={label.toLowerCase()} />
-                            <span className="button-text">{t(`dashboard:${label}`)}</span>
+                            <span className="button-text">{label === "admin" ? "Admin" : t(`dashboard:${label}`)}</span>
                         </button>
                     </Link>
                 </li>

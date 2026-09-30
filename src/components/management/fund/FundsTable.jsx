@@ -50,7 +50,7 @@ const FundsTable = ({
           <Info size={20} color="blue" />
         </button>
         <div className="position-absolute end-0 fw-bold fs-5">
-          {funds.length}/{fundLimit}
+          {funds.length}/{fundLimit === 0 ? t("profile:unlimited") : fundLimit}
         </div>
       </div>
       <ModalFundsInfo
@@ -143,7 +143,7 @@ const FundsTable = ({
         fund={selectedFund}
         onSaved={onSaved}
       />
-      {funds.length < fundLimit && (
+      {(fundLimit === 0 || funds.length < fundLimit) && (
         <div className="img-button pointer m-auto mt-3" onClick={openAdd}>
           <img src={add} className="icon" alt={t("add")} />
           <span className="ms-1">{`${t("add")} ${t("finance:fund")}`}</span>

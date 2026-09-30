@@ -11,6 +11,7 @@ const PATH_COLORS = [
   { path: "/repair", color: "text-bg-success bg-opacity-75" },
   { path: "/statistics", color: "text-bg-info bg-opacity-75" },
   { path: "/cashier", color: "text-bg-dark bg-opacity-50" },
+  { path: "/print", color: "text-bg-dark bg-opacity-50" },
 ];
 
 const getSectionColor = (pathname) =>

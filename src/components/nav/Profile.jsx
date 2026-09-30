@@ -1,157 +1,181 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Building2, CalendarDays, MapPin } from "lucide-react";
 import { useUser } from "../../user/UserContext";
 import { useTranslation } from "react-i18next";
-import profile_edit from "../../assets/images/app/profile_edit.png"
 import { formatDate } from "../../utils/formatDate";
+import { getCondominium } from "../../api/services/managementService";
+import profile_edit from "../../assets/images/app/profile_edit.png";
+import "./Profile.css";
 
-const Profile = () => {
-      const { user } = useUser();
-      const { t, i18n } = useTranslation(["common", "profile", "condo"]);
-      const navigate = useNavigate();
+const metrics = ["homes", "fees", "bills", "funds", "repairs"];
 
-      const roleStyles = {
-            admin: "text-bg-primary bg-opacity-75",
-            manager: "text-bg-danger bg-opacity-50",
-            cashier: "text-bg-dark bg-opacity-50"
-      };
+function CondominiumOverview({ condominium }) {
+  const { t, i18n } = useTranslation(["profile", "common", "condo"]);
+  const [result, setResult] = useState(null);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
-      return (
-            <div className="container mt-4">
-                  <div className="row justify-content-center">
+  useEffect(() => {
+    let active = true;
+    setResult(null);
+    setFailed(false);
+    getCondominium(condominium.id)
+      .then((data) => {
+        if (active) setResult(data);
+      })
+      .catch(() => {
+        if (active) setFailed(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [condominium.id, attempt]);
 
-                        {/* PROFILE CARD */}
-                        <div className="col-md-8 col-lg-6">
-                              <div className="card my-4 shadow border-0 rounded-4">
-                                    <div className="card-header bg-secondary bg-opacity-75 text-white text-center fw-bold rounded-top-4">
-                                          {t("profile:title")}
-                                    </div>
+  const building = result || condominium;
+  return (
+    <article
+      className="profile-building card h-100"
+      style={{ borderTopColor: building.backgroundColor || "#367187" }}
+    >
+      <div className="card-body">
+        <div className="d-flex align-items-center gap-3 mb-3">
+          <Building2
+            size={28}
+            className="text-secondary flex-shrink-0"
+            aria-hidden="true"
+          />
+          <h3 className="h5 mb-0 text-break">{building.name}</h3>
+        </div>
+        <p className="profile-building-detail">
+          <MapPin size={17} aria-hidden="true" />
+          <span>
+            {[building.city, building.address].filter(Boolean).join(", ") ||
+              t("profile:noAddress")}
+          </span>
+        </p>
+        <p className="profile-building-detail">
+          <CalendarDays size={17} aria-hidden="true" />
+          <span>
+            {t("condo:startDate")}:{" "}
+            {building.startDate
+              ? formatDate(building.startDate + "T12:00:00", i18n.language)
+              : "—"}
+          </span>
+        </p>
+        {failed ? (
+          <div className="alert alert-warning" role="alert">
+            <p className="mb-2">{t("profile:loadError")}</p>
+            <button
+              className="btn btn-outline-dark btn-sm"
+              onClick={() => setAttempt((value) => value + 1)}
+            >
+              {t("profile:retry")}
+            </button>
+          </div>
+        ) : !result ? (
+          <p role="status" className="text-muted">
+            {t("profile:loading")}
+          </p>
+        ) : (
+          <dl className="profile-building-metrics">
+            {metrics.map((key) => (
+              <div key={key}>
+                <dt>{t("profile:counts." + key)}</dt>
+                <dd>{Array.isArray(result[key]) ? result[key].length : "—"}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
+    </article>
+  );
+}
 
-                                    <div className="card-body text-center">
-                                          <p className="mb-2"><strong>{t("name")}:</strong> {user.name}</p>
-                                          <p className="mb-2"><strong>{t("email")}:</strong> {user.email}</p>
-                                          <p className="mb-2"><strong>{t("profile:registeredOn")}:</strong> {formatDate(user.registeredOn, i18n.language)}</p>
-                                          <p className="mb-2">
-                                                <strong>{t("roles")}:</strong>{" "}
-                                                {user.roles.map((role) => {
-                                                      const roleKey = role.toLowerCase();
-                                                      const style = roleStyles[roleKey] || roleStyles.default;
-
-                                                      return (
-                                                            <span
-                                                                  key={role}
-                                                                  className={`badge ${style} mx-1`}
-                                                            >
-                                                                  {t(`profile:${roleKey}`)}
-                                                            </span>
-                                                      );
-                                                })}
-                                          </p>
-
-                                          <div className="mt-3 d-flex justify-content-center">
-                                                <div className="img-button pointer"
-                                                      onClick={() => navigate("/profile/edit")}>
-                                                      <img src={profile_edit} className="icon" alt="edit" />
-                                                      <span className="ms-2">{t("edit")}</span>
-                                                </div>
-                                          </div>
-                                    </div>
-                              </div>
-                        </div>
-
-                        {/* CONDOMINIUM CARD */}
-                        <div className="col-12 col-md-10 col-lg-8">
-                              <div className="card my-4 shadow border-0 rounded-4">
-                                    <div className="card-header bg-success bg-opacity-75 text-white rounded-top-4">
-                                          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-                                                <span className="fw-bold text-center flex-grow-1">
-                                                      {t("condo:title")}
-                                                </span>
-                                                <span className="badge bg-light text-success fs-6 px-3 py-2 shadow-sm">
-                                                      {user.condominiumLimit === -1
-                                                            ? t("profile:unlimited")
-                                                            : `${user.condominiums?.length || 0} / ${user.condominiumLimit}`}
-                                                </span>
-                                          </div>
-                                    </div>
-
-                                    {user.condominiums.length === 0 ? (
-                                          <div className="card-body text-center">
-                                                <h5 className="text-muted">
-                                                      {t("condo:noneAddedCondo")}
-                                                </h5>
-                                          </div>
-                                    ) : (
-                                          <div className="card-body">
-                                                <div className="table-responsive">
-                                                      <table className="table table-striped table-hover align-middle">
-                                                            <thead className="table-light">
-                                                                  <tr>
-                                                                        <th>{t("name")}</th>
-                                                                        <th>{t("home:homes")}</th>
-                                                                        <th>{t("finance:fees")}</th>
-                                                                        <th>{t("home:bills")}</th>
-                                                                        <th>{t("home:repairs")}</th>
-                                                                        <th>{t("condo:startDate")}</th>
-                                                                        <th>{t("form:background")}</th>
-                                                                  </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                  {user.condominiums.map((condo) => (
-                                                                        <tr key={condo.id}>
-                                                                              <td className="fw-bold">{condo.name}</td>
-
-                                                                              <td>
-                                                                                    <span className="badge bg-primary">
-                                                                                          {condo.homes?.length || 0}
-                                                                                    </span>
-                                                                              </td>
-                                                                              
-                                                                              <td>
-
-                                                                              </td>
-                                                                              <td>
-
-                                                                              </td>
-                                                                              <td>
-
-                                                                              </td>
-
-                                                                              <td>
-                                                                                    {new Date(condo.startDate).toLocaleDateString(i18n.language, {
-                                                                                          year: "numeric",
-                                                                                          month: "long"
-                                                                                    })}
-                                                                              </td>
-
-                                                                              <td>
-                                                                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                                                          <div
-                                                                                                style={{
-                                                                                                      width: "18px",
-                                                                                                      height: "18px",
-                                                                                                      borderRadius: "4px",
-                                                                                                      backgroundColor: condo.backgroundColor,
-                                                                                                      border: "1px solid #ccc"
-                                                                                                }}
-                                                                                          />
-                                                                                          <span>{condo.backgroundColor}</span>
-                                                                                    </div>
-                                                                              </td>
-                                                                        </tr>
-                                                                  ))}
-                                                            </tbody>
-                                                      </table>
-                                                </div>
-                                          </div>
-                                    )}
-                              </div>
-                        </div>
-
-                  </div>
+export default function Profile() {
+  const { user } = useUser();
+  const { t, i18n } = useTranslation(["common", "profile", "condo"]);
+  if (!user)
+    return (
+      <p className="container py-4" role="status">
+        {t("profile:loading")}
+      </p>
+    );
+  const condominiums = user.condominiums || [];
+  const manager = user.roles?.some((role) =>
+    ["ADMIN", "MANAGER"].includes(role),
+  );
+  return (
+    <main className="container py-4 profile-page">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-6">
+          <section className="card my-4 shadow border-0 rounded-4" aria-labelledby="profile-info-title">
+            <h1 id="profile-info-title" className="card-header bg-secondary bg-opacity-75 text-white text-center fw-bold rounded-top-4 fs-6">
+              {t("profile:title")}
+            </h1>
+            <div className="card-body text-center">
+              <p className="mb-2"><strong>{t("name")}:</strong> {user.name}</p>
+              <p className="mb-2 text-break"><strong>{t("email")}:</strong> {user.email}</p>
+              <p className="mb-2"><strong>{t("profile:registeredOn")}</strong> {formatDate(user.registeredOn, i18n.language)}</p>
+              <p className="mb-2">
+                <strong>{t("roles")}:</strong>{" "}
+                {(user.roles || []).map(role => {
+                  const roleKey = role.toLowerCase();
+                  const style = {
+                    admin: "text-bg-primary bg-opacity-75",
+                    manager: "text-bg-danger bg-opacity-50",
+                    cashier: "text-bg-dark bg-opacity-50",
+                  }[roleKey] || "text-bg-secondary";
+                  return <span key={role} className={"badge " + style + " mx-1"}>{t("profile:" + roleKey)}</span>;
+                })}
+              </p>
+              <div className="mt-3 d-flex justify-content-center">
+                <Link className="img-button pointer text-decoration-none text-reset" to="/profile/edit">
+                  <img src={profile_edit} className="icon" alt="" />
+                  <span className="ms-2">{t("edit")}</span>
+                </Link>
+              </div>
             </div>
-      );
-};
-
-export default Profile;
+          </section>
+        </div>
+      </div>
+      <section aria-labelledby="profile-buildings-title">
+        <div className="bg-success bg-opacity-75 text-white rounded-top-4 p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <h2 id="profile-buildings-title" className="fs-6 mb-0 fw-bold text-center flex-grow-1">
+            {t("condo:title")}
+          </h2>
+          <span className="badge bg-light text-success fs-6 px-3 py-2 shadow-sm">
+            {user.condominiumLimit <= 0
+              ? t("profile:unlimited")
+              : user.condominiumLimit != null
+                ? `${condominiums.length} / ${user.condominiumLimit}`
+                : condominiums.length}
+          </span>
+        </div>
+        {condominiums.length ? (
+          <div className="row g-3">
+            {condominiums.map((condominium) => (
+              <div className="col-12 col-xl-6" key={condominium.id}>
+                <CondominiumOverview
+                  condominium={condominium}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="card card-body text-center py-5">
+            <p>{t("condo:noneAddedCondo")}</p>
+            {manager && (
+              <Link
+                className="btn btn-primary align-self-center"
+                to="/management"
+              >
+                {t("profile:openManagement")}
+              </Link>
+            )}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}

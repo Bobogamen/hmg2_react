@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { format } from "date-fns";
+import { formatDate } from "../../utils/formatDate";
 import FeeLabel from "../../utils/FeeLabel";
 import { Link, useParams } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
@@ -44,6 +46,12 @@ const feePresentation = (fee) =>
         ? { emoji: "📅", label: "monthlyFee" }
         : { emoji: "💶", label: "oneTimeFee" };
 
+const activeResidentsOf = (home) =>
+  home.activeResidents ??
+  home.charges?.find((fee) => fee.primary)?.times ??
+  home.receipts?.find((fee) => fee.primary)?.times ??
+  0;
+
 export default function CashierAccounting() {
   const { condominiumId } = useParams();
   const { t, i18n } = useTranslation(["dashboard", "common"]);
@@ -61,6 +69,7 @@ export default function CashierAccounting() {
   const [error, setError] = useState(false);
   const [modal, setModal] = useState(null);
   const [payError, setPayError] = useState("");
+  const [paidDate, setPaidDate] = useState("");
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("allHomes");
@@ -81,11 +90,7 @@ export default function CashierAccounting() {
       maximumFractionDigits: 2,
     }).format(value || 0);
   const date = (value) =>
-    value
-      ? new Intl.DateTimeFormat(i18n.language).format(
-          new Date(`${value}T12:00:00`),
-        )
-      : "—";
+    value ? formatDate(`${value}T12:00:00`, i18n.language) : "—";
   const monthName = (month) =>
     new Intl.DateTimeFormat(i18n.language, {
       month: "long",
@@ -170,10 +175,17 @@ export default function CashierAccounting() {
   const activeHome = details?.homes.find((home) => home.id === modal?.homeId);
   const open = (home, mode) => {
     setPayError("");
+    setPaidDate(format(new Date(), "yyyy-MM-dd"));
     setModal({ homeId: home.id, mode });
   };
   const pay = async () => {
-    if (submitting.current || !activeHome || details.month.completed) return;
+    if (
+      submitting.current ||
+      !activeHome ||
+      details.month.completed ||
+      !paidDate
+    )
+      return;
     submitting.current = true;
     setSaving(true);
     setIsLoading(true);
@@ -185,6 +197,7 @@ export default function CashierAccounting() {
         details.month.id,
         activeHome.id,
         Number(activeHome.due).toFixed(2),
+        paidDate,
       );
       if (requestId === requests.current) {
         setDetails(data);
@@ -233,7 +246,7 @@ export default function CashierAccounting() {
         : Number(home.due) === 0 && Number(home.paid) > 0);
     return (
       matchesStatus &&
-      `${home.floor} ${home.name} ${home.owner || ""}`
+      `${home.floor} ${home.name} ${home.owner || ""} ${home.receipts.map((receipt) => `${receipt.paidDate} ${date(receipt.paidDate)}`).join(" ")}`
         .toLocaleLowerCase()
         .includes(search.trim().toLocaleLowerCase())
     );
@@ -254,7 +267,9 @@ export default function CashierAccounting() {
         <CashierCondominiumCard
           heading
           condominium={{
-            ...user?.condominiums?.find((item) => String(item.id) === String(condominiumId)),
+            ...user?.condominiums?.find(
+              (item) => String(item.id) === String(condominiumId),
+            ),
             ...overview,
             name: overview?.name || label("title"),
           }}
@@ -499,13 +514,18 @@ export default function CashierAccounting() {
                 <table className="table table-sm table-bordered table-striped table-hover align-middle cashier-homes-table">
                   <thead>
                     <tr>
-                      {["floor", "home", "owner", "total", "paidDate"].map(
-                        (key) => (
-                          <th key={key} scope="col">
-                            {label(key)}
-                          </th>
-                        ),
-                      )}
+                      {[
+                        "floor",
+                        "home",
+                        "owner",
+                        "residents",
+                        "total",
+                        "paidDate",
+                      ].map((key) => (
+                        <th key={key} scope="col">
+                          {label(key)}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
@@ -523,6 +543,12 @@ export default function CashierAccounting() {
                           {home.name}
                         </td>
                         <td data-label={label("owner")}>{home.owner || "—"}</td>
+                        <td
+                          data-label={label("residents")}
+                          className="text-center"
+                        >
+                          {activeResidentsOf(home)}
+                        </td>
                         <td
                           data-label={label("total")}
                           className="text-nowrap fw-semibold"
@@ -567,7 +593,13 @@ export default function CashierAccounting() {
                   <tfoot>
                     <tr>
                       <th colSpan={3}>{label("total")}</th>
-                      <th>
+                      <th className="text-center">
+                        {visibleHomes.reduce(
+                          (sum, home) => sum + Number(activeResidentsOf(home)),
+                          0,
+                        )}
+                      </th>
+                      <th className="text-nowrap">
                         {money(
                           visibleHomes.reduce(
                             (sum, home) => sum + Number(home.total),
@@ -628,6 +660,7 @@ export default function CashierAccounting() {
           if (!submitting.current) setModal(null);
         }}
         centered
+        scrollable
         size="lg"
         backdrop={saving ? "static" : true}
         keyboard={!saving}
@@ -660,6 +693,30 @@ export default function CashierAccounting() {
                   </strong>
                 </span>
               </div>
+              {modal.mode === "pay" && (
+                <div className="cashier-payment-review">
+                  <div className="cashier-payment-date">
+                    <label htmlFor="fee-paid-date">
+                      <CalendarDays size={22} aria-hidden="true" />{" "}
+                      {label("paidDate")}
+                    </label>
+                    <input
+                      id="fee-paid-date"
+                      type="date"
+                      className="form-control form-control-lg"
+                      required
+                      value={paidDate}
+                      disabled={saving}
+                      aria-describedby="fee-paid-date-help"
+                      onChange={(event) => setPaidDate(event.target.value)}
+                    />
+                  </div>
+                  <div className="cashier-payment-amount">
+                    <span>{label("total")}</span>
+                    <strong>{money(activeHome.due)}</strong>
+                  </div>
+                </div>
+              )}
               {payError && (
                 <div role="alert" className="alert alert-danger">
                   {label(payError)}{" "}
@@ -706,7 +763,10 @@ export default function CashierAccounting() {
                                 {feePresentation(item).emoji}
                               </span>
                               <div className="text-start">
-                                <FeeLabel fee={item} fundLabel={t("finance:fund")} />
+                                <FeeLabel
+                                  fee={item}
+                                  fundLabel={t("finance:fund")}
+                                />
                               </div>
                             </div>
                           </td>
@@ -742,7 +802,7 @@ export default function CashierAccounting() {
             {t("common:close")}
           </Button>
           {modal?.mode === "pay" && (
-            <Button disabled={saving || !!payError} onClick={pay}>
+            <Button disabled={saving || !!payError || !paidDate} onClick={pay}>
               {label("pay")}
             </Button>
           )}

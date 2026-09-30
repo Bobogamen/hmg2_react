@@ -1,9 +1,11 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor, act } from "@testing-library/react";
 import AccountingPeriodNotice from "./AccountingPeriodNotice";
+import { toast } from "react-toastify";
 import { getAccountingPeriod, generateAccountingMonths } from "../../api/services/managementService";
 
 jest.mock("../../api/services/managementService", () => ({ getAccountingPeriod: jest.fn(), generateAccountingMonths: jest.fn() }));
+jest.mock("react-toastify", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 jest.mock("../../loader/LoadingContext", () => {
   const setIsLoading = jest.fn();
   return { useLoading: () => ({ setIsLoading }) };
@@ -27,7 +29,8 @@ test("shows missing period and creates it only after the manager clicks", async 
   expect(generateAccountingMonths).toHaveBeenCalledWith("1");
   await act(async () => complete({ ...missing, missingMonths: [], createdMonths: 2 }));
   expect(screen.queryByRole("button")).not.toBeInTheDocument();
-  expect(screen.getByRole("status")).toHaveTextContent("accountingPeriod.created");
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  expect(toast.success).toHaveBeenCalledWith('accountingPeriod.created {"count":2,"to":"12.2026"}');
 });
 
 test("checks again on returning to the page and offers the new year", async () => {
@@ -47,7 +50,8 @@ test("retains the create action after a failed request", async () => {
   generateAccountingMonths.mockRejectedValue(new Error("offline"));
   render(<AccountingPeriodNotice condominiumId="1" />);
   fireEvent.click(await screen.findByRole("button", { name: "accountingPeriod.generate" }));
-  expect(await screen.findByRole("alert")).toHaveTextContent("accountingPeriod.error");
+  await waitFor(() => expect(toast.error).toHaveBeenCalledWith("accountingPeriod.error"));
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "accountingPeriod.generate" })).toBeEnabled();
 });
 

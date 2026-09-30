@@ -259,7 +259,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
         }
         if (
             !Number.isInteger(Number(data.installments)) ||
-            Number(data.installments) < 1 || Number(data.installments) > installmentsLimit
+            Number(data.installments) < 1 || (installmentsLimit > 0 && Number(data.installments) > installmentsLimit)
         ) {
             toast.warning(t("finance:repairInvalidInstallments", { max: installmentsLimit }), {
                 transition: Bounce,
@@ -765,7 +765,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                                                     <input
                                                         type="number"
                                                         min="1"
-                                                        max={installmentsLimit}
+                                                        max={installmentsLimit || undefined}
                                                         className="form-control text-center"
                                                         style={{
                                                             maxWidth: "120px",
@@ -782,7 +782,7 @@ const ModalRepair = ({ show, handleClose, condominium, repair, onSaved }) => {
                                                             : t("finance:installments")}
                                                     </span>
                                                     <span id="repair-installments-limit" className="badge rounded-pill text-bg-light border ms-sm-auto">
-                                                        {t("finance:maximumInstallments")}: {installmentsLimit}
+                                                        {t("finance:maximumInstallments")}: {installmentsLimit || t("profile:unlimited")}
                                                     </span>
                                                 </div>
                                             </div>

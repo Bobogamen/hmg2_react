@@ -999,6 +999,7 @@
   }
 
   .cashier-homes-table tbody td:nth-child(4),
+  .cashier-homes-table tbody td:nth-child(5),
   .cashier-homes-table tbody td:last-child {
     padding-top: 7px;
     border-top: 1px solid #e3ecef;
@@ -1008,11 +1009,20 @@
     align-content: center;
     padding-right: 8px;
     color: #244853;
+    text-align: start !important;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cashier-homes-table tbody td:nth-child(5) {
+    align-content: center;
+    padding-right: 8px;
+    color: #244853;
     font-size: 1.05rem;
     font-variant-numeric: tabular-nums;
   }
 
   .cashier-homes-table tbody td:last-child {
+    grid-column: 1 / -1;
     align-content: center;
     text-align: center;
   }
@@ -1070,3 +1080,80 @@
   }
 }
 .cashier-print-link { min-width: 36px; min-height: 36px; }
+
+.cashier-payment-modal .cashier-payment-review {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 2px solid #438097;
+  border-radius: 14px;
+  background: #eef7fa;
+  color: #173f50;
+}
+
+.cashier-payment-date label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.cashier-payment-date input {
+  min-width: 0;
+  min-height: 52px;
+  border: 2px solid #438097;
+  background: #fff;
+  color: #173f50;
+  font-weight: 600;
+  color-scheme: light;
+}
+
+.cashier-payment-date input:focus {
+  border-color: #17556f;
+  box-shadow: 0 0 0 4px #17556f26;
+}
+
+.cashier-payment-date p {
+  margin: 10px 0 0;
+  font-size: .875rem;
+  line-height: 1.5;
+}
+
+.cashier-payment-amount {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding-left: 24px;
+  border-left: 1px solid #b4cfd9;
+  overflow-wrap: anywhere;
+}
+
+.cashier-payment-amount strong {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.cashier-payment-modal .modal-footer .btn {
+  min-height: 44px;
+  padding-inline: 24px;
+}
+
+@media (max-width: 575px) {
+  .cashier-payment-modal .cashier-payment-review {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .cashier-payment-amount {
+    padding: 14px 0 0;
+    border-left: 0;
+    border-top: 1px solid #b4cfd9;
+  }
+}

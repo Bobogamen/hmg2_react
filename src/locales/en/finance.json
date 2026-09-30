@@ -1,4 +1,6 @@
 {
+  "fundStartDateBeforeCondominium": "The fund start date cannot be before the condominium start date.",
+  "fundStartDateRequired": "Choose a start date for the fund.",
   "period": {"startDate": "Start date", "untilToday": "Today", "activeFor": "Active for {{duration}}", "duration": "Duration: {{duration}}", "planned": "Upcoming", "unknown": "No start date", "completedOn": "Completed on", "inProgress": "In progress"},
   "incomes": "Income",
   "fee": "Fee",
@@ -50,6 +52,10 @@
   "applyToProperties": "Apply fee to properties",
   "feeAlreadyExists": "This fee already exists",
   "homeFeeAlreadyPrimary": "One or more selected properties already have a primary fee",
+  "homeFeeLimitReached": "A selected property has reached its total fee limit. All fees count towards this limit, regardless of type: primary, monthly, one-time and fund fees.",
+  "homeFundFeeAlreadyAssigned": "A property can have only one fee from the same fund. Check the properties assigned to the selected fees.",
+  "fundHomeRule": "Each property can have only one fee from this fund.",
+  "totalFeeLimitLabel": "All fees combined",
   "primaryMustBeMonthly": "The primary fee must be monthly",
   "noFeesAssigned": "No fees assigned",
   "noPrimaryFeeAssigned": "No primary fee",
@@ -89,6 +95,7 @@
     "confirm": "Set as Primary"
   },
   "fund": "Fund",
+  "fundForm": "Fund form",
   "highlightFeeHomes": "Highlight homes for {{name}}",
   "highlightFeeHomesAndFund": "Highlight homes and linked fund for {{name}}",
   "highlightFundFees": "Highlight fees for {{name}}",

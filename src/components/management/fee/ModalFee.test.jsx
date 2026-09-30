@@ -62,3 +62,16 @@ test("editing an existing primary fee retains its own homes", async () => {
     expect(screen.queryByText("Other occupied home")).toBeNull();
     expect(validateFee).toHaveBeenCalledWith(expect.objectContaining({ homeIds: [1, 2] }));
 });
+
+test("editing a fund fee excludes homes assigned another fee from the same fund", async () => {
+    const fundFee = { id: 10, name: "Fund fee", value: 5, fund: true, fundId: 20, homeIds: [1] };
+    render(<ModalFee show handleClose={jest.fn()} condominium={{ ...condominium, fees: [
+        fundFee,
+        { id: 11, fund: true, fundId: 20, homeIds: [2] },
+        { id: 12, fund: true, fundId: 21, homeIds: [3] },
+    ] }} fee={fundFee} />);
+    fireEvent.submit(document.querySelector("form"));
+    await screen.findByText("Occupied home");
+    expect(screen.queryByText("New home")).not.toBeInTheDocument();
+    expect(screen.getByText("Other occupied home")).toBeInTheDocument();
+});

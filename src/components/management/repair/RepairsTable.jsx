@@ -39,7 +39,7 @@ const RepairsTable = ({ condominium, onSaved }) => {
                     <Info size={20} color="blue" />
                 </button>
                 <div className="position-absolute end-0 fw-bold fs-5">
-                    {repairs.length}/{repairLimit}
+                    {repairs.length}/{repairLimit === 0 ? t("profile:unlimited") : repairLimit}
                 </div>
             </div>
             <ModalRepairsInfo show={showRepairInfo} handleClose={() => setShowRepairInfo(false)} />
@@ -83,7 +83,7 @@ const RepairsTable = ({ condominium, onSaved }) => {
                 repair={selectedRepair}
                 onSaved={onSaved}
             />
-            {repairs.length < repairLimit && (
+            {(repairLimit === 0 || repairs.length < repairLimit) && (
                 <div className="img-button pointer m-auto mt-3" onClick={openAdd}>
                     <img src={add} className="icon" alt={t("add")} />
                     <span className="ms-1">{t("add") + " " + t("finance:repair")}</span>

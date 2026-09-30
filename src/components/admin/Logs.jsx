@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Card, Container, Spinner, Table, Badge, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { getLogs } from "../../api/services/logService";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
-import { useTranslation } from "react-i18next";
 import { formatTimestamp } from "../../utils/formatDate";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import "./Logs.css"
@@ -15,7 +14,6 @@ const Logs = () => {
       const [actionFilter, setActionFilter] = useState("");
       const [levelFilter, setLevelFilter] = useState("ALL");
       const { setBreadcrumbs } = useBreadcrumb();
-      const { t } = useTranslation();
 
       useEffect(() => {
             const loadLogs = async () => {
@@ -34,7 +32,7 @@ const Logs = () => {
       useEffect(() => {
             setBreadcrumbs([
                   {
-                        label: t("dashboard:admin"),
+                        label: "Admin",
                         path: "/admin"
                   },
                   {
@@ -42,7 +40,7 @@ const Logs = () => {
                         color: "#6c757d "
                   }
             ]);
-      }, [setBreadcrumbs, t]);
+      }, [setBreadcrumbs]);
 
       const filteredLogs = useMemo(() => {
             return logs.filter((log) => {

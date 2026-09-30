@@ -1,4 +1,6 @@
 {
+  "fundStartDateBeforeCondominium": "Началната дата на фонда не може да е преди началната дата на етажната собственост.",
+  "fundStartDateRequired": "Изберете начална дата на фонда.",
   "period": {"startDate": "Начална дата", "untilToday": "До днес", "activeFor": "Работи от {{duration}}", "duration": "Продължителност: {{duration}}", "planned": "Предстои", "unknown": "Няма начална дата", "completedOn": "Приключен на", "inProgress": "В изпълнение"},
   "incomes": "Приходи",
   "fee": "Такса",
@@ -50,6 +52,10 @@
   "applyToProperties": "Прилагане на таксата към имоти",
   "feeAlreadyExists": "Таксата вече съществува",
   "homeFeeAlreadyPrimary": "Един или повече от избраните имоти вече имат основна такса",
+  "homeFeeLimitReached": "Имот от избраните е достигнал общия лимит за такси. В него влизат всички такси, независимо от вида им — основни, месечни, еднократни и фондови.",
+  "homeFundFeeAlreadyAssigned": "Имот може да има само една такса от един и същ фонд. Проверете имотите към избраните такси.",
+  "fundHomeRule": "За всеки имот може да изберете само една такса от този фонд.",
+  "totalFeeLimitLabel": "Всички такси общо",
   "primaryMustBeMonthly": "Основната такса трябва да е месечна",
   "noFeesAssigned": "Няма назначени такси",
   "noPrimaryFeeAssigned": "Без основна такса",
@@ -89,6 +95,7 @@
     "confirm": "Задай като основна"
   },
   "fund": "Фонд",
+  "fundForm": "Форма за фонд",
   "highlightFeeHomes": "Покажи имотите към {{name}}",
   "highlightFeeHomesAndFund": "Покажи имотите и свързания фонд към {{name}}",
   "highlightFundFees": "Покажи таксите към {{name}}",

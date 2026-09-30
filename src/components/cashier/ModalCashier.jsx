@@ -46,7 +46,7 @@ export default function ModalCashier({
   const [saving, setSaving] = useState(false);
   const submitting = useRef(false);
   const limitReached =
-    !editing && overview.cashiers.length >= overview.cashierLimit;
+    !editing && overview.cashierLimit > 0 && overview.cashiers.length >= overview.cashierLimit;
 
   useEffect(() => {
     if (show) {
@@ -92,7 +92,8 @@ export default function ModalCashier({
         { transition: Bounce },
       );
     } catch (failure) {
-      setSaveError(editing);
+      setSaveError(failure.response?.data?.message === "cashierCondominiumLimitReached"
+        ? "cashierCondominiumLimitReached" : editing);
       setErrors(
         failure.validationErrors || failure.response?.data?.errors || {},
       );
@@ -140,7 +141,7 @@ export default function ModalCashier({
           )}
           {saveError && (
             <div role="alert" className="alert alert-danger">
-              {t("cashierPage.assignmentSaveError")}
+              {t(saveError === "cashierCondominiumLimitReached" ? "cashierPage.cashierCondominiumLimitReached" : "cashierPage.assignmentSaveError")}
             </div>
           )}
           <fieldset

@@ -60,7 +60,7 @@ const FeesTable = ({
 
                         <div className="position-absolute end-0">
                               <div className="fw-bold fs-5">
-                                    {condominium?.fees?.length || 0}/{condominium?.feeMaxCount || 0}
+                                    {condominium?.fees?.length || 0}/{condominium?.feeMaxCount === 0 ? t("profile:unlimited") : condominium?.feeMaxCount || 0}
                               </div>
                         </div>
                   </div>

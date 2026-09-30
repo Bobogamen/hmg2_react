@@ -9,24 +9,45 @@ import {
 } from "../../api/services/cashierService";
 import { getCondominium } from "../../api/services/managementService";
 import { createPrintDocument } from "./printDocument";
+import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
+import Breadcrumbs from "../breadcrumb/Breadcrumbs";
 import "./Print.css";
 
 export default function Print() {
   const { user } = useUser();
   const { t, i18n } = useTranslation();
+  const { setBreadcrumbs } = useBreadcrumb();
   const label = (key) => t(`dashboard:printPage.${key}`);
   const [params, setParams] = useSearchParams();
   const condominiumId =
     params.get("condominium") || String(user?.condominiums?.[0]?.id || "");
   const [overview, setOverview] = useState(null);
   const [details, setDetails] = useState(null);
+  const [receiptSelection, setReceiptSelection] = useState(null);
+  const [homeSearch, setHomeSearch] = useState("");
   const [monthId, setMonthId] = useState("");
+  useEffect(() => setHomeSearch(""), [condominiumId, monthId]);
   const [error, setError] = useState(false);
   const [revision, setRevision] = useState(0);
   const [ready, setReady] = useState(false);
   const printFrames = useRef({});
   const [printReady, setPrintReady] = useState({});
   const requestedMonth = params.get("month");
+  useEffect(() => {
+    const condominium = overview?.selected === condominiumId
+      ? overview.condominium
+      : user?.condominiums?.find((item) => String(item.id) === condominiumId);
+    setBreadcrumbs([
+      { label: t("dashboard:cashier"), path: "/cashier" },
+      ...(condominium ? [{
+        label: condominium.name,
+        path: `/cashier/condominium/${condominiumId}`,
+        color: condominium.backgroundColor,
+      }] : []),
+      { label: t("dashboard:printPage.breadcrumb") },
+    ]);
+    return () => setBreadcrumbs([]);
+  }, [condominiumId, overview, user?.condominiums, setBreadcrumbs, t]);
   useEffect(() => {
     let active = true;
     setOverview(null);
@@ -85,6 +106,18 @@ export default function Print() {
   const valid =
     details?.selected === condominiumId &&
     String(details?.month.id) === monthId;
+  const receiptHomes = useMemo(() => valid
+    ? details.homes.filter((home) => !(home.paidDate && Number(home.due) === 0))
+    : [], [valid, details]);
+  const receiptHomeIds = useMemo(() => receiptSelection?.details === details
+    ? receiptSelection.ids
+    : receiptHomes.map((home) => String(home.id)), [receiptSelection, details, receiptHomes]);
+  const selectReceiptHomes = (ids) => setReceiptSelection({ details, ids });
+  const visibleReceiptHomes = receiptHomes.filter((home) =>
+    [home.name, home.floor, home.owner].some((value) =>
+      String(value ?? "").toLocaleLowerCase().includes(homeSearch.trim().toLocaleLowerCase()),
+    ),
+  );
   const documents = useMemo(() => {
     if (!valid || !overview) return {};
     const labels = Object.fromEntries(
@@ -114,18 +147,19 @@ export default function Print() {
     labels["home:residents"] = t("home:residents");
     labels.fund = t("finance:fund");
     return Object.fromEntries(
-      ["all", "properties", "receipts"].map((section) => [
+      ["all", "properties", "receipts", "allReceipts"].map((section) => [
         section,
         createPrintDocument({
           condominium: overview.condominium,
           details,
           locale: i18n.language,
           labels,
-          section,
+          section: section === "allReceipts" ? "receipts" : section,
+          receiptHomeIds: section === "allReceipts" ? undefined : receiptHomeIds,
         }),
       ]),
     );
-  }, [valid, overview, details, t, i18n.language]);
+  }, [valid, overview, details, t, i18n.language, receiptHomeIds]);
   const document = documents.all || "";
   const print = (section) => {
     if (
@@ -133,6 +167,7 @@ export default function Print() {
       printReady[section] !== documents[section] ||
       error ||
       !valid
+      || (section === "receipts" && !receiptHomeIds.length)
     )
       return;
     try {
@@ -144,6 +179,7 @@ export default function Print() {
   };
   return (
     <main className="print-page">
+      <Breadcrumbs />
       <header className="print-header text-center text-bg-light w-100 rounded border border-2 border-dark p-3">
         <h2 className="fw-bold mb-2">
           <Printer size={25} aria-hidden="true" />
@@ -223,7 +259,7 @@ export default function Print() {
         <div>
           <span className="print-step">2</span>
           <div>
-            <strong>{label("receipts")}</strong>
+            <strong>{label("allReceipts")}</strong>
             <small>{label("receiptsHint")}</small>
           </div>
           <button
@@ -233,15 +269,69 @@ export default function Print() {
               error ||
               !valid ||
               !details?.homes.length ||
-              ready !== document ||
-              printReady.receipts !== documents.receipts
+              printReady.allReceipts !== documents.allReceipts
+              || !receiptHomes.length
             }
-            onClick={() => print("receipts")}
+            onClick={() => print("allReceipts")}
+            aria-label={label("allReceipts")}
           >
             <Printer size={18} aria-hidden="true" />
           </button>
         </div>
       </div>
+      {valid && !error && (
+        <fieldset className="print-home-selection">
+          <legend>{label("selectReceiptHomes")}</legend>
+          {receiptHomes.length ? (
+            <>
+              <p className="print-selection-hint">{label("selectionHint")}</p>
+              <div className="print-selection-tools">
+                <label className="print-home-search">
+                  <span>{label("searchHomes")}</span>
+                  <input type="search" className="form-control" value={homeSearch}
+                    placeholder={label("searchHomesPlaceholder")}
+                    onChange={(event) => setHomeSearch(event.target.value)} />
+                </label>
+                <span className="print-selection-count" role="status">{t("dashboard:printPage.selectedHomes", { count: receiptHomeIds.length, total: receiptHomes.length })}</span>
+              </div>
+              <div className="print-selection-actions">
+                <button type="button" className="btn btn-outline-secondary btn-sm"
+                  disabled={receiptHomeIds.length === receiptHomes.length}
+                  onClick={() => selectReceiptHomes(receiptHomes.map((home) => String(home.id)))}>
+                  {label("selectAllHomes")}
+                </button>
+                <button type="button" className="btn btn-outline-secondary btn-sm"
+                  disabled={!receiptHomeIds.length}
+                  onClick={() => selectReceiptHomes([])}>{label("clearHomes")}</button>
+              </div>
+              <div className="print-home-options">
+                {visibleReceiptHomes.map((home) => (
+                  <label key={home.id} className={`print-home-option ${receiptHomeIds.includes(String(home.id)) ? "is-selected" : ""}`}>
+                    <input type="checkbox" className="form-check-input m-0"
+                      checked={receiptHomeIds.includes(String(home.id))}
+                      onChange={(event) => selectReceiptHomes(event.target.checked
+                        ? [...receiptHomeIds, String(home.id)]
+                        : receiptHomeIds.filter((id) => id !== String(home.id)))} />
+                    <span className="print-home-description">
+                      <strong>{label("home")} {home.name}</strong>
+                      <span>{label("floor")} {home.floor}{home.owner ? ` · ${home.owner}` : ""}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {!visibleReceiptHomes.length && <p className="print-selection-empty" role="status">{label("noSearchHomes")}</p>}
+              <div className="print-selection-footer">
+                <p>{label(receiptHomeIds.length ? "selectionReady" : "selectAtLeastOne")}</p>
+                <button type="button" className="btn btn-primary"
+                  disabled={!receiptHomeIds.length || ready !== document || printReady.receipts !== documents.receipts}
+                  onClick={() => print("receipts")}>
+                  <Printer size={18} aria-hidden="true" /> {label("printSelectedHomes")}
+                </button>
+              </div>
+            </>
+          ) : <p className="mb-0">{label("noReceiptHomes")}</p>}
+        </fieldset>
+      )}
       {error ? (
         <div className="alert alert-danger mt-3" role="alert">
           {label("error")}{" "}
@@ -273,14 +363,14 @@ export default function Print() {
       {valid &&
         !error &&
         details?.homes.length > 0 &&
-        ["properties", "receipts"].map((section) => (
+        ["properties", "receipts", "allReceipts"].map((section) => (
           <iframe
             key={section + documents[section]}
             ref={(node) => {
               printFrames.current[section] = node;
             }}
             title={label(
-              section === "properties" ? "printProperties" : "printReceipts",
+              section === "properties" ? "printProperties" : section === "allReceipts" ? "allReceipts" : "printReceipts",
             )}
             className="print-output-frame"
             aria-hidden="true"

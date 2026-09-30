@@ -18,10 +18,14 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
     const [step, setStep] = useState(1);
     const [selectedFeeIds, setSelectedFeeIds] = useState([]);
     const isEditing = Boolean(fund?.id);
+    const dateBeforeCondominium = !isEditing && startDate && condominium?.startDate && startDate < condominium.startDate;
     const fundFeeLimit = fund?.fundFeeLimit ?? condominium?.fundFeeLimit ?? 6;
     const availableFees = (condominium?.fees || []).filter((fee) =>
         fee.fund && (fee.fundId == null || Number(fee.fundId) === Number(fund?.id))
     );
+    const conflictsWithSelected = (fee) => availableFees.some((other) =>
+        other.id !== fee.id && selectedFeeIds.includes(other.id)
+        && other.homeIds?.some((id) => fee.homeIds?.some((homeId) => String(homeId) === String(id))));
 
     const showRequestError = (error) => {
         const code = error?.response?.data?.message;
@@ -49,6 +53,13 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (dateBeforeCondominium) {
+            setErrors((current) => ({
+                ...current,
+                startDate: [{ code: "fundStartDateBeforeCondominium" }]
+            }));
+            return;
+        }
         if (step === 1) {
             setSaving(true);
             try {
@@ -142,7 +153,7 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                         </div>
                     </Modal.Title>
                 </Modal.Header>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} aria-label={t("finance:fundForm")}>
                     <Modal.Body className="position-relative">
                         {saving && (
                             <div
@@ -167,12 +178,19 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                                         if (errors.name) setErrors((current) => ({ ...current, name: null }));
                                     }} placeholder={t("name")} autoFocus maxLength={50} />
                                 {renderFieldErrors(errors, "name", t)}
-                                {!isEditing && <div className="mb-2">
-                                    <label htmlFor="fund-start-date">{t("finance:period.startDate")}</label>
-                                    <input id="fund-start-date" type="date" required value={startDate} onChange={(event) => setStartDate(event.target.value)} />
-                                    {renderFieldErrors(errors, "startDate", t)}
-                                </div>}
                             </div>
+                            {!isEditing && <div className="mb-2">
+                                    <label htmlFor="fund-start-date">{t("finance:period.startDate")}</label>
+                                    <input id="fund-start-date" type="date" required min={condominium?.startDate || undefined} value={startDate}
+                                        aria-invalid={!!dateBeforeCondominium || !!errors.startDate}
+                                        onChange={(event) => {
+                                            setStartDate(event.target.value);
+                                            if (errors.startDate) setErrors((current) => ({ ...current, startDate: null }));
+                                        }} />
+                                    {dateBeforeCondominium
+                                        ? renderFieldErrors({ startDate: [{ code: "fundStartDateBeforeCondominium" }] }, "startDate", t)
+                                        : renderFieldErrors(errors, "startDate", t)}
+                                </div>}
                         </div> :
                             <div>
                                 <h5 className="fw-bold text-center">
@@ -190,6 +208,7 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                                     </p>
                                 ) : (
                                     <>
+                                        <p className="small text-muted">{t("finance:fundHomeRule")}</p>
                                         <Table bordered striped hover size="sm"
                                             className="mb-0 text-center">
                                             <thead>
@@ -203,7 +222,9 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                                             <tbody>
                                                 {availableFees.map((fee) => (
                                                     <tr key={fee.id}>
-                                                        <td>{fee.name}</td>
+                                                        <td>{fee.name}
+                                                            {conflictsWithSelected(fee) && <small className="d-block text-danger">{t("finance:homeFundFeeAlreadyAssigned")}</small>}
+                                                        </td>
                                                         <td>€ {Number(fee.value || 0).toFixed(2)}</td>
                                                         <td>
                                                             <button
@@ -223,7 +244,7 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                                                                 checked={selectedFeeIds.includes(fee.id)}
                                                                 disabled={
                                                                     !selectedFeeIds.includes(fee.id)
-                                                                    && selectedFeeIds.length >= fundFeeLimit
+                                                                    && ((fundFeeLimit > 0 && selectedFeeIds.length >= fundFeeLimit) || conflictsWithSelected(fee))
                                                                 }
                                                                 onChange={() => setSelectedFeeIds((current) => current.includes(fee.id)
                                                                     ? current.filter((id) => id !== fee.id)
@@ -237,12 +258,12 @@ const ModalFund = ({ show, handleClose, condominium, fund, onSaved }) => {
                                         <div className={`d-flex justify-content-center align-items-center text-center mt-2 fw-bolder ${selectedFeeIds.length === 0 ? "text-danger" : "text-muted"}`}>
                                             {selectedFeeIds.length === 0
                                                 ? t("finance:selectAtLeastOneFundFee")
-                                                : selectedFeeIds.length >= fundFeeLimit
+                                                : (fundFeeLimit > 0 && selectedFeeIds.length >= fundFeeLimit)
                                                     ? t("finance:fundFeeLimitReached")
                                                     : <>
                                                         {t("finance:feeLimit")}:
                                                         <span className="badge bg-danger fs-6 ms-1 pt-1">
-                                                            {fundFeeLimit - selectedFeeIds.length}
+                                                            {fundFeeLimit === 0 ? t("profile:unlimited") : fundFeeLimit - selectedFeeIds.length}
                                                         </span>
                                                     </>}
                                         </div>

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { useLoading } from "../../loader/LoadingContext";
 import {
   getAccountingPeriod,
@@ -20,7 +21,6 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
   const [period, setPeriod] = useState(null);
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [created, setCreated] = useState(null);
   const request = useRef(0);
   const submitting = useRef(false);
   const invalidateRequests = useCallback(() => {
@@ -43,7 +43,6 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
 
   useEffect(() => {
     setPeriod(null);
-    setCreated(null);
     refresh();
     let year = currentYear();
     const timer = setInterval(() => {
@@ -73,11 +72,14 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
       const data = await generateAccountingMonths(condominiumId);
       if (id === request.current) {
         setPeriod(data);
-        setCreated(data.createdMonths);
+        toast.success(t("accountingPeriod.created", {
+          count: data.createdMonths,
+          to: monthLabel(data.endMonth),
+        }));
         onGenerated?.();
       }
     } catch {
-      if (id === request.current) setError(true);
+      if (id === request.current) toast.error(t("accountingPeriod.error"));
     } finally {
       submitting.current = false;
       setSaving(false);
@@ -86,7 +88,7 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
   };
 
   const missing = period?.missingMonths || [];
-  if (!error && !missing.length && created === null) return null;
+  if (!error && !missing.length) return null;
   return (
     <div
       className={`alert ${error ? "alert-danger" : missing.length ? "alert-warning" : "alert-success"}`}
@@ -111,14 +113,6 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
             {t("accountingPeriod.generate")}
           </button>
         </>
-      )}
-      {!missing.length && !error && created !== null && (
-        <span>
-          {t("accountingPeriod.created", {
-            count: created,
-            to: monthLabel(period.endMonth),
-          })}
-        </span>
       )}
       {error && !missing.length && (
         <button

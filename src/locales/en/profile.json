@@ -12,5 +12,23 @@
   "manager": "Manager",
   "cashier": "Cashier",
   "registeredOn": "Registered:",
-  "unlimited": "Unlimited"
+  "unlimited": "Unlimited",
+  "overview": "My condominiums",
+  "overviewHint": "An overview and quick access to each condominium.",
+  "buildingCount": "Condominiums: {{count}}",
+  "limit": "Limit",
+  "noAddress": "No address provided",
+  "loading": "Loading details…",
+  "loadError": "Details for this condominium could not be loaded.",
+  "retry": "Try again",
+  "openCashier": "Cashier",
+  "openManagement": "Management",
+  "print": "Print",
+  "counts": {
+    "homes": "Properties",
+    "fees": "Fees",
+    "bills": "Bills",
+    "funds": "Funds",
+    "repairs": "Repairs"
+  }
 }

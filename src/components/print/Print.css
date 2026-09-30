@@ -94,7 +94,62 @@
   border-radius: 8px;
   background: white;
 }
+.print-home-selection {
+  min-width: 0;
+  margin: 0 0 16px;
+  padding: 20px;
+  border: 1px solid #cbdde9;
+  border-radius: 14px;
+  background: #fff;
+}
+.print-home-selection legend {
+  padding: 0 8px;
+  margin-bottom: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.print-selection-hint { color: #526571; margin: 0 0 16px; }
+.print-selection-tools { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+.print-home-search { flex: 1 1 240px; font-weight: 600; }
+.print-home-search input { margin-top: 6px; min-height: 44px; font-size: 16px; }
+.print-selection-count { padding: 10px 14px; background: #edf5fa; border-radius: 20px; font-weight: 600; }
+.print-selection-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.print-selection-actions button { min-height: 44px; padding-inline: 14px; }
+.print-home-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 3px;
+}
+.print-home-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 12px;
+  border: 1px solid #d1dce3;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.print-home-option.is-selected { border-color: #235975; background: #edf5fa; }
+.print-home-option:focus-within { outline: 3px solid #235975; outline-offset: 1px; }
+.print-home-option input { width: 22px; height: 22px; flex-shrink: 0; cursor: pointer; }
+.print-home-description { display: grid; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
+.print-home-description > span { color: #526571; font-size: .9rem; }
+.print-selection-empty { padding: 20px; text-align: center; color: #526571; background: #f5f7f9; border-radius: 10px; }
+.print-selection-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid #dbe5e9; margin-top: 16px; padding-top: 16px; }
+.print-selection-footer p { margin: 0; color: #526571; }
+.print-selection-footer button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; }
+@media (hover: hover) {
+  .print-home-option:hover { border-color: #235975; background: #f3f8fb; }
+}
 @media (max-width: 600px) {
+  .print-home-selection { padding: 12px; }
+  .print-home-options { grid-template-columns: 1fr; max-height: 50vh; }
+  .print-selection-actions button { flex: 1; }
+  .print-selection-footer button { width: 100%; }
   .print-page {
     padding: 12px 8px;
   }

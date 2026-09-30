@@ -86,10 +86,16 @@ test("registers a cashier with selected buildings without replacing the manager 
 });
 
 test("hides registration when the configured limit is reached", async () => {
-  getCashiers.mockResolvedValue({ ...overview, cashierLimit: 0 });
+  getCashiers.mockResolvedValue({ ...overview, cashierLimit: 1, cashiers: [{ id: 2, name: "Cashier", email: "cashier@example.test", condominiums: [] }] });
   open();
   await screen.findByText("cashierPage.limit");
   expect(screen.queryByRole("button", { name: "auth:register" })).not.toBeInTheDocument();
+});
+
+test("zero cashier limit allows registration", async () => {
+  getCashiers.mockResolvedValue({ ...overview, cashierLimit: 0 });
+  open();
+  expect(await screen.findByRole("button", { name: /cashierPage.register/ })).toBeEnabled();
 });
 
 test("cashiers see their assigned condominiums and no manager registration", () => {

@@ -4,7 +4,7 @@ export const repairSchedule = ({ budget, homeIds, distributionType, homePercenta
     const count = Number(installments);
     const amount = String(budget);
     if (!/^\d+(\.\d{1,2})?$/.test(amount) || Number(amount) <= 0 ||
-        !Number.isInteger(count) || count < 1 || count > installmentsLimit || !homeIds.length) return [];
+        !Number.isInteger(count) || count < 1 || (installmentsLimit > 0 && count > installmentsLimit) || !homeIds.length) return [];
     const cents = BigInt(amount.split(".")[0]) * 100n + BigInt((amount.split(".")[1] || "").padEnd(2, "0"));
     const ids = [...homeIds].sort((a, b) => a - b);
     const equal = distributionType === "EQUAL";

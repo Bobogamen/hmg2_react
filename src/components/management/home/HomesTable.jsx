@@ -207,14 +207,18 @@ const HomesTable = ({ condominium, onSaved, selectedHomeIds = [] }) => {
         onSaved={onSaved}
       />
 
-      <div
-        className="img-button pointer m-auto mt-3"
-        onClick={() => handleOpenHomeModal()}
-      >
-        <img src={addHome} className="icon" alt="add" />
+      {condominium.size > condominium.homes.length && (
+        <div
+          className="img-button pointer m-auto mt-3"
+          onClick={() => handleOpenHomeModal()}
+        >
+          <img src={addHome} className="icon" alt="add" />
 
-        <span className="ms-1">{t("add")}</span>
-      </div>
+          <span className="ms-1">
+            {t("add")} {t("home:home")}
+          </span>
+        </div>
+      )}
     </div>
   );
 };

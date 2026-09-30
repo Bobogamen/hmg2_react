@@ -37,8 +37,56 @@
 .statistics-table th, .statistics-table td { padding: 12px; white-space: nowrap; text-align: right; vertical-align: middle; }
 .statistics-table th:first-child, .statistics-table td:nth-child(2) { text-align: left; }
 .statistics-table tfoot { font-weight: 700; border-top: 2px solid #cad5dc; }
-.statistics-sections { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-.statistics-sections button { min-height: 44px; }
+.statistics-sections {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 22px;
+  padding: 10px;
+  border: 1px solid #dce6ec;
+  border-radius: 16px;
+  background: #f2f6f9;
+}
+.statistics-section-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 88px;
+  padding: 12px 8px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: #405966;
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  transition: background-color .15s, border-color .15s, box-shadow .15s;
+}
+.statistics-section-icon { display: inline-flex; flex-shrink: 0; }
+.statistics-section-button:hover { background: #e3edf3; border-color: #b8ceda; }
+.statistics-section-button[aria-pressed="true"] {
+  background: #245b77;
+  color: #fff;
+  border-color: #245b77;
+  box-shadow: 0 3px 8px #245b7730;
+}
+.statistics-section-button:focus-visible { outline: 3px solid #147ba9; outline-offset: 3px; }
+@media (max-width: 1000px) {
+  .statistics-sections { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+  .statistics-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 8px; gap: 6px; }
+  .statistics-section-button { flex-direction: row; justify-content: flex-start; min-height: 54px; padding: 12px; text-align: left; }
+  .statistics-section-button:last-child { grid-column: 1 / -1; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .statistics-section-button { transition: none; }
+}
 .statistics-search { max-width: 650px; margin: 18px 0; }
 .statistics-search label { display: block; margin-bottom: 6px; font-weight: 600; }
 .statistics-page .statistics-search input { width: 100%; max-width: none; margin: 0 0 8px; }

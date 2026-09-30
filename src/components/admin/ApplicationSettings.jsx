@@ -14,7 +14,7 @@ const ApplicationSettings = () => {
 
     const { setBreadcrumbs } = useBreadcrumb();
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(undefined, { lng: "en" });
 
     useEffect(() => {
         loadSettings();
@@ -23,7 +23,7 @@ const ApplicationSettings = () => {
     useEffect(() => {
         setBreadcrumbs([
             {
-                label: t("dashboard:admin"),
+                label: "Admin",
                 path: "/admin"
             },
             {
@@ -301,7 +301,7 @@ const ApplicationSettings = () => {
                                         {/* Created */}
                                         <td className="small text-muted">
                                             {setting.createdAt
-                                                ? new Date(setting.createdAt).toLocaleString()
+                                                ? new Date(setting.createdAt).toLocaleString("en-GB")
                                                 : "-"}
                                         </td>
 
@@ -330,7 +330,7 @@ const ApplicationSettings = () => {
                                         {/* Updated */}
                                         <td className="small text-muted">
                                             {setting.updatedAt
-                                                ? new Date(setting.updatedAt).toLocaleString()
+                                                ? new Date(setting.updatedAt).toLocaleString("en-GB")
                                                 : "-"}
                                         </td>
 
@@ -367,13 +367,13 @@ const ApplicationSettings = () => {
                                         <div>
                                             <span className="fw-bold">Created:{" "}</span>
                                             {setting.createdAt
-                                                ? new Date(setting.createdAt).toLocaleString()
+                                                ? new Date(setting.createdAt).toLocaleString("en-GB")
                                                 : "-"}
                                         </div>
                                         <div>
                                             <span className="fw-bold">Updated:{" "}</span>
                                             {setting.updatedAt
-                                                ? new Date(setting.updatedAt).toLocaleString()
+                                                ? new Date(setting.updatedAt).toLocaleString("en-GB")
                                                 : "-"}
                                         </div>
                                     </div>

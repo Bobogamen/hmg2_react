@@ -38,7 +38,12 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
         ? homes.filter((home) =>
             !home.hasPrimaryFee || (isEditing && fee?.primary && fee?.homeIds?.includes(home.id))
         )
-        : homes;
+        : feeData.fund && fee?.fundId != null
+            ? homes.filter((home) => !(condominium?.fees || []).some((other) =>
+                String(other.id) !== String(fee.id)
+                && other.fund && String(other.fundId) === String(fee.fundId)
+                && other.homeIds?.some((id) => String(id) === String(home.id))))
+            : homes;
 
     const [hideMainModal, setHideMainModal] = useState(false);
     const [showMonthlyInfoModal, setShowMonthlyInfoModal] = useState(false);
@@ -58,7 +63,9 @@ const ModalFee = ({ show, handleClose, condominium, fee, onSaved }) => {
 
         if (validationCode === "feeAlreadyExists"
             || validationCode === "primaryMustBeMonthly"
-            || validationCode === "homeFeeAlreadyPrimary") {
+            || validationCode === "homeFeeAlreadyPrimary"
+            || validationCode === "homeFeeLimitReached"
+            || validationCode === "homeFundFeeAlreadyAssigned") {
             toast.warning(t(`finance:${validationCode}`), {
                 transition: Bounce,
             });

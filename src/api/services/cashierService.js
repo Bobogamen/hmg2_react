@@ -33,10 +33,11 @@ export const payCashierHomeFees = async (
   monthId,
   homeId,
   expectedTotal,
+  paidDate,
 ) => {
   const { data } = await api.post(
     `/cashier/condominium/${condominiumId}/months/${monthId}/homes/${homeId}/payments`,
-    { expectedTotal },
+    { expectedTotal, paidDate },
   );
   return data;
 };

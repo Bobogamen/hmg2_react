@@ -56,6 +56,7 @@ export function createPrintDocument({
   locale,
   labels,
   section = "all",
+  receiptHomeIds,
 }) {
   const model = buildPrintModel(details);
   const residentCounts = new Map(
@@ -63,6 +64,12 @@ export function createPrintDocument({
       String(home.id),
       home.residentsSize,
     ]),
+  );
+  const activeResidentsOf = (home) =>
+    home.activeResidents ?? residentCounts.get(String(home.id));
+  const activeResidentsTotal = model.homes.reduce(
+    (sum, home) => sum + Number(activeResidentsOf(home) ?? 0),
+    0,
   );
   const text = (key) => labels[key];
   const amount = (value) =>
@@ -82,6 +89,12 @@ export function createPrintDocument({
     details.month.year;
   const title = text("documentTitle") + " " + (address || condominium.name);
   const parts = model.homes.flatMap((home) => {
+    if (home.paidDate && Number(home.due) === 0) return [];
+    if (
+      receiptHomeIds &&
+      !receiptHomeIds.some((id) => String(id) === String(home.id))
+    )
+      return [];
     const count = Math.max(1, Math.ceil(home.fees.length / 12));
     return Array.from({ length: count }, (_, index) => ({
       home,
@@ -150,6 +163,13 @@ export function createPrintDocument({
       text-align: left;
       font-weight: bold;
       padding-bottom: 1.5mm;
+  }
+  .fund-heading th {
+      text-align: left;
+      background: #ddd;
+  }
+  .fund-subtotal td {
+      font-weight: bold;
   }
 
   .fee-summary .number {
@@ -382,7 +402,7 @@ export function createPrintDocument({
           <p className="period">{period}</p>
           <table className="properties-table">
             <colgroup>
-              {["10%", "10%", "23%", "9%", "8%", "16%", "14%", "10%"].map(
+              {["10%", "11%", "23%", "9%", "8%", "15%", "14%", "10%"].map(
                 (width, i) => (
                   <col key={i} style={{ width }} />
                 ),
@@ -411,16 +431,23 @@ export function createPrintDocument({
                   <td className="center">{home.name}</td>
                   <td>{home.owner || "—"}</td>
                   <td className="center">
-                    {residentCounts.get(String(home.id)) ?? "—"}
+                    {activeResidentsOf(home) ?? "—"}
                   </td>
                   <td className="number home-amount">{amount(home.total)}</td>
-                  <td></td>
+                  <td className="center">
+                    {home.paidDate && Number(home.due) === 0
+                      ? new Intl.DateTimeFormat(locale).format(
+                          new Date(`${home.paidDate}T12:00:00`),
+                        )
+                      : ""}
+                  </td>
                   <td></td>
                   <td></td>
                 </tr>
               ))}
               <tr className="total">
-                <td colSpan={4}>{text("total")}</td>
+                <td colSpan={3}>{text("total")}</td>
+                <td className="center">{activeResidentsTotal}</td>
                 <td className="number">€ {amount(model.total)}</td>
                 <td colSpan={3}></td>
               </tr>
@@ -429,6 +456,14 @@ export function createPrintDocument({
           <div className="fee-summaries">
             {[false, true].map((fund) => {
               const fees = model.fees.filter((fee) => fee.fund === fund);
+              const groups = fund
+                ? [...new Set(fees.map((fee) => fee.fundName || ""))]
+                    .sort((a, b) => a.localeCompare(b, locale))
+                    .map((name) => ({
+                      name,
+                      fees: fees.filter((fee) => (fee.fundName || "") === name),
+                    }))
+                : [{ name: "", fees }];
               const total =
                 fees.reduce((sum, fee) => sum + fee.amountCents, 0) / 100;
               return (
@@ -450,18 +485,42 @@ export function createPrintDocument({
                     </tr>
                   </thead>
                   <tbody>
-                    {fees.map((f) => (
-                      <tr
-                        key={f.key}
-                        className={f.fund ? "fund-fee" : undefined}
-                      >
-                        <td>
-                          <FeeLabel fee={f} fundLabel={text("fund")} />
-                        </td>
-                        <td className="number">{amount(f.value)}</td>
-                        <td className="center">{f.homeCount}</td>
-                        <td className="number">{amount(f.amount)}</td>
-                      </tr>
+                    {groups.map((group) => (
+                      <React.Fragment key={group.name}>
+                        {fund && (
+                          <tr className="fund-heading">
+                            <th colSpan={4} scope="rowgroup">
+                              {text("fund")}
+                              {group.name ? ` "${group.name}"` : ""}
+                            </th>
+                          </tr>
+                        )}
+                        {group.fees.map((f) => (
+                          <tr
+                            key={f.key}
+                            className={f.fund ? "fund-fee" : undefined}
+                          >
+                            <td>{f.name}</td>
+                            <td className="number">{amount(f.value)}</td>
+                            <td className="center">{f.homeCount}</td>
+                            <td className="number">{amount(f.amount)}</td>
+                          </tr>
+                        ))}
+                        {fund && (
+                          <tr className="fund-subtotal">
+                            <td colSpan={3}>{text("total")}</td>
+                            <td className="number">
+                              €{" "}
+                              {amount(
+                                group.fees.reduce(
+                                  (sum, fee) => sum + fee.amountCents,
+                                  0,
+                                ) / 100,
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))}
                     <tr className="total">
                       <td colSpan={3}>{text("total")}</td>

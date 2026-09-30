@@ -1,26 +1,36 @@
+import userLabels from "./userLabels";
 import React, { useEffect } from "react";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
-import { useTranslation } from "react-i18next";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { setBreadcrumbs } = useBreadcrumb();
 
   useEffect(() => {
     setBreadcrumbs([
       {
-        label: t("dashboard:admin")
+        label: "Admin"
       }
     ]);
-  }, [setBreadcrumbs, t]);
+  }, [setBreadcrumbs]);
 
 
   return (
     <div>
       <Row className="justify-content-center g-3">
+        <Col xs={12} md={6} lg={4}>
+          <Card className="shadow-sm text-center h-100 p-3">
+            <Card.Body className="d-flex flex-column">
+              <Card.Title>{userLabels.title}</Card.Title>
+              <Card.Text className="flex-grow-1">{userLabels.description}</Card.Text>
+              <Button variant="success" className="w-100" onClick={() => navigate("users")}>
+                {userLabels.open}
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* SETTINGS */}
         <Col xs={12} md={6} lg={4}>

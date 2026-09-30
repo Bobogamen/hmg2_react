@@ -1,0 +1,11 @@
+.admin-users .form-control, .admin-users .form-select { width: 100%; max-width: none; margin: 0; min-height: 44px; }
+.admin-users .btn { min-height: 44px; }
+.admin-users td, .admin-users th { padding: 12px; }
+.admin-users td { overflow-wrap: anywhere; }
+.admin-users-pagination { padding: 16px; border: 1px solid #c5dfd1; border-radius: 12px; background: #f0f7f3; }
+.admin-users-pagination .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; min-width: 120px; font-weight: 600; }
+.admin-users-pagination .btn:disabled { background: #e1e7e4; border-color: #c5d0ca; color: #69776e; opacity: 1; }
+.admin-users-pagination > span { font-weight: 600; font-variant-numeric: tabular-nums; }
+.admin-user-edit-form { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.admin-user-settings .form-control, .admin-user-settings .form-select { width: 100%; max-width: none; margin: 0; min-height: 44px; }
+.admin-user-settings .btn { min-height: 44px; }

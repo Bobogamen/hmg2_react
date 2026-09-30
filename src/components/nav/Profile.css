@@ -1,0 +1,23 @@
+.profile-account, .profile-building {
+  border: 1px solid #dce5eb;
+  border-radius: 14px;
+  box-shadow: 0 3px 14px #213b5010;
+}
+.profile-account-info { min-width: 0; }
+.profile-building { border-top: 5px solid; overflow: hidden; }
+.profile-building .card-body { padding: 24px; }
+.profile-building-detail { display: flex; gap: 8px; color: #53616d; font-size: .9rem; }
+.profile-building-detail svg { flex-shrink: 0; margin-top: 2px; }
+.profile-building-detail span { overflow-wrap: anywhere; }
+.profile-building-metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 24px 0 0; }
+.profile-building-metrics div { padding: 12px 4px; border-radius: 8px; background: #f0f5f8; text-align: center; }
+.profile-building-metrics dt { font-size: .8rem; color: #53616d; font-weight: 500; overflow-wrap: anywhere; }
+.profile-building-metrics dd { font-size: 1.5rem; font-weight: 700; color: #244b60; margin: 4px 0 0; }
+.profile-building .card-footer { padding: 16px 24px; border-color: #e6edf2; }
+.profile-page .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+@media (max-width: 575px) {
+  .profile-building-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .profile-building .card-body { padding: 16px; }
+  .profile-building .card-footer { padding: 16px; }
+  .profile-building .card-footer .btn { flex: 1 1 auto; }
+}

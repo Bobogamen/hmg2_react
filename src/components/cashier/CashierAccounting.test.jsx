@@ -18,7 +18,7 @@ jest.mock("react-i18next", () => {
 });
 const month = { id: 9, year: 2026, number: 9, completed: false };
 const charges = [{ homeFeeId: 10, feeId: 10, name: "Cleaning", value: 5, times: 2, amount: 10 }, { homeFeeId: 11, feeId: 11, name: "Electricity", value: 3, times: 1, amount: 3 }];
-const home = { id: 2, floor: "1", name: "Apartment 2", owner: "Owner Name", total: 13, due: 13, paid: 0, paidDate: null, charges, receipts: [] };
+const home = { id: 2, floor: "1", name: "Apartment 2", owner: "Owner Name", activeResidents: 3, total: 13, due: 13, paid: 0, paidDate: null, charges, receipts: [] };
 const details = { month, homes: [home] };
 const paidHome = { ...home, due: 0, paid: 13, paidDate: "2026-09-12", charges: [], receipts: charges.map((charge, i) => ({ ...charge, id: i + 1, paidDate: "2026-09-12" })) };
 const open = () => render(<MemoryRouter initialEntries={["/cashier/condominium/1"]}><Routes><Route path="/cashier/condominium/:condominiumId" element={<CashierAccounting />} /></Routes></MemoryRouter>);
@@ -38,6 +38,22 @@ test("cashier can open print documents for the selected month using the print ic
   expect(printLink).toHaveTextContent("");
 });
 
+test("shows the active residents count for each home", async () => {
+  open();
+  const row = (await screen.findByText("Apartment 2")).closest("tr");
+  expect(within(row).getAllByRole("cell")[3]).toHaveTextContent("3");
+});
+
+test("uses the primary fee multiplier when an older response has no residents field", async () => {
+  getCashierMonth.mockResolvedValue({
+    month,
+    homes: [{ ...home, activeResidents: undefined, charges: [{ ...charges[0], primary: true, times: 4 }] }],
+  });
+  open();
+  const row = (await screen.findByText("Apartment 2")).closest("tr");
+  expect(within(row).getAllByRole("cell")[3]).toHaveTextContent("4");
+});
+
 test("opens current month and pays all fees once after reviewing the modal", async () => {
   let complete;
   payCashierHomeFees.mockImplementation(() => new Promise(resolve => { complete = resolve; }));
@@ -49,15 +65,38 @@ test("opens current month and pays all fees once after reviewing the modal", asy
   expect(within(dialog).queryByRole("checkbox")).not.toBeInTheDocument();
   expect(payCashierHomeFees).not.toHaveBeenCalled();
   const confirm = within(dialog).getByRole("button", { name: "cashierAccounting.pay" });
+  fireEvent.change(within(dialog).getByLabelText("cashierAccounting.paidDate"), { target: { value: "2026-09-12" } });
   fireEvent.click(confirm); fireEvent.click(confirm);
   expect(payCashierHomeFees).toHaveBeenCalledTimes(1);
-  expect(payCashierHomeFees).toHaveBeenCalledWith("1", 9, 2, "13.00");
+  expect(payCashierHomeFees).toHaveBeenCalledWith("1", 9, 2, "13.00", "2026-09-12");
   await act(async () => complete({ month, homes: [paidHome] }));
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   expect(screen.queryByRole("button", { name: "cashierAccounting.pay" })).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "9/12/2026" }));
+  fireEvent.click(screen.getByRole("button", { name: "12-Sep-2026" }));
   expect(within(screen.getByRole("dialog")).getByText("Cleaning")).toBeInTheDocument();
+  expect(within(screen.getByRole("dialog")).queryByText("12-Sep-2026")).not.toBeInTheDocument();
+  expect(within(screen.getByRole("dialog")).queryByText("cashierAccounting.paidDate")).not.toBeInTheDocument();
   expect(within(screen.getByRole("dialog")).queryByRole("button", { name: "cashierAccounting.pay" })).not.toBeInTheDocument();
+});
+
+test("requires a payment date before submitting", async () => {
+  open();
+  fireEvent.click(await screen.findByRole("button", { name: "cashierAccounting.pay" }));
+  const dialog = screen.getByRole("dialog");
+  fireEvent.change(within(dialog).getByLabelText("cashierAccounting.paidDate"), { target: { value: "" } });
+  const confirm = within(dialog).getByRole("button", { name: "cashierAccounting.pay" });
+  expect(confirm).toBeDisabled();
+  fireEvent.click(confirm);
+  expect(payCashierHomeFees).not.toHaveBeenCalled();
+});
+
+test("searches by the recorded payment date", async () => {
+  getCashierMonth.mockResolvedValue({ month, homes: [home, { ...paidHome, id: 3, name: "Apartment 3" }] });
+  open();
+  await screen.findByText("Apartment 3");
+  fireEvent.change(screen.getByRole("searchbox"), { target: { value: "2026-09-12" } });
+  expect(screen.getByText("Apartment 3")).toBeInTheDocument();
+  expect(screen.queryByText("Apartment 2")).not.toBeInTheDocument();
 });
 
 test("switches accounting month", async () => {
@@ -71,7 +110,7 @@ test("closed month shows paid receipt but prevents payment", async () => {
   getCashierMonth.mockResolvedValue({ month: { ...month, completed: true }, homes: [home, { ...paidHome, id: 3, name: "Apartment 3" }] });
   open();
   expect(await screen.findByRole("button", { name: "cashierAccounting.pay" })).toBeDisabled();
-  fireEvent.click(screen.getByRole("button", { name: "9/12/2026" }));
+  fireEvent.click(screen.getByRole("button", { name: "12-Sep-2026" }));
   expect(screen.getByRole("dialog")).toBeInTheDocument();
 });
 
@@ -96,13 +135,16 @@ test("filters homes by payment and owner and restores the full list", async () =
   open(); await screen.findByText("Apartment 2");
   const footer = screen.getByText("Apartment 2").closest("table").querySelector("tfoot");
   expect(footer).toHaveTextContent("26.00");
+  expect(within(footer).getByText("6")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "cashierAccounting.unpaidHomes" }));
   expect(footer).toHaveTextContent("13.00");
+  expect(within(footer).getByText("3")).toBeInTheDocument();
   expect(screen.getByText("Apartment 2")).toBeInTheDocument();
   expect(screen.queryByText("Apartment 3")).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole("searchbox"), { target: { value: "Other Owner" } });
   expect(screen.getByText("cashierAccounting.noResults")).toBeInTheDocument();
   expect(footer).toHaveTextContent("0.00");
+  expect(within(footer).getByText("0")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "cashierAccounting.clearFilters" }));
   expect(footer).toHaveTextContent("26.00");
   expect(screen.getByText("Apartment 2")).toBeInTheDocument();
@@ -135,8 +177,8 @@ test("partial payment remains actionable and clearly shows the remaining amount"
   getCashierMonth.mockResolvedValue({ month, homes: [{ ...home, paid: 5, due: 8, paidDate: "2026-09-12" }] });
   open();
   const row = (await screen.findByText("Apartment 2")).closest("tr");
-  expect(within(row).getAllByRole("cell")).toHaveLength(5);
-  expect(within(row).queryByRole("button", { name: "9/12/2026" })).not.toBeInTheDocument();
+  expect(within(row).getAllByRole("cell")).toHaveLength(6);
+  expect(within(row).queryByRole("button", { name: "12-Sep-2026" })).not.toBeInTheDocument();
   expect(within(row).getByText(/cashierAccounting.due: € 8\.00/)).toBeInTheDocument();
   expect(within(row).getByRole("button", { name: "cashierAccounting.pay" })).toBeEnabled();
 });
@@ -152,11 +194,11 @@ test.each(["pay", "receipt"])("%s modal groups fees and shows matching icons and
     ? { ...home, charges: entries }
     : { ...paidHome, receipts: entries }] });
   open();
-  fireEvent.click(await screen.findByRole("button", { name: mode === "pay" ? "cashierAccounting.pay" : "9/12/2026" }));
+  fireEvent.click(await screen.findByRole("button", { name: mode === "pay" ? "cashierAccounting.pay" : "12-Sep-2026" }));
   const dialog = within(screen.getByRole("dialog"));
   const rows = dialog.getAllByRole("row").slice(1, -1);
   expect(rows.map(row => within(row).getAllByRole("cell")[0].textContent)).toEqual([
-    "⭐Basic fee", "📅Monthly electricity", "💶One-off cleaning", '💰finance:fund "Roof reserve"Reserve contribution',
+    "⭐Basic fee", "📅Monthly electricity", "💶One-off cleaning", '💰Reserve contributionfinance:fund "Roof reserve"',
   ]);
   expect(entries[0].name).toBe("Reserve contribution");
 });

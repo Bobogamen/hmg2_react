@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChartColumn, RefreshCw } from "lucide-react";
+import { ChartColumn, RefreshCw, House, Receipt, FileText, ArrowUpRight, CalendarDays, Wrench, Wallet } from "lucide-react";
 import { useUser } from "../../user/UserContext";
 import { getStatistics } from "../../api/services/statisticsService";
 import AnnualBreakdown from "./AnnualBreakdown";
 import "./Statistics.css";
+
+const sectionIcons = { homes: House, fees: Receipt, bills: FileText, expenses: ArrowUpRight, months: CalendarDays, repairs: Wrench, funds: Wallet };
 
 export default function Statistics() {
   const { user } = useUser();
@@ -78,9 +80,12 @@ export default function Statistics() {
             <p>{label("asOf")}: {new Intl.DateTimeFormat(i18n.language).format(new Date(`${data.asOf}T12:00:00`))}</p>
           </div>
           <nav className="statistics-sections" aria-label={label("sections")}>
-            {["homes", "fees", "bills", "expenses", "months", "repairs", "funds"].map((key) => (
-              <button type="button" key={key} className={`btn ${section === key ? "btn-primary" : "btn-outline-primary"}`}
-                aria-pressed={section === key} onClick={() => setSection(key)}>{label(`by${key[0].toUpperCase()}${key.slice(1)}`)}</button>
+            {Object.entries(sectionIcons).map(([key, Icon]) => (
+              <button type="button" key={key} className="statistics-section-button"
+                aria-pressed={section === key} onClick={() => setSection(key)}>
+                <span className="statistics-section-icon"><Icon size={21} aria-hidden="true" /></span>
+                <span>{label(`by${key[0].toUpperCase()}${key.slice(1)}`)}</span>
+              </button>
             ))}
           </nav>
           {section !== "months" && <AnnualBreakdown key={`${selected}-${data.year}-${section}`} section={section}

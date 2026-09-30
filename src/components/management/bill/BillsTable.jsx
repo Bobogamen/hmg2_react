@@ -44,7 +44,7 @@ const BillsTable = ({ condominium, onSaved }) => {
                 </button>
                 <div className="position-absolute end-0">
                     <div className="fw-bold fs-5">
-                        {bills.length}/{condominium?.billMaxCount || 0}
+                        {bills.length}/{condominium?.billMaxCount === 0 ? t("profile:unlimited") : condominium?.billMaxCount || 0}
                     </div>
                 </div>
             </div>
@@ -168,7 +168,7 @@ const BillsTable = ({ condominium, onSaved }) => {
                 onSaved={onSaved}
             />
 
-            {bills.length < (condominium?.billMaxCount || 0) && (
+            {(condominium?.billMaxCount === 0 || bills.length < (condominium?.billMaxCount || 0)) && (
                 <div className="img-button pointer m-auto mt-3" onClick={openAdd}>
                     <img src={add} className="icon" alt={t("add")} />
                     <span className="ms-1">{`${t("add")} ${t("finance:bill")}`}</span>

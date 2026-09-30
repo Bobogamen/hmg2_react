@@ -16,6 +16,58 @@ test("counts each home once per fee and sums paid plus unpaid amounts", () => {
   expect(model.total).toBe(12.5);
   expect(model.fees[0]).toMatchObject({ homeCount: 2, amount: 12.5 });
 });
+test.each(["all", "properties"])("%s prints payment dates only for fully paid homes", (section) => {
+  const homes = [
+    { ...details.homes[0], id: 1, paid: 7.5, due: "0.00", paidDate: "2026-09-12" },
+    { ...details.homes[0], id: 2, paidDate: "2026-09-10" },
+    { ...details.homes[1], id: 3, paidDate: null },
+    { ...details.homes[1], id: 4, total: 0, due: 0, paidDate: null },
+  ];
+  const html = createPrintDocument({ ...options, section, details: { ...details, homes } });
+  const dom = new DOMParser().parseFromString(html, "text/html");
+  const rows = [...dom.querySelectorAll(".properties-table tbody tr:not(.total)")];
+  expect(rows.map(row => row.children[5].textContent)).toEqual(["12.09.2026 г.", "", "", ""]);
+});
+test.each(["all", "receipts"])("%s omits fully paid homes from slips and keeps unpaid and partially paid homes", (section) => {
+  const homes = [
+    { ...details.homes[0], id: 3, name: "3", paid: 7.5, due: "0.00", paidDate: "2026-09-12" },
+    { ...details.homes[0], paidDate: "2026-09-10" },
+    details.homes[1],
+  ];
+  const html = createPrintDocument({ ...options, section, details: { ...details, homes } });
+  const dom = new DOMParser().parseFromString(html, "text/html");
+  expect([...dom.querySelectorAll(".receipt-home b:last-child")].map(el => el.textContent)).toEqual(["1", "2"]);
+  if (section === "all") {
+    expect(dom.querySelectorAll(".properties-table tbody tr:not(.total)")).toHaveLength(3);
+  }
+});
+
+test.each(["all", "receipts"])("%s generates slips only for selected home IDs", (section) => {
+  const html = createPrintDocument({ ...options, section, receiptHomeIds: ["2"] });
+  const dom = new DOMParser().parseFromString(html, "text/html");
+  expect([...dom.querySelectorAll(".receipt-home b:last-child")].map(el => el.textContent)).toEqual(["2"]);
+  if (section === "all") {
+    expect(dom.querySelectorAll(".properties-table tbody tr:not(.total)")).toHaveLength(2);
+    expect(dom.querySelector(".properties-table .total .number").textContent).toBe("€ 12,50");
+  }
+});
+
+test("empty selection generates no slips and selected paid homes remain excluded", () => {
+  const homes = details.homes.map(home => ({ ...home, due: 0, paidDate: "2026-09-12" }));
+  for (const receiptHomeIds of [[], ["1", "2"]]) {
+    const html = createPrintDocument({ ...options, receiptHomeIds, details: { ...details, homes: receiptHomeIds.length ? homes : details.homes } });
+    const dom = new DOMParser().parseFromString(html, "text/html");
+    expect(dom.querySelectorAll(".receipt, .receipt-row")).toHaveLength(0);
+  }
+});
+
+test("creates no slips when every home has paid", () => {
+  const homes = details.homes.map(home => ({ ...home, due: 0, paid: home.total, paidDate: "2026-09-12" }));
+  const html = createPrintDocument({ ...options, section: "receipts", details: { ...details, homes } });
+  const dom = new DOMParser().parseFromString(html, "text/html");
+  expect(dom.querySelectorAll(".receipt, .receipt-row")).toHaveLength(0);
+});
+
 test.each(["properties", "receipts"])("%s print contains only the requested section", (section) => {
   const html = createPrintDocument({ ...options, section });
   const dom = new DOMParser().parseFromString(html, "text/html");
@@ -45,9 +97,9 @@ test("sorts fee types across homes and styles funds in both summary and slips", 
   const dom = new DOMParser().parseFromString(createPrintDocument({ ...options, details: mixed }), "text/html");
   expect(dom.querySelectorAll(".properties-document .fund-fee")).toHaveLength(1);
   expect(dom.querySelectorAll(".receipts-document .fund-fee")).toHaveLength(2);
-  dom.querySelectorAll(".fund-fee td:first-child").forEach(cell => {
-    expect(cell.children[0].textContent).toBe('Фонд "Roof reserve"');
-    expect(cell.children[1].textContent).toBe("A fund");
+  dom.querySelectorAll(".receipts-document .fund-fee td:first-child").forEach(cell => {
+    expect(cell.children[0].textContent).toBe("A fund");
+    expect(cell.children[1].textContent).toBe('Фонд "Roof reserve"');
   });
   const summaries = dom.querySelectorAll(".fee-summary");
   expect([...summaries].map(table => table.querySelector("caption").textContent)).toEqual(["Такси", "Фондове"]);
@@ -55,6 +107,26 @@ test("sorts fee types across homes and styles funds in both summary and slips", 
   expect(summaries[0].querySelector(".total .number").textContent).toBe("€ 15,00");
   expect(summaries[1].querySelector(".total .number").textContent).toBe("€ 10,00");
 });
+test("groups fund fees with values, unique home counts and fund subtotals", () => {
+  const roof = { ...fee, name: "Reserve", fund: true, fundName: "Roof", primary: false };
+  const extra = { ...roof, name: "Extra", value: 1, amount: 1, times: 1 };
+  const lift = { ...roof, fundName: "Lift", amount: 2.5, times: 1 };
+  const homes = [
+    { ...details.homes[0], charges: [roof, extra, lift], receipts: [{ ...roof, amount: 2.5 }] },
+    { ...details.homes[1], charges: [roof], receipts: [] },
+  ];
+  const dom = new DOMParser().parseFromString(createPrintDocument({ ...options, details: { ...details, homes } }), "text/html");
+  const table = dom.querySelectorAll(".fee-summary")[1];
+  expect([...table.querySelectorAll(".fund-heading")].map(row => row.textContent)).toEqual(['Фонд "Lift"', 'Фонд "Roof"']);
+  expect([...table.querySelectorAll(".fund-fee")].map(row => [...row.children].map(cell => cell.textContent))).toEqual([
+    ["Reserve", "2,50", "1", "2,50"],
+    ["Extra", "1,00", "1", "1,00"],
+    ["Reserve", "2,50", "2", "12,50"],
+  ]);
+  expect([...table.querySelectorAll(".fund-subtotal .number")].map(cell => cell.textContent)).toEqual(["€ 2,50", "€ 13,50"]);
+  expect(table.querySelector(".total .number").textContent).toBe("€ 16,00");
+});
+
 test("combined document uses portrait properties and landscape slips with narrow margins and escaped text", () => {
   const html = createPrintDocument({ ...options, mode: "landscape", condominium: { ...options.condominium, address: "<script>alert(1)</script>" } });
   const normalized = html.replace(/\s+/g, " ");
@@ -70,7 +142,7 @@ test("combined document uses portrait properties and landscape slips with narrow
   expect(html).toContain("Общо €");
   expect(html).toContain("12,50");
   expect(dom.querySelector(".properties-table tbody tr").children[4].textContent).toBe("7,50");
-  expect(dom.querySelector(".properties-table .total").children[1].textContent).toBe("€ 12,50");
+  expect(dom.querySelector(".properties-table .total").children[2].textContent).toBe("€ 12,50");
 });
 test("prints active resident counts by home ID, preserving zero and missing values", () => {
   const html = createPrintDocument({ ...options, condominium: { ...options.condominium,
@@ -79,6 +151,7 @@ test("prints active resident counts by home ID, preserving zero and missing valu
   const rows = dom.querySelectorAll(".properties-table tbody tr:not(.total)");
   expect(rows[0].children[3].textContent).toBe("3");
   expect(rows[1].children[3].textContent).toBe("0");
+  expect(dom.querySelector(".properties-table .total").children[1].textContent).toBe("3");
   expect(dom.querySelectorAll(".properties-table th")).toHaveLength(8);
   const missing = new DOMParser().parseFromString(createPrintDocument(options), "text/html");
   expect(missing.querySelector(".properties-table tbody tr").children[3].textContent).toBe("—");

@@ -38,6 +38,7 @@
   "lengthBetween": "Length must be between {{min}} and {{max}} characters",
   "startDateAfter": "Start date must be in or after {{year}}",
   "pastOrPresent": "Start date cannot be in the future",
+  "fundStartDateBeforeCondominium": "The fund start date cannot be before the condominium start date.",
   "notMoreThan200": "Not more than 200",
   "notMoreThan100 000": "Not more than 100 000",
   "sizeIsLess": "The number of homes is greater than the specified size",

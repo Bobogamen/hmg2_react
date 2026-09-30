@@ -21,6 +21,7 @@ import Cashier from "./components/cashier/Cashier";
 import CashierAccounting from "./components/cashier/CashierAccounting";
 
 import Profile from "./components/nav/Profile";
+import Users from "./components/admin/Users";
 import ProfileEdit from "./components/nav/ProfileEdit";
 import Header from "./components/nav/Header";
 import Footer from "./components/footer/Footer";
@@ -109,6 +110,7 @@ const App = () => {
               }
             >
               <Route index element={<Admin />} />
+              <Route path="users" element={<Users />} />
               <Route
                 path="application-settings"
                 element={<ApplicationSettings />}
