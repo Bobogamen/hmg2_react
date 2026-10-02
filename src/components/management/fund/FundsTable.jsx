@@ -82,7 +82,7 @@ const FundsTable = ({
               >
                 <td>{formatDate(fund.startDate, i18n.language)}</td>
                 <td>
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center justify-content-center">
                     <span>{fund.name}</span>
                     {fund.feeCount === 0 && (
                       <OverlayTrigger

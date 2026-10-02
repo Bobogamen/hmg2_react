@@ -2,9 +2,19 @@ import React from "react";
 import { fireEvent, render, screen, waitFor, act } from "@testing-library/react";
 import AccountingPeriodNotice from "./AccountingPeriodNotice";
 import { toast } from "react-toastify";
-import { getAccountingPeriod, generateAccountingMonths } from "../../api/services/managementService";
+import {
+  getAccountingPeriod,
+  getAccountingChargeStatus,
+  generateAccountingMonths,
+  initializeAccountingCharges,
+} from "../../api/services/managementService";
 
-jest.mock("../../api/services/managementService", () => ({ getAccountingPeriod: jest.fn(), generateAccountingMonths: jest.fn() }));
+jest.mock("../../api/services/managementService", () => ({
+  getAccountingPeriod: jest.fn(),
+  getAccountingChargeStatus: jest.fn(),
+  generateAccountingMonths: jest.fn(),
+  initializeAccountingCharges: jest.fn(),
+}));
 jest.mock("react-toastify", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 jest.mock("../../loader/LoadingContext", () => {
   const setIsLoading = jest.fn();
@@ -12,7 +22,10 @@ jest.mock("../../loader/LoadingContext", () => {
 });
 jest.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key, values) => values ? `${key} ${JSON.stringify(values)}` : key }) }));
 const missing = { startMonth: "2026-01", endMonth: "2026-12", missingMonths: ["2026-01", "2026-02"], createdMonths: 0 };
-beforeEach(() => jest.resetAllMocks());
+beforeEach(() => {
+  jest.resetAllMocks();
+  getAccountingChargeStatus.mockResolvedValue({ months: [], createdMonths: 0 });
+});
 
 test("shows missing period and creates it only after the manager clicks", async () => {
   getAccountingPeriod.mockResolvedValue(missing);
@@ -61,4 +74,28 @@ test("offers retry when the status could not be loaded", async () => {
   fireEvent.click(await screen.findByRole("button", { name: "accountingPeriod.retry" }));
   await screen.findByRole("button", { name: "accountingPeriod.generate" });
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
+test("prepares legacy charge snapshots only after explicit confirmation", async () => {
+  getAccountingPeriod.mockResolvedValue({ ...missing, missingMonths: [] });
+  getAccountingChargeStatus.mockResolvedValue({
+    months: ["2025-01", "2025-02"],
+    createdMonths: 0,
+  });
+  initializeAccountingCharges.mockResolvedValue({ months: [], createdMonths: 2 });
+
+  render(<AccountingPeriodNotice condominiumId="7" />);
+
+  const review = await screen.findByRole("button", { name: "accountingPeriod.reviewCharges" });
+  expect(initializeAccountingCharges).not.toHaveBeenCalled();
+  expect(screen.getByRole("status")).toHaveTextContent("01.2025");
+  expect(screen.getByRole("status")).toHaveTextContent("02.2025");
+
+  fireEvent.click(review);
+  expect(initializeAccountingCharges).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "accountingPeriod.confirmCharges" }));
+
+  await waitFor(() => expect(initializeAccountingCharges).toHaveBeenCalledWith("7"));
+  await waitFor(() => expect(screen.queryByRole("status")).not.toBeInTheDocument());
+  expect(toast.success).toHaveBeenCalledWith('accountingPeriod.chargesCreated {"count":2}');
 });

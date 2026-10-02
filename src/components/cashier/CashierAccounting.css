@@ -631,8 +631,12 @@
   border: 1px solid #d5e3e8;
   border-radius: 12px;
 }
-.cashier-close-action:empty { display: none; }
-.cashier-close-action button { white-space: nowrap; }
+.cashier-close-action:empty {
+  display: none;
+}
+.cashier-close-action button {
+  white-space: nowrap;
+}
 .cashier-period-picker {
   display: flex;
   align-items: center;
@@ -1079,7 +1083,111 @@
     display: none;
   }
 }
-.cashier-print-link { min-width: 36px; min-height: 36px; }
+.cashier-print-link {
+  min-width: 36px;
+  min-height: 36px;
+}
+.cashier-debtors-button {
+  min-height: 36px;
+  gap: 6px;
+  font-weight: 700;
+}
+.cashier-charge-input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.cashier-payment-table {
+  width: 100%;
+  table-layout: fixed;
+}
+.cashier-payment-table__fee {
+  width: 58%;
+}
+.cashier-payment-table__value {
+  width: 15%;
+}
+.cashier-payment-table__times {
+  width: 11%;
+}
+.cashier-payment-table__total {
+  width: 16%;
+}
+.cashier-payment-table th:first-child,
+.cashier-payment-table td:first-child {
+  overflow-wrap: anywhere;
+}
+.cashier-payment-table th:not(:first-child),
+.cashier-payment-table td:not(:first-child) {
+  text-align: center;
+}
+.cashier-debtors-modal .modal-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cashier-debtors-summary {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e4c2c7;
+  border-radius: 12px;
+  background: #fff5f6;
+  color: #65242d;
+}
+.cashier-debtor {
+  border: 1px solid darkred;
+  border-radius: 11px;
+  overflow: hidden;
+}
+.cashier-debtor + .cashier-debtor {
+  margin-top: 10px;
+}
+.cashier-debtor summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8em;
+  padding: .4em .8em;
+  background: #e7b9b95c;
+  cursor: pointer;
+}
+.cashier-debtor summary > span {
+  min-width: 0;
+}
+.cashier-debtor summary small {
+  display: block;
+  margin-top: 3px;
+  color: #60717a;
+  overflow-wrap: anywhere;
+}
+.cashier-debtor-month {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-top: 1px solid #e2eaee;
+}
+@media (max-width: 575px) {
+  .cashier-payment-table {
+    min-width: 560px;
+  }
+  .cashier-debtors-button span {
+    display: none;
+  }
+  .cashier-debtor-month {
+    grid-template-columns: 1fr auto;
+  }
+  .cashier-debtor-month .btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
 
 .cashier-payment-modal .cashier-payment-review {
   display: grid;
@@ -1119,7 +1227,7 @@
 
 .cashier-payment-date p {
   margin: 10px 0 0;
-  font-size: .875rem;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 

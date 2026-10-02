@@ -1,0 +1,14 @@
+{
+  "administration": "Administration", "title": "Admin", "subtitle": "An overview of your application and what needs attention.",
+  "period": "Registration and error period", "week": "Last 7 days", "month": "Last 30 days", "refresh": "Refresh",
+  "shortcuts": "Quick actions", "manageUsers": "Manage users", "settings": "Settings", "logs": "All logs",
+  "loading": "Loading dashboard…", "loadError": "Dashboard data could not be loaded. Please try again.", "retry": "Try again", "updated": "Updated",
+  "overview": "Key figures", "users": "Users", "condominiums": "Buildings", "homes": "Homes", "registrations": "New registrations",
+  "usersHint": "All registered accounts", "buildingsHint": "All non-archived buildings", "homesHint": "Non-archived homes in active buildings", "periodHint": "Selected period, including today",
+  "attention": "Needs attention", "attentionHint": "Recent errors and users who have reached their building limit.",
+  "errors": "Recent errors", "errorsHint": "ERROR entries during the selected period. Their cause may already be resolved.", "system": "System event", "errorBadge": "Error",
+  "noErrors": "No errors recorded during this period.", "latestFive": "Showing the latest 5 errors in this period.", "viewErrors": "Open all errors",
+  "limits": "Reached limits", "limitsHint": "Current building limit per user. Unlimited accounts are excluded.",
+  "review": "Review", "noLimits": "No users have reached their building limit.", "limitsPreview": "Showing 5 users who have reached their limit.", "manageLimits": "Manage limits",
+  "recentRegistrations": "New users", "registrationsHint": "The latest 5 registrations during the selected period.", "noRegistrations": "No new registrations during this period."
+}

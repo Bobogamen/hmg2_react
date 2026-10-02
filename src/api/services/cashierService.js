@@ -28,16 +28,21 @@ export const getCashierMonth = async (condominiumId, monthId) => {
   );
   return data;
 };
+export const getCashierDebtors = async (condominiumId) => {
+  const { data } = await api.get(`/cashier/condominium/${condominiumId}/debtors`);
+  return data;
+};
 export const payCashierHomeFees = async (
   condominiumId,
   monthId,
   homeId,
   expectedTotal,
   paidDate,
+  corrections,
 ) => {
   const { data } = await api.post(
     `/cashier/condominium/${condominiumId}/months/${monthId}/homes/${homeId}/payments`,
-    { expectedTotal, paidDate },
+    { expectedTotal, paidDate, corrections },
   );
   return data;
 };

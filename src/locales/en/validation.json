@@ -24,6 +24,7 @@
   "positiveWholeNumber": "Must be a positive whole number",
   "positiveNumber": "Must be a positive number",
   "invalidColor": "Invalid color code",
+  "invalidSettingValue": "Enter a valid non-negative value for this setting",
   "invalidEmail": "Invalid email address",
   "emailInUse": "Email address is already in use",
   "emailNotFound": "Email not found",

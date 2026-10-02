@@ -2,9 +2,9 @@ import React from "react";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import CashierAccounting from "./CashierAccounting";
-import { getCashierMonths, getCashierMonth, payCashierHomeFees, getCashierFinance } from "../../api/services/cashierService";
+import { getCashierMonths, getCashierMonth, payCashierHomeFees, getCashierFinance, getCashierDebtors } from "../../api/services/cashierService";
 
-jest.mock("../../api/services/cashierService", () => ({ getCashierMonths: jest.fn(), getCashierMonth: jest.fn(), payCashierHomeFees: jest.fn(), getCashierFinance: jest.fn() }));
+jest.mock("../../api/services/cashierService", () => ({ getCashierMonths: jest.fn(), getCashierMonth: jest.fn(), payCashierHomeFees: jest.fn(), getCashierFinance: jest.fn(), getCashierDebtors: jest.fn() }));
 jest.mock("../../loader/LoadingContext", () => {
   const setIsLoading = jest.fn(); return { useLoading: () => ({ setIsLoading }) };
 });
@@ -27,6 +27,35 @@ beforeEach(() => {
   getCashierMonths.mockResolvedValue({ condominiumId: 1, name: "Building One", currentMonth: "2026-09", months: [month, { ...month, id: 10, number: 10 }] });
   getCashierMonth.mockResolvedValue(details);
   getCashierFinance.mockResolvedValue(null);
+  getCashierDebtors.mockResolvedValue({ condominiumId: 1, totalDue: 0, homes: 0, debtors: [] });
+});
+
+test("shows debtors across accounting months and opens the selected month", async () => {
+  getCashierDebtors.mockResolvedValue({ condominiumId: 1, totalDue: 13, homes: 1, debtors: [{
+    homeId: 2, name: "Apartment 2", owner: "Owner Name", due: 13,
+    months: [{ monthId: 9, year: 2026, number: 9, due: 13, charges: [] }]
+  }] });
+  open(); await screen.findByText("Apartment 2");
+  fireEvent.click(screen.getByRole("button", { name: "cashierAccounting.debtors" }));
+  const debtorsDialog = await screen.findByRole("dialog", { name: "cashierAccounting.debtors" });
+  expect(within(debtorsDialog).getByText("Owner Name")).toBeInTheDocument();
+  expect(within(debtorsDialog).getAllByText("€ 13.00").length).toBeGreaterThan(0);
+  fireEvent.click(within(debtorsDialog).getByRole("button", { name: "cashierAccounting.openMonth" }));
+  await waitFor(() => expect(getCashierMonth).toHaveBeenLastCalledWith("1", "9"));
+});
+
+test("allows correcting a snapshotted charge before recording payment", async () => {
+  const snapshotted = { ...home, charges: [{ ...charges[0], id: 101 }] };
+  getCashierMonth.mockResolvedValue({ month, homes: [snapshotted] });
+  payCashierHomeFees.mockResolvedValue({ month, homes: [{ ...snapshotted, charges: [], due: 0, paid: 12 }] });
+  open(); await screen.findByText("Apartment 2");
+  fireEvent.click(screen.getByRole("button", { name: "cashierAccounting.pay" }));
+  const dialog = screen.getByRole("dialog", { name: /cashierAccounting.payTitle/ });
+  fireEvent.change(screen.getByRole("spinbutton", { name: "cashierAccounting.value: Cleaning" }), { target: { value: "6" } });
+  fireEvent.click(within(dialog).getByRole("button", { name: "cashierAccounting.pay" }));
+  await waitFor(() => expect(payCashierHomeFees).toHaveBeenCalledWith("1", 9, 2, "12.00", expect.any(String), [
+    { chargeId: 101, value: "6", times: 2 }
+  ]));
 });
 
 test("cashier can open print documents for the selected month using the print icon", async () => {
@@ -106,10 +135,10 @@ test("switches accounting month", async () => {
   await waitFor(() => expect(getCashierMonth).toHaveBeenCalledWith("1", "10"));
 });
 
-test("closed month shows paid receipt but prevents payment", async () => {
+test("closed month shows paid receipt and still allows recorded debts to be paid", async () => {
   getCashierMonth.mockResolvedValue({ month: { ...month, completed: true }, homes: [home, { ...paidHome, id: 3, name: "Apartment 3" }] });
   open();
-  expect(await screen.findByRole("button", { name: "cashierAccounting.pay" })).toBeDisabled();
+  expect(await screen.findByRole("button", { name: "cashierAccounting.pay" })).toBeEnabled();
   fireEvent.click(screen.getByRole("button", { name: "12-Sep-2026" }));
   expect(screen.getByRole("dialog")).toBeInTheDocument();
 });

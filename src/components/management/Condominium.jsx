@@ -17,7 +17,7 @@ import FundsTable from "./fund/FundsTable";
 const Condominium = () => {
   const { condominiumId } = useParams();
   const { setIsLoading } = useLoading();
-  const { logout, user } = useUser();
+  const { logout } = useUser();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { setBreadcrumbs } = useBreadcrumb();

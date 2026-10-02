@@ -34,16 +34,21 @@ export default function Print() {
   const [printReady, setPrintReady] = useState({});
   const requestedMonth = params.get("month");
   useEffect(() => {
-    const condominium = overview?.selected === condominiumId
-      ? overview.condominium
-      : user?.condominiums?.find((item) => String(item.id) === condominiumId);
+    const condominium =
+      overview?.selected === condominiumId
+        ? overview.condominium
+        : user?.condominiums?.find((item) => String(item.id) === condominiumId);
     setBreadcrumbs([
       { label: t("dashboard:cashier"), path: "/cashier" },
-      ...(condominium ? [{
-        label: condominium.name,
-        path: `/cashier/condominium/${condominiumId}`,
-        color: condominium.backgroundColor,
-      }] : []),
+      ...(condominium
+        ? [
+            {
+              label: condominium.name,
+              path: `/cashier/condominium/${condominiumId}`,
+              color: condominium.backgroundColor,
+            },
+          ]
+        : []),
       { label: t("dashboard:printPage.breadcrumb") },
     ]);
     return () => setBreadcrumbs([]);
@@ -106,16 +111,28 @@ export default function Print() {
   const valid =
     details?.selected === condominiumId &&
     String(details?.month.id) === monthId;
-  const receiptHomes = useMemo(() => valid
-    ? details.homes.filter((home) => !(home.paidDate && Number(home.due) === 0))
-    : [], [valid, details]);
-  const receiptHomeIds = useMemo(() => receiptSelection?.details === details
-    ? receiptSelection.ids
-    : receiptHomes.map((home) => String(home.id)), [receiptSelection, details, receiptHomes]);
+  const receiptHomes = useMemo(
+    () =>
+      valid
+        ? details.homes.filter(
+            (home) => !(home.paidDate && Number(home.due) === 0),
+          )
+        : [],
+    [valid, details],
+  );
+  const receiptHomeIds = useMemo(
+    () =>
+      receiptSelection?.details === details
+        ? receiptSelection.ids
+        : receiptHomes.map((home) => String(home.id)),
+    [receiptSelection, details, receiptHomes],
+  );
   const selectReceiptHomes = (ids) => setReceiptSelection({ details, ids });
   const visibleReceiptHomes = receiptHomes.filter((home) =>
     [home.name, home.floor, home.owner].some((value) =>
-      String(value ?? "").toLocaleLowerCase().includes(homeSearch.trim().toLocaleLowerCase()),
+      String(value ?? "")
+        .toLocaleLowerCase()
+        .includes(homeSearch.trim().toLocaleLowerCase()),
     ),
   );
   const documents = useMemo(() => {
@@ -155,7 +172,8 @@ export default function Print() {
           locale: i18n.language,
           labels,
           section: section === "allReceipts" ? "receipts" : section,
-          receiptHomeIds: section === "allReceipts" ? undefined : receiptHomeIds,
+          receiptHomeIds:
+            section === "allReceipts" ? undefined : receiptHomeIds,
         }),
       ]),
     );
@@ -166,8 +184,8 @@ export default function Print() {
       !documents[section] ||
       printReady[section] !== documents[section] ||
       error ||
-      !valid
-      || (section === "receipts" && !receiptHomeIds.length)
+      !valid ||
+      (section === "receipts" && !receiptHomeIds.length)
     )
       return;
     try {
@@ -269,8 +287,8 @@ export default function Print() {
               error ||
               !valid ||
               !details?.homes.length ||
-              printReady.allReceipts !== documents.allReceipts
-              || !receiptHomes.length
+              printReady.allReceipts !== documents.allReceipts ||
+              !receiptHomes.length
             }
             onClick={() => print("allReceipts")}
             aria-label={label("allReceipts")}
@@ -288,48 +306,106 @@ export default function Print() {
               <div className="print-selection-tools">
                 <label className="print-home-search">
                   <span>{label("searchHomes")}</span>
-                  <input type="search" className="form-control" value={homeSearch}
+                  <input
+                    type="search"
+                    className="form-control"
+                    value={homeSearch}
                     placeholder={label("searchHomesPlaceholder")}
-                    onChange={(event) => setHomeSearch(event.target.value)} />
+                    onChange={(event) => setHomeSearch(event.target.value)}
+                  />
                 </label>
-                <span className="print-selection-count" role="status">{t("dashboard:printPage.selectedHomes", { count: receiptHomeIds.length, total: receiptHomes.length })}</span>
+                <span className="print-selection-count" role="status">
+                  {t("dashboard:printPage.selectedHomes", {
+                    count: receiptHomeIds.length,
+                    total: receiptHomes.length,
+                  })}
+                </span>
               </div>
               <div className="print-selection-actions">
-                <button type="button" className="btn btn-outline-secondary btn-sm"
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
                   disabled={receiptHomeIds.length === receiptHomes.length}
-                  onClick={() => selectReceiptHomes(receiptHomes.map((home) => String(home.id)))}>
+                  onClick={() =>
+                    selectReceiptHomes(
+                      receiptHomes.map((home) => String(home.id)),
+                    )
+                  }
+                >
                   {label("selectAllHomes")}
                 </button>
-                <button type="button" className="btn btn-outline-secondary btn-sm"
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
                   disabled={!receiptHomeIds.length}
-                  onClick={() => selectReceiptHomes([])}>{label("clearHomes")}</button>
+                  onClick={() => selectReceiptHomes([])}
+                >
+                  {label("clearHomes")}
+                </button>
               </div>
               <div className="print-home-options">
                 {visibleReceiptHomes.map((home) => (
-                  <label key={home.id} className={`print-home-option ${receiptHomeIds.includes(String(home.id)) ? "is-selected" : ""}`}>
-                    <input type="checkbox" className="form-check-input m-0"
+                  <label
+                    key={home.id}
+                    className={`print-home-option ${receiptHomeIds.includes(String(home.id)) ? "is-selected" : ""}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="form-check-input m-0"
                       checked={receiptHomeIds.includes(String(home.id))}
-                      onChange={(event) => selectReceiptHomes(event.target.checked
-                        ? [...receiptHomeIds, String(home.id)]
-                        : receiptHomeIds.filter((id) => id !== String(home.id)))} />
+                      onChange={(event) =>
+                        selectReceiptHomes(
+                          event.target.checked
+                            ? [...receiptHomeIds, String(home.id)]
+                            : receiptHomeIds.filter(
+                                (id) => id !== String(home.id),
+                              ),
+                        )
+                      }
+                    />
                     <span className="print-home-description">
-                      <strong>{label("home")} {home.name}</strong>
-                      <span>{label("floor")} {home.floor}{home.owner ? ` · ${home.owner}` : ""}</span>
+                      <strong>
+                        {label("home")} {home.name}
+                      </strong>
+                      <span>
+                        {label("floor")} {home.floor}
+                        {home.owner ? ` · ${home.owner}` : ""}
+                      </span>
                     </span>
                   </label>
                 ))}
               </div>
-              {!visibleReceiptHomes.length && <p className="print-selection-empty" role="status">{label("noSearchHomes")}</p>}
+              {!visibleReceiptHomes.length && (
+                <p className="print-selection-empty" role="status">
+                  {label("noSearchHomes")}
+                </p>
+              )}
               <div className="print-selection-footer">
-                <p>{label(receiptHomeIds.length ? "selectionReady" : "selectAtLeastOne")}</p>
-                <button type="button" className="btn btn-primary"
-                  disabled={!receiptHomeIds.length || ready !== document || printReady.receipts !== documents.receipts}
-                  onClick={() => print("receipts")}>
-                  <Printer size={18} aria-hidden="true" /> {label("printSelectedHomes")}
+                <p>
+                  {label(
+                    receiptHomeIds.length
+                      ? "selectionReady"
+                      : "selectAtLeastOne",
+                  )}
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  disabled={
+                    !receiptHomeIds.length ||
+                    ready !== document ||
+                    printReady.receipts !== documents.receipts
+                  }
+                  onClick={() => print("receipts")}
+                >
+                  <Printer size={18} aria-hidden="true" />{" "}
+                  {label("printSelectedHomes")}
                 </button>
               </div>
             </>
-          ) : <p className="mb-0">{label("noReceiptHomes")}</p>}
+          ) : (
+            <p className="mb-0">{label("noReceiptHomes")}</p>
+          )}
         </fieldset>
       )}
       {error ? (
@@ -370,7 +446,11 @@ export default function Print() {
               printFrames.current[section] = node;
             }}
             title={label(
-              section === "properties" ? "printProperties" : section === "allReceipts" ? "allReceipts" : "printReceipts",
+              section === "properties"
+                ? "printProperties"
+                : section === "allReceipts"
+                  ? "allReceipts"
+                  : "printReceipts",
             )}
             className="print-output-frame"
             aria-hidden="true"

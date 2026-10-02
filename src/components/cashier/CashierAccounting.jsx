@@ -10,6 +10,7 @@ import {
   getCashierMonth,
   payCashierHomeFees,
   getCashierFinance,
+  getCashierDebtors,
 } from "../../api/services/cashierService";
 import { useLoading } from "../../loader/LoadingContext";
 import { useUser } from "../../user/UserContext";
@@ -27,6 +28,7 @@ import {
   CalendarDays,
   LockKeyhole,
   LockKeyholeOpen,
+  CircleDollarSign,
 } from "lucide-react";
 import "./CashierAccounting.css";
 import "./CashierManagement.css";
@@ -71,6 +73,9 @@ export default function CashierAccounting() {
   const [payError, setPayError] = useState("");
   const [paidDate, setPaidDate] = useState("");
   const [saving, setSaving] = useState(false);
+  const [debtors, setDebtors] = useState(null);
+  const [debtorsError, setDebtorsError] = useState(false);
+  const [corrections, setCorrections] = useState({});
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("allHomes");
   const submitting = useRef(false);
@@ -176,29 +181,43 @@ export default function CashierAccounting() {
   const open = (home, mode) => {
     setPayError("");
     setPaidDate(format(new Date(), "yyyy-MM-dd"));
+    setCorrections(
+      Object.fromEntries(
+        (home.charges || []).map((charge) => [
+          charge.id,
+          {
+            value: String(charge.value),
+            times: String(charge.times),
+          },
+        ]),
+      ),
+    );
     setModal({ homeId: home.id, mode });
   };
   const pay = async () => {
-    if (
-      submitting.current ||
-      !activeHome ||
-      details.month.completed ||
-      !paidDate
-    )
-      return;
+    if (submitting.current || !activeHome || !paidDate) return;
     submitting.current = true;
     setSaving(true);
     setIsLoading(true);
     setPayError("");
     const requestId = ++requests.current;
     try {
-      const data = await payCashierHomeFees(
+      const correctionPayload = activeHome.charges.every((charge) => charge.id)
+        ? activeHome.charges.map((charge) => ({
+            chargeId: charge.id,
+            value: corrections[charge.id]?.value,
+            times: Number(corrections[charge.id]?.times),
+          }))
+        : undefined;
+      const paymentArguments = [
         condominiumId,
         details.month.id,
         activeHome.id,
-        Number(activeHome.due).toFixed(2),
+        Number(correctedTotal).toFixed(2),
         paidDate,
-      );
+      ];
+      if (correctionPayload) paymentArguments.push(correctionPayload);
+      const data = await payCashierHomeFees(...paymentArguments);
       if (requestId === requests.current) {
         setDetails(data);
         setModal(null);
@@ -230,6 +249,33 @@ export default function CashierAccounting() {
       setIsLoading(false);
     }
   };
+  const loadDebtors = async () => {
+    setDebtorsError(false);
+    try {
+      setDebtors(await getCashierDebtors(condominiumId));
+    } catch {
+      setDebtorsError(true);
+      setDebtors({ debtors: [], totalDue: 0, homes: 0 });
+    }
+  };
+  const correctedTotal = activeHome?.charges.every((charge) => charge.id)
+    ? activeHome.charges.reduce(
+        (sum, charge) =>
+          sum +
+          Number(corrections[charge.id]?.value || 0) *
+            Number(corrections[charge.id]?.times || 0),
+        0,
+      )
+    : Number(activeHome?.due || 0);
+  const validCorrections =
+    !activeHome ||
+    activeHome.charges.every(
+      (charge) =>
+        !charge.id ||
+        (Number(corrections[charge.id]?.value) > 0 &&
+          Number.isInteger(Number(corrections[charge.id]?.times)) &&
+          Number(corrections[charge.id]?.times) > 0),
+    );
 
   const total = (field) =>
     details?.homes.reduce((sum, home) => sum + Number(home[field]), 0) || 0;
@@ -388,6 +434,18 @@ export default function CashierAccounting() {
           >
             <CalendarDays size={19} aria-hidden="true" />
           </button>
+          {details && (
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm cashier-debtors-button"
+              onClick={loadDebtors}
+              title={label("debtors")}
+              aria-label={label("debtors")}
+            >
+              <CircleDollarSign size={20} aria-hidden="true" />
+              <span>{label("debtors")}</span>
+            </button>
+          )}
           {details && (
             <span
               className={`cashier-month-state ${details.month.completed ? "is-closed" : ""}`}
@@ -575,7 +633,6 @@ export default function CashierAccounting() {
                             <button
                               className="btn btn-primary btn-sm cashier-pay-button"
                               aria-haspopup="dialog"
-                              disabled={details.month.completed}
                               onClick={() => open(home, "pay")}
                             >
                               {label("pay")}
@@ -713,7 +770,7 @@ export default function CashierAccounting() {
                   </div>
                   <div className="cashier-payment-amount">
                     <span>{label("total")}</span>
-                    <strong>{money(activeHome.due)}</strong>
+                    <strong>{money(correctedTotal)}</strong>
                   </div>
                 </div>
               )}
@@ -732,7 +789,13 @@ export default function CashierAccounting() {
                 </div>
               )}
               <div className="table-responsive">
-                <table className="table table-bordered align-middle">
+                <table className="table table-bordered align-middle cashier-payment-table">
+                  <colgroup>
+                    <col className="cashier-payment-table__fee" />
+                    <col className="cashier-payment-table__value" />
+                    <col className="cashier-payment-table__times" />
+                    <col className="cashier-payment-table__total" />
+                  </colgroup>
                   <thead>
                     <tr>
                       {["fee", "value", "times", "total"].map((key) => (
@@ -770,9 +833,66 @@ export default function CashierAccounting() {
                               </div>
                             </div>
                           </td>
-                          <td>{money(item.value)}</td>
-                          <td>{item.times}</td>
-                          <td>{money(item.amount)}</td>
+                          <td>
+                            {modal.mode === "pay" && item.id ? (
+                              <input
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                className="form-control cashier-charge-input"
+                                aria-label={`${label("value")}: ${item.name}`}
+                                value={
+                                  corrections[item.id]?.value ?? item.value
+                                }
+                                disabled={saving}
+                                onChange={(event) =>
+                                  setCorrections((current) => ({
+                                    ...current,
+                                    [item.id]: {
+                                      ...current[item.id],
+                                      value: event.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            ) : (
+                              money(item.value)
+                            )}
+                          </td>
+                          <td>
+                            {modal.mode === "pay" && item.id ? (
+                              <input
+                                type="number"
+                                min="1"
+                                step="1"
+                                className="form-control cashier-charge-input"
+                                aria-label={`${label("times")}: ${item.name}`}
+                                value={
+                                  corrections[item.id]?.times ?? item.times
+                                }
+                                disabled={saving}
+                                onChange={(event) =>
+                                  setCorrections((current) => ({
+                                    ...current,
+                                    [item.id]: {
+                                      ...current[item.id],
+                                      times: event.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            ) : (
+                              item.times
+                            )}
+                          </td>
+                          <td>
+                            {money(
+                              modal.mode === "pay" && item.id
+                                ? Number(corrections[item.id]?.value || 0) *
+                                    Number(corrections[item.id]?.times || 0)
+                                : item.amount,
+                            )}
+                          </td>
                         </tr>
                       ))}
                   </tbody>
@@ -782,7 +902,7 @@ export default function CashierAccounting() {
                       <th>
                         {money(
                           modal.mode === "pay"
-                            ? activeHome.due
+                            ? correctedTotal
                             : activeHome.paid,
                         )}
                       </th>
@@ -802,10 +922,101 @@ export default function CashierAccounting() {
             {t("common:close")}
           </Button>
           {modal?.mode === "pay" && (
-            <Button disabled={saving || !!payError || !paidDate} onClick={pay}>
+            <Button
+              disabled={saving || !!payError || !paidDate || !validCorrections}
+              onClick={pay}
+            >
               {label("pay")}
             </Button>
           )}
+        </Modal.Footer>
+      </Modal>
+      <Modal
+        show={!!debtors}
+        onHide={() => setDebtors(null)}
+        centered
+        scrollable
+        size="lg"
+        className="cashier-debtors-modal"
+        aria-labelledby="cashier-debtors-title"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="cashier-debtors-title">
+            <CircleDollarSign size={22} aria-hidden="true" /> {label("debtors")}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {debtorsError && (
+            <div className="alert alert-danger">{label("debtorsError")}</div>
+          )}
+          {!debtorsError && debtors?.debtors.length === 0 && (
+            <div className="alert alert-success">{label("noDebtors")}</div>
+          )}
+          {!debtorsError && debtors?.debtors.length > 0 && (
+            <>
+              <div className="cashier-debtors-summary">
+                <span>
+                  {label("debtorHomes")}: <strong>{debtors.homes}</strong>
+                </span>
+                <span>
+                  {label("totalDue")}:{" "}
+                  <strong>{money(debtors.totalDue)}</strong>
+                </span>
+              </div>
+              <div className="accordion" role="list">
+                {debtors.debtors.map((home) => (
+                  <details className="cashier-debtor" key={home.homeId}>
+                    <summary>
+                      <div>
+                        <strong>{home.owner}</strong>
+                        <div className="d-flex gap-3 text-muted">
+                          <span>
+                            {t("home:floor")}:{" "}
+                            <strong className="text-dark">
+                              {home.floor ?? "—"}
+                            </strong>
+                          </span>
+                          <span>
+                            {label("home")}:{" "}
+                            <strong className="text-dark">
+                              {home.name || "—"}
+                            </strong>
+                          </span>
+                        </div>
+                      </div>
+                      <strong>{money(home.due)}</strong>
+                    </summary>
+                    <div>
+                      {home.months.map((month) => (
+                        <div
+                          className="cashier-debtor-month"
+                          key={month.monthId}
+                        >
+                          <span>{monthName(month)}</span>
+                          <strong>{money(month.due)}</strong>
+                          <Button
+                            size="sm"
+                            variant="outline-success"
+                            onClick={() => {
+                              setMonthId(String(month.monthId));
+                              setDebtors(null);
+                            }}
+                          >
+                            {label("openMonth")}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setDebtors(null)}>
+            {t("common:close")}
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

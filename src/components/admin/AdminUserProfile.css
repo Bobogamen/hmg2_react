@@ -1,0 +1,314 @@
+.modal.admin-profile-modal {
+  transform: none;
+}
+.admin-profile-modal .modal-content {
+  border: 1px solid #c5dfd1;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.admin-profile-modal .modal-header {
+  background: #edf7f1;
+  color: #146c43;
+}
+.admin-profile-modal .modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.admin-profile {
+  text-align: left;
+  color: #243d32;
+  padding: 1.5rem;
+}
+.admin-profile .btn,
+.admin-profile-footer .btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+.admin-profile .form-control,
+.admin-profile .form-select {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  min-height: 44px;
+}
+.admin-profile .form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.admin-profile-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+}
+.admin-profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #d1e7dd;
+  color: #146c43;
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.admin-profile-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.admin-profile-name h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.admin-profile-name p {
+  margin-bottom: 0.3rem;
+}
+.admin-profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.admin-profile-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 0.75rem;
+}
+.admin-profile-summary > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-content: start;
+  gap: 0.4rem 0.6rem;
+  background: #f1f7f3;
+  padding: 1rem;
+  border: 1px solid #dce6df;
+  border-radius: 12px;
+}
+.admin-profile-summary span {
+  font-size: 0.8rem;
+  color: #52665c;
+}
+.admin-profile-summary strong {
+  grid-column: 1 / -1;
+  font-size: 1.7rem;
+  font-variant-numeric: tabular-nums;
+}
+.admin-profile-summary .admin-profile-date {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.admin-profile-note {
+  font-size: 0.8rem;
+  color: #596b61;
+  margin: 0.75rem 0 1.5rem;
+}
+.admin-profile-section {
+  border-top: 1px solid #dce6df;
+  padding-top: 1.25rem;
+  margin-top: 1.5rem;
+}
+.admin-profile-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.admin-profile-section > p,
+.admin-profile-actions-heading p {
+  font-size: 0.85rem;
+  color: #596b61;
+}
+.admin-profile-usage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+.admin-profile-usage {
+  border: 1px solid #dce6df;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #fff;
+}
+.admin-profile-usage.is-reached {
+  border-color: #d6b65d;
+  background: #fffcf3;
+}
+.admin-profile-usage-heading {
+  display: flex;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.admin-profile-usage strong {
+  display: block;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+.admin-profile-usage strong span {
+  color: #596b61;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+.admin-profile-usage small {
+  display: block;
+  color: #596b61;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+.admin-profile-meter {
+  height: 6px;
+  border-radius: 4px;
+  background: #e6eee9;
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+.admin-profile-meter > div {
+  height: 100%;
+  background: #198754;
+}
+.admin-profile-usage.is-reached .admin-profile-meter > div {
+  background: #b47d00;
+}
+.admin-profile-search {
+  max-width: 480px;
+  margin-bottom: 1rem;
+}
+.admin-profile-buildings .accordion-item {
+  border-color: #dce6df;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.admin-profile-buildings .accordion-item + .accordion-item {
+  margin-top: 0.6rem;
+  border-top: 1px solid #dce6df;
+}
+.admin-profile-buildings .accordion-button {
+  gap: 0.75rem;
+  min-height: 68px;
+  background: #f8fbf9;
+}
+.admin-profile-buildings .accordion-button:not(.collapsed) {
+  background: #e8f5ee;
+  color: #146c43;
+  box-shadow: none;
+}
+.admin-profile-buildings .accordion-button > span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.admin-profile-building-address {
+  display: block;
+  font-size: 0.8rem;
+  color: #596b61;
+  margin-top: 0.3rem;
+}
+.admin-profile-funds {
+  margin-top: 1.25rem;
+}
+.admin-profile-funds h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.admin-profile-funds h5 {
+  font-size: 0.85rem;
+  margin: 0.75rem 0 0.4rem;
+  overflow-wrap: anywhere;
+}
+.admin-profile-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.admin-profile-actions-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: start;
+  gap: 0.75rem;
+}
+.admin-profile-actions {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+.admin-profile-actions li {
+  border-left: 3px solid #c5dfd1;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+.admin-profile-actions li > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+.admin-profile-actions time {
+  color: #596b61;
+  font-size: 0.8rem;
+}
+.admin-profile-actions p {
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+  overflow-wrap: anywhere;
+}
+.admin-profile-empty {
+  padding: 1.5rem;
+  background: #f8fbf9;
+  border-radius: 10px;
+  text-align: center;
+}
+.admin-profile-state {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.admin-profile-footer {
+  background: #f8fbf9;
+}
+@media (max-width: 575.98px) {
+  .admin-profile {
+    padding: 1rem;
+  }
+  .admin-profile-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-profile-summary > div:last-child {
+    grid-column: 1 / -1;
+  }
+  .admin-profile-usage-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-profile-badges {
+    width: 100%;
+  }
+  .admin-profile-footer .btn {
+    flex: 1 1 auto;
+  }
+  .admin-profile-buildings .accordion-button {
+    padding: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .admin-profile-buildings .accordion-button > span:first-child {
+    flex-basis: 60%;
+  }
+}

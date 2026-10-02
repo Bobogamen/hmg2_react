@@ -1,0 +1,17 @@
+{
+  "title": "User profile", "account": "User account", "registered": "Registered", "active": "Active", "blocked": "Blocked",
+  "loading": "Loading profile…", "loadError": "The profile could not be loaded. Please try again.", "notFound": "User not found.", "retry": "Try again",
+  "buildings": "Assigned buildings", "homes": "homes", "reachedLimits": "Reached limits", "lastActivity": "Last recorded activity", "noActivity": "No recorded activity",
+  "activityHint": "Activity is based on available logs. It does not indicate whether the user is online or when they last opened the application.",
+  "accountLimits": "Account limit usage", "limitsHint": "Used / allowed. Unlimited means a setting of 0. Reached limits are highlighted in amber.",
+  "unlimited": "Unlimited", "reached": "Reached", "homeFeeHint": "Highest number of active fees assigned to a single home in this building.",
+  "buildingsHint": "Non-archived buildings assigned to this user. Expand a building to see its limit usage.",
+  "search": "Search by name, city or address", "noMatches": "No buildings match your search.", "noBuildings": "This user has no assigned active buildings.",
+  "fundLimits": "Fund limits", "buildingsPages": "Building pages", "previous": "Previous", "next": "Next",
+  "actions": "Recent actions", "actionsHint": "The latest 20 log entries associated with this user's email. Filters apply to these entries.",
+  "level": "Entry type", "allLevels": "All types", "noActions": "No actions recorded for this user.", "noActionsForFilter": "No entries of this type among the recent actions.",
+  "close": "Close", "refresh": "Refresh", "edit": "Edit account", "view": "Profile",
+  "roles": { "ADMIN": "Administrator", "MANAGER": "Manager", "CASHIER": "Cashier" },
+  "levels": { "INFO": "Information", "WARN": "Warning", "ERROR": "Error" },
+  "limits": { "condominium_limit": "Buildings", "cashier_limit": "Cashiers", "cashier_condominium_limit": "Buildings for cashier", "fee_limit": "Fees", "fee_home_limit": "Fees per home (maximum)", "bill_limit": "Bills", "fund_limit": "Funds", "repair_limit": "Repairs", "fund_fee_limit": "Fees in fund" }
+}

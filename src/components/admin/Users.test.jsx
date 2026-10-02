@@ -26,10 +26,10 @@ test("validates limits and submits explicit status and limit changes", async () 
   fireEvent.click((await screen.findAllByRole("button", { name: `${label("edit")} ${user.email}` }))[0]);
   const dialog = within(screen.getByRole("dialog"));
   fireEvent.change(dialog.getByLabelText(label("limit")), { target: { value: "1" } });
-  expect(dialog.getByRole("button", { name: label("save") })).toBeDisabled();
+  expect(dialog.getByRole("button", { name: label("saveAccount") })).toBeDisabled();
   fireEvent.change(dialog.getByLabelText(label("limit")), { target: { value: "0" } });
-  fireEvent.click(dialog.getByLabelText(label("blocked")));
-  fireEvent.click(dialog.getByRole("button", { name: label("save") }));
+  fireEvent.click(dialog.getByLabelText(label("blockAccount")));
+  fireEvent.click(dialog.getByRole("button", { name: label("saveAccount") }));
   await waitFor(() => expect(updateAdminUser).toHaveBeenCalledWith(2, { blocked: true, condominiumLimit: 0 }));
   await screen.findByText(label("saved"));
 });
@@ -38,14 +38,14 @@ test("protects administrator accounts from blocking", async () => {
   getAdminUsers.mockResolvedValue({ ...page, content: [{ ...user, roles: ["ADMIN"] }] });
   render(<Users />);
   fireEvent.click((await screen.findAllByRole("button", { name: `${label("edit")} ${user.email}` }))[0]);
-  expect(within(screen.getByRole("dialog")).getByLabelText(label("blocked"))).toBeDisabled();
+  expect(within(screen.getByRole("dialog")).getByLabelText(label("blockAccount"))).toBeDisabled();
 });
 
 test("shows failed saves and retains the edit form", async () => {
   updateAdminUser.mockRejectedValue(new Error("offline"));
   render(<Users />);
   fireEvent.click((await screen.findAllByRole("button", { name: `${label("edit")} ${user.email}` }))[0]);
-  fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: label("save") }));
+  fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: label("saveAccount") }));
   await screen.findByText(label("saveError"));
   expect(screen.getByRole("dialog")).toBeInTheDocument();
 });

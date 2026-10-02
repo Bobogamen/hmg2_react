@@ -49,7 +49,8 @@ export default function Cashier() {
     };
   }, [manager, user?.id, revision]);
 
-  const limitReached = data && data.cashierLimit > 0 && data.cashiers.length >= data.cashierLimit;
+  const limitReached =
+    data && data.cashierLimit > 0 && data.cashiers.length >= data.cashierLimit;
 
   return (
     <div className="py-1 container-fluid">
@@ -96,13 +97,16 @@ export default function Cashier() {
                 <h3 className="fs-5 fw-bold mb-0">
                   {t("cashierPage.list")}
                   <span className="badge text-bg-dark bg-opacity-50 ms-2">
-                    {data.cashiers.length} / {data.cashierLimit === 0 ? t("profile:unlimited") : data.cashierLimit}
+                    {data.cashiers.length} /{" "}
+                    {data.cashierLimit === 0
+                      ? t("profile:unlimited")
+                      : data.cashierLimit}
                   </span>
                 </h3>
                 {!limitReached && (
                   <button
                     type="button"
-                    className="img-button pointer border-0 bg-transparent"
+                    className="img-button pointer border-0"
                     onClick={() => setShowRegistration(true)}
                   >
                     <img src={addIcon} className="icon" alt="addIcon" />

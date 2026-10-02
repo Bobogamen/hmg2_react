@@ -1,18 +1,26 @@
 import userLabels from "./userLabels";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, Badge, Button, Card, Col, Container, Form, Modal, Row, Spinner } from "react-bootstrap";
-import { Users as UsersIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users as UsersIcon, ChevronLeft, ChevronRight, ShieldCheck, UserRound } from "lucide-react";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 import { getAdminUsers, updateAdminUser } from "../../api/services/adminUserService";
 import { formatDate } from "../../utils/formatDate";
 import "./Users.css";
 import UserSettings from "./UserSettings";
+import AdminUserProfile from "./AdminUserProfile";
+import { useTranslation } from "react-i18next";
 
 export default function Users() {
+  const { i18n } = useTranslation();
+  const profileLabel = (i18n.resolvedLanguage || i18n.language || "en").startsWith("bg") ? "Профил" : "Profile";
+  const [profileId, setProfileId] = useState(() => {
+    const id = new URLSearchParams(window.location.search).get("profile");
+    return /^[1-9]\d*$/.test(id || "") ? id : null;
+  });
   const label = key => userLabels[key];
   const { setBreadcrumbs } = useBreadcrumb();
-  const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState({ search: "", role: "", blocked: "", page: 0 });
+  const [search, setSearch] = useState(() => (new URLSearchParams(window.location.search).get("search") || "").slice(0, 200));
+  const [filters, setFilters] = useState(() => ({ search: (new URLSearchParams(window.location.search).get("search") || "").slice(0, 200), role: "", blocked: "", page: 0 }));
   const [revision, setRevision] = useState(0);
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
@@ -63,7 +71,7 @@ export default function Users() {
   const roles = user => user.roles.map(role => <Badge key={role} bg={role === "ADMIN" ? "primary" : role === "MANAGER" ? "danger" : "secondary"} className="me-1">{role.charAt(0) + role.slice(1).toLowerCase()}</Badge>);
   const status = user => <Badge bg={user.blocked ? "danger" : "success"}>{label(user.blocked ? "blocked" : "active")}</Badge>;
   const capacity = user => `${user.condominiumCount} / ${user.condominiumLimit <= 0 ? "Unlimited" : user.condominiumLimit}`;
-  const editButton = user => <Button variant="outline-success" size="sm" onClick={() => open(user)} aria-label={`${label("edit")} ${user.email}`}>{label("edit")}</Button>;
+  const editButton = user => <div className="d-flex flex-wrap gap-2"><Button variant="success" size="sm" onClick={() => setProfileId(user.id)} aria-label={`${profileLabel}: ${user.email}`}><UserRound size={16} aria-hidden="true" /> {profileLabel}</Button><Button variant="outline-success" size="sm" onClick={() => open(user)} aria-label={`${label("edit")} ${user.email}`}>{label("edit")}</Button></div>;
 
   return <Container className="mt-3 admin-users">
     <Card className="shadow-sm mb-3 border-0">
@@ -97,18 +105,29 @@ export default function Users() {
       <span>{filters.page + 1} / {Math.max(1, data.totalPages)}</span>
       <Button variant="success" disabled={filters.page + 1 >= data.totalPages} onClick={() => setFilters(current => ({ ...current, page: current.page + 1 }))}>{label("next")} <ChevronRight size={20} aria-hidden="true" /></Button>
     </nav>}
-    <Modal show={!!editing} onHide={() => { if (!submitting.current && !settingsSaving) setEditing(null); }} centered size="lg" scrollable backdrop={saving || settingsSaving ? "static" : true} keyboard={!saving && !settingsSaving} aria-labelledby="admin-user-edit-title">
+    {profileId && <AdminUserProfile key={profileId} userId={profileId} onHide={() => setProfileId(null)} onEdit={user => { setProfileId(null); open(user); }} />}
+    <Modal show={!!editing} onHide={() => { if (!submitting.current && !settingsSaving) setEditing(null); }} centered size="xl" scrollable backdrop={saving || settingsSaving ? "static" : true} keyboard={!saving && !settingsSaving} aria-labelledby="admin-user-edit-title">
       <Form onSubmit={save} className="admin-user-edit-form">
-        <Modal.Header closeButton={!saving && !settingsSaving} className="bg-success text-white"><Modal.Title id="admin-user-edit-title" className="fs-5">{label("edit")}</Modal.Title></Modal.Header>
+        <Modal.Header closeButton={!saving && !settingsSaving} className="bg-success text-white"><Modal.Title id="admin-user-edit-title" className="fs-5"><UserRound size={21} aria-hidden="true" /> {label("editUser")}</Modal.Title></Modal.Header>
         <Modal.Body>{editing && <>
-          <h3 className="h6">{editing.name}</h3><p className="text-break text-muted">{editing.email}</p>
+          <div className="admin-user-identity d-flex flex-wrap align-items-center gap-3 mb-3">
+            <div className="admin-user-avatar" aria-hidden="true">{editing.name?.charAt(0)?.toUpperCase() || "U"}</div>
+            <div className="me-auto"><h2 className="h5 mb-1">{editing.name}</h2><div className="text-break text-muted">{editing.email}</div></div>
+            <div>{roles(editing)} {status(editing)}</div>
+          </div>
           {saveError && <Alert variant="danger">{label(saveError)}</Alert>}
-          <Form.Group controlId="admin-user-limit" className="mb-3"><Form.Label>{label("limit")}</Form.Label><Form.Control type="number" min={0} max={2147483647} step={1} required value={limit} disabled={saving} isInvalid={!validLimit} onChange={e => setLimit(e.target.value)} aria-describedby="admin-user-limit-help" /><Form.Text id="admin-user-limit-help">{label("limitHelp")} {label("assigned")}: {editing.condominiumCount}</Form.Text></Form.Group>
-          <Form.Check id="admin-user-blocked" type="switch" label={label("blocked")} checked={blocked} disabled={saving || editing.roles.includes("ADMIN")} onChange={e => setBlocked(e.target.checked)} />
-          <p className="small text-muted mt-2">{label(editing.roles.includes("ADMIN") ? "adminCannotBeBlocked" : "blockHelp")}</p>
+          <Card className="border-0 bg-light account-settings-card">
+            <Card.Body>
+              <h3 className="h6 mb-3"><ShieldCheck size={18} aria-hidden="true" /> {label("accountSettings")}</h3>
+              <Row className="g-4 align-items-start">
+                <Col md={7}><Form.Group controlId="admin-user-limit"><Form.Label className="fw-semibold">{label("limit")}</Form.Label><Form.Control type="number" min={0} max={2147483647} step={1} required value={limit} disabled={saving} isInvalid={!validLimit} onChange={e => setLimit(e.target.value)} aria-describedby="admin-user-limit-help" /><Form.Text id="admin-user-limit-help">{label("limitHelp")} <span className="d-block mt-1 fw-semibold">{label("assigned")}: {editing.condominiumCount}</span></Form.Text></Form.Group></Col>
+                <Col md={5}><div className="account-status-control rounded border bg-white p-3"><Form.Check id="admin-user-blocked" type="switch" label={label("blockAccount")} checked={blocked} disabled={saving || editing.roles.includes("ADMIN")} onChange={e => setBlocked(e.target.checked)} /><p className="small text-muted mt-2 mb-0">{label(editing.roles.includes("ADMIN") ? "adminCannotBeBlocked" : "blockHelp")}</p></div></Col>
+              </Row>
+            </Card.Body>
+          </Card>
           <UserSettings key={editing.id} userId={editing.id} disabled={saving} onBusy={setSettingsSaving} />
         </>}</Modal.Body>
-        <Modal.Footer><Button variant="secondary" disabled={saving || settingsSaving} onClick={() => setEditing(null)}>{label("cancel")}</Button><Button variant="success" type="submit" disabled={saving || settingsSaving || !validLimit}>{saving && <Spinner size="sm" className="me-2" />}{label("save")}</Button></Modal.Footer>
+        <Modal.Footer><span className="small text-muted me-auto d-none d-md-inline">{label("entitySettingsSaveHint")}</span><Button variant="secondary" disabled={saving || settingsSaving} onClick={() => setEditing(null)}>{label("cancel")}</Button><Button variant="success" type="submit" disabled={saving || settingsSaving || !validLimit}>{saving && <Spinner size="sm" className="me-2" />}{label("saveAccount")}</Button></Modal.Footer>
       </Form>
     </Modal>
   </Container>;

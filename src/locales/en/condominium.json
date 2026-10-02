@@ -1,10 +1,18 @@
 {
   "accountingPeriod": {
-    "missing": "There are {{count}} missing accounting months from {{from}} through {{to}}. Create them to complete the accounting period through the end of the current year.",
+    "missing": "There are {{count}} missing accounting months from {{from}} through {{to}}. Create them to complete the accounting period through the current month.",
     "generate": "Create missing months",
     "created": "Months created: {{count}}. The accounting period is complete through {{to}}.",
     "error": "The accounting period could not be checked or updated. Please try again.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "chargesTitle": "Prepare saved monthly charges",
+    "chargesMissing": "{{count}} existing months from {{from}} through {{to}} do not yet have saved charges.",
+    "reviewCharges": "Review and prepare charges",
+    "chargesWarning": "The system will use the current fees and resident counts for these existing months because their exact historical values are unavailable. You can correct every charge when recording the payment.",
+    "confirmCharges": "Prepare saved charges",
+    "cancel": "Cancel",
+    "chargesCreated": "Saved charges were prepared for {{count}} months.",
+    "chargesError": "The saved charges could not be prepared. Please try again."
   },
   "title": "Condominium",
   "typeApartmentBuilding": "Apartment Building",

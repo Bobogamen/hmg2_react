@@ -1,423 +1,382 @@
 import React, { useEffect, useState } from "react";
-import { Card, Form, Button, Spinner, Alert, Badge, Container } from "react-bootstrap";
-import { getSettings, updateSetting } from "../../api/services/appSettingService";
+import {
+  Card,
+  Form,
+  Button,
+  Spinner,
+  Alert,
+  Badge,
+  Container,
+} from "react-bootstrap";
+import {
+  getSettings,
+  updateSetting,
+} from "../../api/services/appSettingService";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useBreadcrumb } from "../breadcrumb/BreadcrumpContext";
 
 const ApplicationSettings = () => {
+  const [settings, setSettings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingId, setLoadingId] = useState(null);
+  const [error, setError] = useState("");
 
-    const [settings, setSettings] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadingId, setLoadingId] = useState(null);
-    const [error, setError] = useState("");
+  const { setBreadcrumbs } = useBreadcrumb();
 
-    const { setBreadcrumbs } = useBreadcrumb();
+  const { t } = useTranslation();
 
-    const { t } = useTranslation(undefined, { lng: "en" });
+  useEffect(() => {
+    loadSettings();
+  }, []);
 
-    useEffect(() => {
-        loadSettings();
-    }, []);
+  useEffect(() => {
+    setBreadcrumbs([
+      {
+        label: t("dashboard:admin"),
+        path: "/admin",
+      },
+      {
+        label: "Application Settings",
+        color: "#0d6efd",
+      },
+    ]);
+  }, [setBreadcrumbs, t]);
 
-    useEffect(() => {
-        setBreadcrumbs([
-            {
-                label: "Admin",
-                path: "/admin"
-            },
-            {
-                label: "Application Settings",
-                color: "#0d6efd"
-            }
-        ]);
-    }, [setBreadcrumbs, t]);
+  // =========================
+  // LOAD SETTINGS
+  // =========================
+  const loadSettings = async () => {
+    try {
+      setIsLoading(true);
 
-    // =========================
-    // LOAD SETTINGS
-    // =========================
-    const loadSettings = async () => {
-        try {
-            setIsLoading(true);
+      const data = await getSettings();
 
-            const data = await getSettings();
+      setSettings(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.log(error);
+      setError("Failed to load settings.");
+      setSettings([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-            setSettings(Array.isArray(data) ? data : []);
+  // =========================
+  // HANDLE VALUE CHANGE
+  // =========================
+  const handleChange = (id, value) => {
+    setSettings((prev) =>
+      (prev ?? []).map((s) => (s.id === id ? { ...s, value } : s)),
+    );
+  };
 
-        } catch (error) {
-            console.log(error);
-            setError("Failed to load settings.");
-            setSettings([]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  // =========================
+  // SAVE SETTING
+  // =========================
+  const handleSave = async (setting) => {
+    try {
+      setLoadingId(setting.id);
 
-    // =========================
-    // HANDLE VALUE CHANGE
-    // =========================
-    const handleChange = (id, value) => {
-        setSettings((prev) =>
-            (prev ?? []).map((s) =>
-                s.id === id ? { ...s, value } : s
-            )
+      await updateSetting({
+        id: setting.id,
+        settingKey: setting.settingKey,
+        value: setting.value,
+      });
+
+      toast.success(`${setting.settingKey} updated`);
+
+      await loadSettings();
+    } catch (error) {
+      const errors = error?.response?.data?.errors;
+
+      if (errors?.value?.length) {
+        const validationError = errors.value[0];
+
+        toast.error(
+          `${setting.settingKey}: ${t(`validation:${validationError.code}`)}`,
         );
-    };
+      } else if (error?.response?.data?.message) {
+        toast.error(
+          `${setting.settingKey}: ${t(`validation:${error.response.data.message}`)}`,
+        );
+      } else {
+        toast.error(`${setting.settingKey}: ${t("server:error")}`);
+      }
 
-    // =========================
-    // SAVE SETTING
-    // =========================
-    const handleSave = async (setting) => {
+      console.log(error);
 
-        try {
-            setLoadingId(setting.id);
+      await loadSettings();
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
-            await updateSetting({
-                id: setting.id,
-                settingKey: setting.settingKey,
-                value: setting.value
-            });
+  const getSettingType = (type) => {
+    switch (type) {
+      case "STRING":
+        return "text-bg-primary";
 
-            toast.success(`${setting.settingKey} updated`);
+      case "INTEGER":
+        return "text-bg-success";
 
-            await loadSettings();
+      case "DOUBLE":
+        return "text-bg-info";
 
-        } catch (error) {
+      case "BOOLEAN":
+        return "text-bg-warning";
 
-            const errors = error?.response?.data?.errors;
+      case "DATE":
+        return "text-bg-dark";
 
-            if (errors?.value?.length) {
+      case "COLOR":
+        return "text-bg-danger";
+      default:
+        return "text-bg-secondary";
+    }
+  };
 
-                const validationError = errors.value[0];
-
-                toast.error(
-                    `${setting.settingKey}: ${t(`validation:${validationError.code}`)}`
-                );
-
-            } else {
-
-                toast.error(
-                    `${setting.settingKey}: ${t("server:error")}`
-                );
-            }
-
-            console.log(error);
-
-            await loadSettings();
-
-        } finally {
-
-            setLoadingId(null);
-
-        }
-    };
-
-    const getSettingType = (type) => {
-        switch (type) {
-            case "STRING":
-                return "text-bg-primary";
-
-            case "INTEGER":
-                return "text-bg-success";
-
-            case "DOUBLE":
-                return "text-bg-info";
-
-            case "BOOLEAN":
-                return "text-bg-warning";
-
-            case "DATE":
-                return "text-bg-dark";
-
-            case "COLOR":
-                return "text-bg-danger";
-            default:
-                return "text-bg-secondary";
-        }
-    };
-
-    // =========================
-    // INPUT RENDERER
-    // =========================
-    const renderInput = (setting) => {
-
-        switch (setting.type) {
-
-            // =====================
-            // BOOLEAN
-            // =====================
-            case "BOOLEAN":
-                return (
-                    <Form.Check
-                        type="switch"
-                        checked={String(setting.value) === "true"}
-                        onChange={(e) =>
-                            handleChange(setting.id, e.target.checked.toString())
-                        }
-                    />
-                );
-
-            // =====================
-            // INTEGER
-            // =====================
-            case "INTEGER":
-                return (
-                    <Form.Control
-                        type="number"
-                        step="1"
-                        value={setting.value ?? ""}
-                        onChange={(e) =>
-                            handleChange(setting.id, e.target.value)
-                        }
-                    />
-                );
-
-            // =====================
-            // DOUBLE
-            // =====================
-            case "DOUBLE":
-                return (
-                    <Form.Control
-                        type="number"
-                        step="0.01"
-                        value={setting.value ?? ""}
-                        onChange={(e) =>
-                            handleChange(setting.id, e.target.value)
-                        }
-                    />
-                );
-
-            // =====================
-            // COLOR
-            // =====================
-            case "COLOR":
-                return (
-                    <div className="d-flex align-items-center gap-2">
-                        <Form.Control
-                            type="color"
-                            value={setting.value ?? "#000000"}
-                            onChange={(e) =>
-                                handleChange(setting.id, e.target.value)
-                            }
-                            style={{
-                                width: "40px",
-                                height: "40px"
-                            }}
-                        />
-                        <span className="small fw-bold">
-                            {setting.value}
-                        </span>
-                    </div>
-                );
-
-            // =====================
-            // DATE (expects YYYY-MM-DD)
-            // =====================
-            case "DATE":
-                return (
-                    <Form.Control
-                        type="date"
-                        value={setting.value ?? ""}
-                        onChange={(e) =>
-                            handleChange(setting.id, e.target.value)
-                        }
-                    />
-                );
-
-            // =====================
-            // STRING (default)
-            // =====================
-            case "STRING":
-            default:
-                return (
-                    <Form.Control
-                        type="text"
-                        value={setting.value ?? ""}
-                        onChange={(e) =>
-                            handleChange(setting.id, e.target.value)
-                        }
-                    />
-                );
-        }
-    };
-
-    // =========================
-    // LOADING STATE
-    // =========================
-    if (isLoading) {
+  // =========================
+  // INPUT RENDERER
+  // =========================
+  const renderInput = (setting) => {
+    switch (setting.type) {
+      // =====================
+      // BOOLEAN
+      // =====================
+      case "BOOLEAN":
         return (
-            <Container className="py-4 text-center">
-                <Spinner animation="border" />
-            </Container>
+          <Form.Check
+            type="switch"
+            checked={String(setting.value) === "true"}
+            onChange={(e) =>
+              handleChange(setting.id, e.target.checked.toString())
+            }
+          />
+        );
+
+      // =====================
+      // INTEGER
+      // =====================
+      case "INTEGER":
+        return (
+          <Form.Control
+            type="number"
+            step="1"
+            value={setting.value ?? ""}
+            onChange={(e) => handleChange(setting.id, e.target.value)}
+          />
+        );
+
+      // =====================
+      // DOUBLE
+      // =====================
+      case "DOUBLE":
+        return (
+          <Form.Control
+            type="number"
+            step="0.01"
+            value={setting.value ?? ""}
+            onChange={(e) => handleChange(setting.id, e.target.value)}
+          />
+        );
+
+      // =====================
+      // COLOR
+      // =====================
+      case "COLOR":
+        return (
+          <div className="d-flex align-items-center gap-2">
+            <Form.Control
+              type="color"
+              value={setting.value ?? "#000000"}
+              onChange={(e) => handleChange(setting.id, e.target.value)}
+              style={{
+                width: "40px",
+                height: "40px",
+              }}
+            />
+            <span className="small fw-bold">{setting.value}</span>
+          </div>
+        );
+
+      // =====================
+      // DATE (expects YYYY-MM-DD)
+      // =====================
+      case "DATE":
+        return (
+          <Form.Control
+            type="date"
+            value={setting.value ?? ""}
+            onChange={(e) => handleChange(setting.id, e.target.value)}
+          />
+        );
+
+      // =====================
+      // STRING (default)
+      // =====================
+      case "STRING":
+      default:
+        return (
+          <Form.Control
+            type="text"
+            value={setting.value ?? ""}
+            onChange={(e) => handleChange(setting.id, e.target.value)}
+          />
         );
     }
+  };
 
-    // =========================
-    // UI
-    // =========================
+  // =========================
+  // LOADING STATE
+  // =========================
+  if (isLoading) {
     return (
-        <div className="p-1 mt-4">
-
-            <div className="shadow border-0">
-
-                {/* HEADER */}
-                <Card.Header className="bg-primary text-white fw-bold text-center">
-                    Application Settings
-                </Card.Header>
-
-                <div>
-
-                    {/* ERROR */}
-                    {error && (
-                        <Alert variant="danger">
-                            {error}
-                        </Alert>
-                    )}
-
-                    {/* TABLE */}
-                    <div className="table-responsive d-none d-md-block">
-                        <table className="table table-hover align-middle text-center">
-                            <thead className="table-dark">
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Created</th>
-                                    <th>Key</th>
-                                    <th>Value</th>
-                                    <th>Type</th>
-                                    <th>Description</th>
-                                    <th>Updated</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(settings ?? []).map((setting) => (
-                                    <tr key={setting.id}>
-
-                                        {/* Id */}
-                                        <td className="fw-bold">
-                                            {setting.id}
-                                        </td>
-
-                                        {/* Created */}
-                                        <td className="small text-muted">
-                                            {setting.createdAt
-                                                ? new Date(setting.createdAt).toLocaleString("en-GB")
-                                                : "-"}
-                                        </td>
-
-                                        {/* Key */}
-                                        <td className="fw-bold">
-                                            {setting.settingKey}
-                                        </td>
-
-                                        {/* Value */}
-                                        <td>
-                                            {renderInput(setting)}
-                                        </td>
-
-                                        {/* Type */}
-                                        <td>
-                                            <Badge bg={null} className={getSettingType(setting.type)}>
-                                                {setting.type}
-                                            </Badge>
-                                        </td>
-
-                                        {/* Description */}
-                                        <td>
-                                            {setting.description || "-"}
-                                        </td>
-
-                                        {/* Updated */}
-                                        <td className="small text-muted">
-                                            {setting.updatedAt
-                                                ? new Date(setting.updatedAt).toLocaleString("en-GB")
-                                                : "-"}
-                                        </td>
-
-                                        {/* Action */}
-                                        <td>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => handleSave(setting)}
-                                                disabled={loadingId === setting.id}
-                                            >
-                                                {loadingId === setting.id ? (
-                                                    <Spinner size="sm" />
-                                                ) : (
-                                                    "Save"
-                                                )}
-                                            </Button>
-                                        </td>
-
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    {/* MOBILE CARDS (< 768px) */}
-                    <div className="d-md-none bg-black">
-                        {(settings ?? []).map((setting) => (
-                            <Card key={setting.id} className="mb-2">
-                                <Card.Body>
-
-                                    {/* ID + timestamps */}
-                                    <div className="small text-muted mb-2">
-                                        <div>
-                                            <span className="fw-bold">ID:</span> {setting.id}</div>
-                                        <div>
-                                            <span className="fw-bold">Created:{" "}</span>
-                                            {setting.createdAt
-                                                ? new Date(setting.createdAt).toLocaleString("en-GB")
-                                                : "-"}
-                                        </div>
-                                        <div>
-                                            <span className="fw-bold">Updated:{" "}</span>
-                                            {setting.updatedAt
-                                                ? new Date(setting.updatedAt).toLocaleString("en-GB")
-                                                : "-"}
-                                        </div>
-                                    </div>
-
-                                    {/* Type */}
-                                    <div className="mb-2">
-                                        <Badge bg={null} className={getSettingType(setting.type)}>
-                                            {setting.type}
-                                        </Badge>
-                                    </div>
-
-                                    {/* Key */}
-                                    <div className="fw-bold mb-2">
-                                        {setting.settingKey}
-                                    </div>
-
-                                    {/* Input */}
-                                    <div className="mb-2">
-                                        {renderInput(setting)}
-                                    </div>
-
-                                    {/* Save button */}
-                                    <Button
-                                        size="sm"
-                                        className="w-100"
-                                        onClick={() => handleSave(setting)}
-                                        disabled={loadingId === setting.id}
-                                    >
-                                        {loadingId === setting.id ? (
-                                            <Spinner size="sm" />
-                                        ) : (
-                                            "Save"
-                                        )}
-                                    </Button>
-
-                                </Card.Body>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-        </div>
+      <Container className="py-4 text-center">
+        <Spinner animation="border" />
+      </Container>
     );
+  }
+
+  // =========================
+  // UI
+  // =========================
+  return (
+    <div className="p-1 mt-4">
+      <div className="shadow border-0">
+        {/* HEADER */}
+        <Card.Header className="bg-primary text-white fw-bold text-center">
+          Application Settings
+        </Card.Header>
+
+        <div>
+          {/* ERROR */}
+          {error && <Alert variant="danger">{error}</Alert>}
+
+          {/* TABLE */}
+          <div className="table-responsive d-none d-md-block">
+            <table className="table table-hover align-middle text-center">
+              <thead className="table-dark">
+                <tr>
+                  <th>Id</th>
+                  <th>Created</th>
+                  <th>Key</th>
+                  <th>Value</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Updated</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(settings ?? []).map((setting) => (
+                  <tr key={setting.id}>
+                    {/* Id */}
+                    <td className="fw-bold">{setting.id}</td>
+
+                    {/* Created */}
+                    <td className="small text-muted">
+                      {setting.createdAt
+                        ? new Date(setting.createdAt).toLocaleString("en-GB")
+                        : "-"}
+                    </td>
+
+                    {/* Key */}
+                    <td className="fw-bold">{setting.settingKey}</td>
+
+                    {/* Value */}
+                    <td>{renderInput(setting)}</td>
+
+                    {/* Type */}
+                    <td>
+                      <Badge bg={null} className={getSettingType(setting.type)}>
+                        {setting.type}
+                      </Badge>
+                    </td>
+
+                    {/* Description */}
+                    <td>{setting.description || "-"}</td>
+
+                    {/* Updated */}
+                    <td className="small text-muted">
+                      {setting.updatedAt
+                        ? new Date(setting.updatedAt).toLocaleString("en-GB")
+                        : "-"}
+                    </td>
+
+                    {/* Action */}
+                    <td>
+                      <Button
+                        size="sm"
+                        onClick={() => handleSave(setting)}
+                        disabled={loadingId === setting.id}
+                      >
+                        {loadingId === setting.id ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          "Save"
+                        )}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* MOBILE CARDS (< 768px) */}
+          <div className="d-md-none bg-black">
+            {(settings ?? []).map((setting) => (
+              <Card key={setting.id} className="mb-2">
+                <Card.Body>
+                  {/* ID + timestamps */}
+                  <div className="small text-muted mb-2">
+                    <div>
+                      <span className="fw-bold">ID:</span> {setting.id}
+                    </div>
+                    <div>
+                      <span className="fw-bold">Created: </span>
+                      {setting.createdAt
+                        ? new Date(setting.createdAt).toLocaleString("en-GB")
+                        : "-"}
+                    </div>
+                    <div>
+                      <span className="fw-bold">Updated: </span>
+                      {setting.updatedAt
+                        ? new Date(setting.updatedAt).toLocaleString("en-GB")
+                        : "-"}
+                    </div>
+                  </div>
+
+                  {/* Type */}
+                  <div className="mb-2">
+                    <Badge bg={null} className={getSettingType(setting.type)}>
+                      {setting.type}
+                    </Badge>
+                  </div>
+
+                  {/* Key */}
+                  <div className="fw-bold mb-2">{setting.settingKey}</div>
+
+                  {/* Input */}
+                  <div className="mb-2">{renderInput(setting)}</div>
+
+                  {/* Save button */}
+                  <Button
+                    size="sm"
+                    className="w-100"
+                    onClick={() => handleSave(setting)}
+                    disabled={loadingId === setting.id}
+                  >
+                    {loadingId === setting.id ? <Spinner size="sm" /> : "Save"}
+                  </Button>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ApplicationSettings;

@@ -8,6 +8,8 @@ export const setupInterceptors = (api, logout) => {
     (response) => response,
 
     (error) => {
+      // Navigating away or changing a dashboard period cancels the old request.
+      if (error.code === "ERR_CANCELED") return Promise.reject(error);
       const status = error?.response?.status;
       const data = error?.response?.data;
       const message = data?.message;

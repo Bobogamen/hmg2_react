@@ -325,7 +325,7 @@
     "noHomes": "There are no homes in this condominium.",
     "noMonths": "No accounting months have been created. Contact your property manager.",
     "currentMonthMissing": "The current accounting month has not been created. Contact your property manager.",
-    "closed": "This month is closed. Payments can only be viewed.",
+    "closed": "This month is closed. Recorded debts can still be paid; the cash balances that follow will be recalculated.",
     "loadError": "The data could not be loaded.",
     "retry": "Try again",
     "refresh": "Refresh data",
@@ -333,7 +333,13 @@
     "homeFeesChanged": "The fees have changed. Refresh the data and review the new amount.",
     "homeFeesAlreadyPaid": "There are no unpaid fees. Refresh the data to view the payment.",
     "accountingMonthCompleted": "This month has already been closed.",
-    "feeNotAssignedToFund": "A fund fee has no assigned fund. Contact your property manager."
+    "feeNotAssignedToFund": "A fund fee has no assigned fund. Contact your property manager.",
+    "debtors": "Debtors",
+    "debtorHomes": "Homes with debt",
+    "totalDue": "Total outstanding",
+    "noDebtors": "There are no outstanding monthly fees.",
+    "debtorsError": "The debtor list could not be loaded.",
+    "openMonth": "Open month"
   },
   "admin": "Administration",
   "management": "Management",

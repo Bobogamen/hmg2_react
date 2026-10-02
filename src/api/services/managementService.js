@@ -10,6 +10,16 @@ export const generateAccountingMonths = async (condominiumId) => {
     return data;
 };
 
+export const getAccountingChargeStatus = async (condominiumId) => {
+    const { data } = await api.get(`/management/condominiums/${condominiumId}/accounting-months/charges`);
+    return data;
+};
+
+export const initializeAccountingCharges = async (condominiumId) => {
+    const { data } = await api.post(`/management/condominiums/${condominiumId}/accounting-months/charges`);
+    return data;
+};
+
 export const addCondominium = async (condominiumData) => {
     const { data } = await api.post("/management/condominiums", condominiumData);
     return data;
