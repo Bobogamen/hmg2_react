@@ -32,6 +32,9 @@ const ModalResident = ({
     const [residentData, setResidentData] = useState(initialState);
     const [errors, setErrors] = useState({});
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const isBusy = isSaving || isRefreshing;
 
     useEffect(() => {
         if (!show) {
@@ -49,6 +52,8 @@ const ModalResident = ({
             setResidentData(initialState);
         }
         setErrors({});
+        setIsSaving(false);
+        setIsRefreshing(false);
 
     }, [show, isEditing, resident]);
 
@@ -70,7 +75,10 @@ const ModalResident = ({
     };
 
     const handleSubmit = async (data) => {
+        if (isBusy) return;
+        setIsSaving(true);
         setIsLoading(true);
+        handleClose();
         try {
             const payload = {
                 condominiumId: condominium.id,
@@ -91,9 +99,7 @@ const ModalResident = ({
                     t("resident:created")
                 );
             }
-            updateUser();
-            await onSaved?.();
-            handleClose();
+            await Promise.all([updateUser(), onSaved?.()]);
         } catch (error) {
             const serverMessage = error?.response?.data?.message;
 
@@ -118,12 +124,16 @@ const ModalResident = ({
                 );
             }
         } finally {
+            setIsSaving(false);
             setIsLoading(false);
         }
     };
 
     const handleDelete = async () => {
+        if (isBusy) return;
+        let deleted = false;
         try {
+            setIsSaving(true);
             setIsLoading(true);
             await deleteResident({
                 condominiumId: condominium.id,
@@ -133,10 +143,8 @@ const ModalResident = ({
             toast.success(
                 t("resident:deleted")
             );
-            updateUser();
-            await onSaved?.();
+            deleted = true;
             setShowDeleteConfirm(false);
-            handleClose();
         } catch (error) {
             if (error.response?.data === "atLeastOneActiveResident") {
                 toast.info(
@@ -156,7 +164,20 @@ const ModalResident = ({
                 }
             );
         } finally {
+            setIsSaving(false);
             setIsLoading(false);
+        }
+
+        if (deleted) {
+            setIsRefreshing(true);
+            try {
+                await Promise.all([updateUser(), onSaved?.()]);
+            } catch (error) {
+                toast.error(t("server:error"), { transition: Bounce });
+            } finally {
+                setIsRefreshing(false);
+                handleClose();
+            }
         }
     };
 
@@ -164,10 +185,12 @@ const ModalResident = ({
         <>
             <Modal
                 show={show}
-                onHide={handleClose}
+                onHide={isBusy ? undefined : handleClose}
                 centered
+                backdrop={isBusy ? "static" : true}
+                keyboard={!isBusy}
             >
-                <Modal.Header closeButton>
+                <Modal.Header closeButton={!isBusy}>
                     <Modal.Title className="fw-bold">
                         <div className="fs-5">
                             <span className="pe-2">
@@ -226,6 +249,8 @@ const ModalResident = ({
                         showSubmit={true}
                         isEditing={isEditing}
                         onSubmit={handleSubmit}
+                        isSubmitting={isBusy}
+                        showSpinner={isRefreshing}
                     />
                 </Modal.Body>
                 <Modal.Footer className={isEditing ? "justify-content-between" : ""}>
@@ -237,6 +262,7 @@ const ModalResident = ({
                                 onClick={() =>
                                     setShowDeleteConfirm(true)
                                 }
+                                disabled={isBusy}
                             >
                                 {t("common:deactivate")}
                             </Button>
@@ -245,6 +271,7 @@ const ModalResident = ({
                     <Button
                         variant="secondary"
                         onClick={handleClose}
+                        disabled={isBusy}
                     >
                         {t("close")}
                     </Button>
@@ -252,13 +279,13 @@ const ModalResident = ({
             </Modal>
             <Modal
                 show={showDeleteConfirm}
-                onHide={() =>
-                    setShowDeleteConfirm(false)
-                }
+                onHide={isBusy ? undefined : () => setShowDeleteConfirm(false)}
                 centered
                 className="bg-dark"
+                backdrop={isBusy ? "static" : true}
+                keyboard={!isBusy}
             >
-                <Modal.Header closeButton>
+                <Modal.Header closeButton={!isBusy}>
                     <Modal.Title className="text-danger fw-bold fs-5">
                         {t(isOwner ? "resident:ownerConfirmDeleteTitle" : "resident:confirmDeleteTitle")}
                     </Modal.Title>
@@ -304,13 +331,18 @@ const ModalResident = ({
                         onClick={() =>
                             setShowDeleteConfirm(false)
                         }
+                        disabled={isBusy}
                     >
                         {t("cancel")}
                     </Button>
                     <Button
                         variant="danger"
                         onClick={handleDelete}
+                        disabled={isBusy}
                     >
+                        {isRefreshing && (
+                            <span className="spinner-border spinner-border-sm me-2" aria-hidden="true" />
+                        )}
                         {t("common:deactivate")}
                     </Button>
                 </Modal.Footer>

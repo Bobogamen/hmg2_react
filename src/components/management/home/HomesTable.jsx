@@ -197,6 +197,7 @@ const HomesTable = ({ condominium, onSaved, selectedHomeIds = [] }) => {
         handleClose={() => setOpenResidentModal(false)}
         home={selectedHome}
         condominium={condominium}
+        onSaved={onSaved}
       />
 
       <ModalHome

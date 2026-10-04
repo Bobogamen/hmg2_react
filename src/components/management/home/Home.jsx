@@ -51,8 +51,8 @@ const Home = () => {
   const [editHome, setEditHome] = useState(false);
   const [buildingOpen, setBuildingOpen] = useState(false);
 
-  const fetchHome = useCallback(async () => {
-    setIsLoading(true);
+  const fetchHome = useCallback(async (showGlobalLoader = true) => {
+    if (showGlobalLoader) setIsLoading(true);
 
     try {
       const [data, fees, repairs] = await Promise.all([
@@ -72,13 +72,15 @@ const Home = () => {
     } catch (error) {
       errorHandler(error, undefined, navigate, t, logout);
     } finally {
-      setIsLoading(false);
+      if (showGlobalLoader) setIsLoading(false);
     }
   }, [condominiumId, homeId, navigate, logout, setIsLoading, t]);
 
   useEffect(() => {
     fetchHome();
   }, [fetchHome]);
+
+  const refreshHomeLocally = useCallback(() => fetchHome(false), [fetchHome]);
 
   const homeTitle = [
     home.floor && `${t("home:floor")} ${home.floor}`,
@@ -280,7 +282,7 @@ const Home = () => {
           <OwnerCard
             home={home}
             condominium={home.condominium}
-            onSaved={fetchHome}
+            onSaved={refreshHomeLocally}
           />
 
           {activeResidents.map((resident) => (
@@ -289,7 +291,7 @@ const Home = () => {
               resident={resident}
               home={home}
               condominium={home.condominium}
-              onSaved={fetchHome}
+              onSaved={refreshHomeLocally}
             />
           ))}
 
@@ -303,7 +305,7 @@ const Home = () => {
                   resident={resident}
                   home={home}
                   condominium={home.condominium}
-                  onSaved={fetchHome}
+                  onSaved={refreshHomeLocally}
                 />
               ))}
             </>

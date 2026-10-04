@@ -97,21 +97,26 @@ const Condominium = () => {
     };
   }, []);
 
-  const fetchCondominium = useCallback(async () => {
-    setIsLoading(true);
+  const fetchCondominium = useCallback(async (showGlobalLoader = true) => {
+    if (showGlobalLoader) setIsLoading(true);
     try {
       const data = await getCondominium(condominiumId);
       setCondominium(data);
     } catch (error) {
       errorHandler(error, undefined, navigate, t, logout);
     } finally {
-      setIsLoading(false);
+      if (showGlobalLoader) setIsLoading(false);
     }
   }, [condominiumId, setIsLoading, navigate, t, logout]);
 
   useEffect(() => {
     fetchCondominium();
   }, [fetchCondominium]);
+
+  const refreshCondominiumLocally = useCallback(
+    () => fetchCondominium(false),
+    [fetchCondominium],
+  );
 
   useEffect(() => {
     if (!condominium.name) return;
@@ -166,7 +171,7 @@ const Condominium = () => {
         <section className="homes-section">
           <HomesTable
             condominium={condominium}
-            onSaved={fetchCondominium}
+            onSaved={refreshCondominiumLocally}
             selectedHomeIds={selectedHomeIds}
           />
         </section>

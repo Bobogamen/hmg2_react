@@ -1,4 +1,5 @@
 import React from "react";
+import { Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import renderFieldErrors from "../../../../utils/renderFieldErrors";
 
@@ -10,7 +11,9 @@ const Resident = ({
     showSubmit = false,
     titleKey = "home:resident",
     onSubmit,
-    isEditing = false
+    isEditing = false,
+    isSubmitting = false,
+    showSpinner = false
 }) => {
 
     const { t } = useTranslation();
@@ -60,6 +63,7 @@ const Resident = ({
                         value={data?.[name] || ""}
                         placeholder={t(labelKey)}
                         onChange={onChange}
+                        disabled={isSubmitting}
                     />
                     {renderFieldErrors(errors, name, t)}
                 </div>
@@ -69,7 +73,11 @@ const Resident = ({
                 <button
                     type="submit"
                     className="authentication-button mb-1 m-auto"
+                    disabled={isSubmitting}
                 >
+                    {showSpinner && (
+                        <Spinner animation="border" size="sm" className="me-2" aria-hidden="true" />
+                    )}
                     {t(isEditing ? "save" : "add")}
                 </button>
             )}

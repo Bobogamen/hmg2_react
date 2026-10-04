@@ -83,10 +83,12 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
       const data = await generateAccountingMonths(condominiumId);
       if (id === request.current) {
         setPeriod(data);
-        toast.success(t("accountingPeriod.created", {
-          count: data.createdMonths,
-          to: monthLabel(data.endMonth),
-        }));
+        toast.success(
+          t("accountingPeriod.created", {
+            count: data.createdMonths,
+            to: monthLabel(data.endMonth),
+          }),
+        );
         onGenerated?.();
       }
     } catch {
@@ -109,13 +111,16 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
       if (id === request.current) {
         setChargeStatus(data);
         setConfirmCharges(false);
-        toast.success(t("accountingPeriod.chargesCreated", {
-          count: data.createdMonths,
-        }));
+        toast.success(
+          t("accountingPeriod.chargesCreated", {
+            count: data.createdMonths,
+          }),
+        );
         onGenerated?.();
       }
     } catch {
-      if (id === request.current) toast.error(t("accountingPeriod.chargesError"));
+      if (id === request.current)
+        toast.error(t("accountingPeriod.chargesError"));
     } finally {
       submitting.current = false;
       setSaving(false);
@@ -128,41 +133,43 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
   if (!error && !missing.length && !unsnapshotted.length) return null;
   return (
     <>
-      {(error || missing.length > 0) && <div
-        className={`alert ${error ? "alert-danger" : "alert-warning"}`}
-        role={error ? "alert" : "status"}
-      >
-        {error && <p>{t("accountingPeriod.error")}</p>}
-        {missing.length > 0 && (
-          <>
-            <p className="mb-2">
-              {t("accountingPeriod.missing", {
-                count: missing.length,
-                from: monthLabel(missing[0]),
-                to: monthLabel(period.endMonth),
-              })}
-            </p>
+      {(error || missing.length > 0) && (
+        <div
+          className={`alert ${error ? "alert-danger" : "alert-warning"}`}
+          role={error ? "alert" : "status"}
+        >
+          {error && <p>{t("accountingPeriod.error")}</p>}
+          {missing.length > 0 && (
+            <>
+              <p className="mb-2">
+                {t("accountingPeriod.missing", {
+                  count: missing.length,
+                  from: monthLabel(missing[0]),
+                  to: monthLabel(period.endMonth),
+                })}
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={saving}
+                onClick={generate}
+              >
+                {t("accountingPeriod.generate")}
+              </button>
+            </>
+          )}
+          {error && !missing.length && (
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-outline-dark"
               disabled={saving}
-              onClick={generate}
+              onClick={refresh}
             >
-              {t("accountingPeriod.generate")}
+              {t("accountingPeriod.retry")}
             </button>
-          </>
-        )}
-        {error && !missing.length && (
-          <button
-            type="button"
-            className="btn btn-outline-dark"
-            disabled={saving}
-            onClick={refresh}
-          >
-            {t("accountingPeriod.retry")}
-          </button>
-        )}
-      </div>}
+          )}
+        </div>
+      )}
       {unsnapshotted.length > 0 && (
         <div className="alert alert-warning" role="status">
           <p className="fw-bold mb-1">{t("accountingPeriod.chargesTitle")}</p>
@@ -185,7 +192,7 @@ export default function AccountingPeriodNotice({ condominiumId, onGenerated }) {
           ) : (
             <div className="border rounded bg-white p-3">
               <p className="mb-3">{t("accountingPeriod.chargesWarning")}</p>
-              <div className="d-flex flex-wrap gap-2">
+              <div className="d-flex justify-content-center flex-wrap gap-2">
                 <button
                   type="button"
                   className="btn btn-primary"
