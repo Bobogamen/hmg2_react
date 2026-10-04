@@ -34,6 +34,7 @@ const CardResident = ({
 
         try {
 
+            setShowActivate(false);
             setIsLoading(true);
 
             await activateResident(
@@ -49,7 +50,6 @@ const CardResident = ({
                 }
             );
 
-            setShowActivate(false);
             await onSaved?.();
 
         } catch (error) {

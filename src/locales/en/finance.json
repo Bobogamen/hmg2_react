@@ -24,9 +24,9 @@
     },
     "oneTime": {
       "title": "One-Time Fee",
-      "description": "A fee that is charged <strong>once</strong>.",
-      "rule": "The <u>active</u> fee is included in the current charge.",
-      "note": "Deactivate it when it <u>should no longer</u> be charged."
+      "description": "A fee paid <strong>only once</strong> for the property.",
+      "rule": "It appears in <u>every unpaid accounting month</u> until it is paid.",
+      "note": "After the first payment it is <strong>no longer charged</strong> and does not need to be deactivated manually."
     },
     "forFund": {
       "title": "Fund Fee",

@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import ModalResident from "./ModalResident";
-import { addResident } from "../../../../api/services/residentService";
+import { addResident, deleteResident } from "../../../../api/services/residentService";
 
 const mockSetIsLoading = jest.fn();
 
@@ -27,6 +27,10 @@ jest.mock("react-toastify", () => ({
   toast: { success: jest.fn(), warning: jest.fn(), error: jest.fn(), info: jest.fn() },
   Bounce: {},
 }));
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 test("closes immediately and keeps the global loader through saving and refreshing", async () => {
   let finishSave;
@@ -59,4 +63,38 @@ test("closes immediately and keeps the global loader through saving and refreshi
   finishRefresh();
   await waitFor(() => expect(mockSetIsLoading).toHaveBeenCalledWith(false));
   expect(handleClose).toHaveBeenCalledTimes(1);
+});
+
+test("closes immediately and keeps the global loader through deactivation and refresh", async () => {
+  let finishDelete;
+  let finishRefresh;
+  deleteResident.mockReturnValue(new Promise((resolve) => { finishDelete = resolve; }));
+  const onSaved = jest.fn().mockReturnValue(new Promise((resolve) => { finishRefresh = resolve; }));
+  const handleClose = jest.fn();
+
+  render(
+    <ModalResident
+      show
+      isEditing
+      handleClose={handleClose}
+      resident={{ id: 10, firstName: "Ivan", lastName: "Ivanov" }}
+      home={{ id: 2, name: "2", floor: "1" }}
+      condominium={{ id: 1 }}
+      onSaved={onSaved}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: "common:deactivate" }));
+  fireEvent.click(screen.getAllByRole("button", { name: "common:deactivate" }).at(-1));
+
+  expect(handleClose).toHaveBeenCalledTimes(1);
+  expect(mockSetIsLoading).toHaveBeenCalledWith(true);
+  expect(mockSetIsLoading).not.toHaveBeenCalledWith(false);
+
+  finishDelete();
+  await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
+  expect(mockSetIsLoading).not.toHaveBeenCalledWith(false);
+
+  finishRefresh();
+  await waitFor(() => expect(mockSetIsLoading).toHaveBeenCalledWith(false));
 });

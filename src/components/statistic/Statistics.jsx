@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "react-bootstrap";
 import { ChartColumn, RefreshCw, House, Receipt, FileText, ArrowUpRight, CalendarDays, Wrench, Wallet } from "lucide-react";
 import { useUser } from "../../user/UserContext";
 import { getStatistics } from "../../api/services/statisticsService";
@@ -73,7 +74,7 @@ export default function Statistics() {
         <div role="alert" className="alert alert-danger">{label("error")}{" "}
           <button type="button" className="btn btn-link" onClick={() => setRevision((r) => r + 1)}>{label("retry")}</button>
         </div>
-      ) : !data ? <p role="status">{label("loading")}</p> : (
+      ) : !data ? <p role="status"><Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />{label("loading")}</p> : (
         <>
           <div className="statistics-context">
             <div><h3>{data.name}</h3><p>{data.address}</p></div>

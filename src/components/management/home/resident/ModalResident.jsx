@@ -33,8 +33,7 @@ const ModalResident = ({
     const [errors, setErrors] = useState({});
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const isBusy = isSaving || isRefreshing;
+    const isBusy = isSaving;
 
     useEffect(() => {
         if (!show) {
@@ -53,7 +52,6 @@ const ModalResident = ({
         }
         setErrors({});
         setIsSaving(false);
-        setIsRefreshing(false);
 
     }, [show, isEditing, resident]);
 
@@ -131,10 +129,11 @@ const ModalResident = ({
 
     const handleDelete = async () => {
         if (isBusy) return;
-        let deleted = false;
+        setIsSaving(true);
+        setIsLoading(true);
+        setShowDeleteConfirm(false);
+        handleClose();
         try {
-            setIsSaving(true);
-            setIsLoading(true);
             await deleteResident({
                 condominiumId: condominium.id,
                 homeId: home.id,
@@ -143,8 +142,7 @@ const ModalResident = ({
             toast.success(
                 t("resident:deleted")
             );
-            deleted = true;
-            setShowDeleteConfirm(false);
+            await Promise.all([updateUser(), onSaved?.()]);
         } catch (error) {
             if (error.response?.data === "atLeastOneActiveResident") {
                 toast.info(
@@ -153,8 +151,6 @@ const ModalResident = ({
                         transition: Bounce
                     }
                 );
-                setShowDeleteConfirm(false);
-                handleClose();
                 return;
             }
             toast.error(
@@ -166,18 +162,6 @@ const ModalResident = ({
         } finally {
             setIsSaving(false);
             setIsLoading(false);
-        }
-
-        if (deleted) {
-            setIsRefreshing(true);
-            try {
-                await Promise.all([updateUser(), onSaved?.()]);
-            } catch (error) {
-                toast.error(t("server:error"), { transition: Bounce });
-            } finally {
-                setIsRefreshing(false);
-                handleClose();
-            }
         }
     };
 
@@ -250,7 +234,6 @@ const ModalResident = ({
                         isEditing={isEditing}
                         onSubmit={handleSubmit}
                         isSubmitting={isBusy}
-                        showSpinner={isRefreshing}
                     />
                 </Modal.Body>
                 <Modal.Footer className={isEditing ? "justify-content-between" : ""}>
@@ -340,9 +323,6 @@ const ModalResident = ({
                         onClick={handleDelete}
                         disabled={isBusy}
                     >
-                        {isRefreshing && (
-                            <span className="spinner-border spinner-border-sm me-2" aria-hidden="true" />
-                        )}
                         {t("common:deactivate")}
                     </Button>
                 </Modal.Footer>

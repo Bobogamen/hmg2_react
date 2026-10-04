@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "react-bootstrap";
 import {
   Wallet,
   Landmark,
@@ -193,6 +194,7 @@ export default function Finance() {
         </div>
       ) : !data ? (
         <p role="status" className="finance-panel">
+          <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
           {label("loading")}
         </p>
       ) : (

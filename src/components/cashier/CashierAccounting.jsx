@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { formatDate } from "../../utils/formatDate";
 import FeeLabel from "../../utils/FeeLabel";
 import { Link, useParams } from "react-router-dom";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
   getCashierMonths,
@@ -241,6 +241,7 @@ export default function CashierAccounting() {
         "homeFeesAlreadyPaid",
         "accountingMonthCompleted",
         "feeNotAssignedToFund",
+        "fundFeeCorrectionNotAllowed",
       ];
       setPayError(known.includes(reason) ? reason : "paymentError");
     } finally {
@@ -330,7 +331,7 @@ export default function CashierAccounting() {
                 <h3>
                   <Wallet size={21} aria-hidden="true" /> {label("collection")}
                 </h3>
-                <p>{details ? monthName(details.month) : label("loading")}</p>
+                <p>{details ? monthName(details.month) : <><Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />{label("loading")}</>}</p>
               </div>
             </div>
             {details && (
@@ -520,7 +521,7 @@ export default function CashierAccounting() {
                   <ReceiptText size={21} aria-hidden="true" />{" "}
                   {label("payments")}
                 </h3>
-                <p>{details ? monthName(details.month) : label("loading")}</p>
+                <p>{details ? monthName(details.month) : <><Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />{label("loading")}</>}</p>
               </div>
               <span className="cashier-count">
                 {visibleHomes.length} / {allHomes.length}
@@ -564,6 +565,7 @@ export default function CashierAccounting() {
             </div>
             {!details && !error && (
               <p role="status" className="cashier-loading">
+                <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
                 {label("loading")}
               </p>
             )}
@@ -834,7 +836,7 @@ export default function CashierAccounting() {
                             </div>
                           </td>
                           <td>
-                            {modal.mode === "pay" && item.id ? (
+                            {modal.mode === "pay" && item.id && !item.fund ? (
                               <input
                                 type="number"
                                 min="0.01"
@@ -860,7 +862,7 @@ export default function CashierAccounting() {
                             )}
                           </td>
                           <td>
-                            {modal.mode === "pay" && item.id ? (
+                            {modal.mode === "pay" && item.id && !item.fund ? (
                               <input
                                 type="number"
                                 min="1"

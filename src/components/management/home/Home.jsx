@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import FeeLabel from "../../../utils/FeeLabel";
 import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
-import { TriangleAlert } from "lucide-react";
+import {
+  CircleChevronLeft,
+  CircleChevronRight,
+  TriangleAlert,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import homeIcon from "../../../assets/images/app/home.png";
 import aptBuilding from "../../../assets/images/app/apartment_building.png";
 import ModalHome from "./ModalHome";
 
-import { getHome } from "../../../api/services/homeService";
+import { getHome, getHomes } from "../../../api/services/homeService";
 import {
   getHomeFees,
   updateHomeFeeTimes,
@@ -23,6 +27,28 @@ import CardResident from "./resident/CardResident";
 import ModalBuilding from "./ModalBuilding";
 import HomeRepairsTable from "./HomeRepairsTable";
 import { getHomeRepairs } from "../../../api/services/repairService";
+
+export const findAdjacentHomes = (homes, currentHomeId) => {
+  const orderedHomes = [...homes].sort(
+    (first, second) =>
+      Number(first.sortOrder ?? Number.MAX_SAFE_INTEGER) -
+        Number(second.sortOrder ?? Number.MAX_SAFE_INTEGER) ||
+      Number(first.id) - Number(second.id),
+  );
+  const currentIndex = orderedHomes.findIndex(
+    (item) => String(item.id) === String(currentHomeId),
+  );
+
+  if (currentIndex < 0 || orderedHomes.length < 2) {
+    return { previous: null, next: null };
+  }
+
+  return {
+    previous:
+      orderedHomes[(currentIndex - 1 + orderedHomes.length) % orderedHomes.length],
+    next: orderedHomes[(currentIndex + 1) % orderedHomes.length],
+  };
+};
 
 const Home = () => {
   const { setBreadcrumbs } = useBreadcrumb();
@@ -50,31 +76,40 @@ const Home = () => {
   const [savingFeeId, setSavingFeeId] = useState(null);
   const [editHome, setEditHome] = useState(false);
   const [buildingOpen, setBuildingOpen] = useState(false);
+  const [adjacentHomes, setAdjacentHomes] = useState({
+    previous: null,
+    next: null,
+  });
 
-  const fetchHome = useCallback(async (showGlobalLoader = true) => {
-    if (showGlobalLoader) setIsLoading(true);
+  const fetchHome = useCallback(
+    async (showGlobalLoader = true) => {
+      if (showGlobalLoader) setIsLoading(true);
 
-    try {
-      const [data, fees, repairs] = await Promise.all([
-        getHome({ condominiumId, homeId }),
-        getHomeFees({ condominiumId, homeId }),
-        getHomeRepairs({ condominiumId, homeId }),
-      ]);
-      setHome({ ...data, fees, repairs });
-      const loadedFeeTimes = Object.fromEntries(
-        fees.map((fee) => {
-          const times = Number(fee.times);
-          return [fee.id, Number.isFinite(times) ? times : 1];
-        }),
-      );
-      setFeeTimes(loadedFeeTimes);
-      setSavedFeeTimes(loadedFeeTimes);
-    } catch (error) {
-      errorHandler(error, undefined, navigate, t, logout);
-    } finally {
-      if (showGlobalLoader) setIsLoading(false);
-    }
-  }, [condominiumId, homeId, navigate, logout, setIsLoading, t]);
+      try {
+        const [data, fees, repairs, homes] = await Promise.all([
+          getHome({ condominiumId, homeId }),
+          getHomeFees({ condominiumId, homeId }),
+          getHomeRepairs({ condominiumId, homeId }),
+          getHomes(condominiumId),
+        ]);
+        setHome({ ...data, fees, repairs });
+        setAdjacentHomes(findAdjacentHomes(homes, homeId));
+        const loadedFeeTimes = Object.fromEntries(
+          fees.map((fee) => {
+            const times = Number(fee.times);
+            return [fee.id, Number.isFinite(times) ? times : 1];
+          }),
+        );
+        setFeeTimes(loadedFeeTimes);
+        setSavedFeeTimes(loadedFeeTimes);
+      } catch (error) {
+        errorHandler(error, undefined, navigate, t, logout);
+      } finally {
+        if (showGlobalLoader) setIsLoading(false);
+      }
+    },
+    [condominiumId, homeId, navigate, logout, setIsLoading, t],
+  );
 
   useEffect(() => {
     fetchHome();
@@ -120,6 +155,11 @@ const Home = () => {
     if (!home.condominium) return;
 
     setBuildingOpen(true);
+  };
+
+  const openAdjacentHome = (target) => {
+    if (!target) return;
+    navigate(`/management/condominiums/${condominiumId}/homes/${target.id}`);
   };
 
   const activeResidents = home.residents.filter(
@@ -229,7 +269,22 @@ const Home = () => {
         home={home}
         onSaved={fetchHome}
       />
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-center align-items-center">
+        <button
+          type="button"
+          className="d-inline-flex align-items-center justify-content-center border-0 bg-transparent p-0"
+          style={{ width: "2.5rem", height: "2.5rem" }}
+          disabled={!adjacentHomes.previous}
+          onClick={() => openAdjacentHome(adjacentHomes.previous)}
+          aria-label={t("common:back")}
+          title={
+            adjacentHomes.previous
+              ? `${t("common:back")}: ${adjacentHomes.previous.name}`
+              : t("common:back")
+          }
+        >
+          <CircleChevronLeft aria-hidden="true" size={38} />
+        </button>
         <button className="hg-title my-2" onClick={handleOpen}>
           <div className="d-flex justify-content-center align-items-center gap-3">
             <div className="text-center">
@@ -238,6 +293,21 @@ const Home = () => {
 
             <img src={homeIcon} className="medium-icon" alt="home" />
           </div>
+        </button>
+        <button
+          type="button"
+          className="d-inline-flex align-items-center justify-content-center border-0 bg-transparent p-0"
+          style={{ width: "2.5rem", height: "2.5rem" }}
+          disabled={!adjacentHomes.next}
+          onClick={() => openAdjacentHome(adjacentHomes.next)}
+          aria-label={t("common:next")}
+          title={
+            adjacentHomes.next
+              ? `${t("common:next")}: ${adjacentHomes.next.name}`
+              : t("common:next")
+          }
+        >
+          <CircleChevronRight aria-hidden="true" size={38} />
         </button>
         <button className="hg-title my-2" onClick={handleBuildingOpen}>
           <div className="d-flex justify-content-center align-items-center gap-3">

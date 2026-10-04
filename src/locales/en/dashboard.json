@@ -334,6 +334,7 @@
     "homeFeesAlreadyPaid": "There are no unpaid fees. Refresh the data to view the payment.",
     "accountingMonthCompleted": "This month has already been closed.",
     "feeNotAssignedToFund": "A fund fee has no assigned fund. Contact your property manager.",
+    "fundFeeCorrectionNotAllowed": "The value and count of a fund fee cannot be changed during payment.",
     "debtors": "Debtors",
     "debtorHomes": "Homes with debt",
     "totalDue": "Total outstanding",

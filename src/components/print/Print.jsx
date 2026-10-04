@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "react-bootstrap";
 import { Printer, CalendarDays } from "lucide-react";
 import { useUser } from "../../user/UserContext";
 import {
@@ -423,7 +424,10 @@ export default function Print() {
       ) : overview && !overview.months.length ? (
         <p>{label("noMonths")}</p>
       ) : !valid ? (
-        <p role="status">{label("loading")}</p>
+        <p role="status">
+          <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
+          {label("loading")}
+        </p>
       ) : !details.homes.length ? (
         <p>{label("noHomes")}</p>
       ) : (

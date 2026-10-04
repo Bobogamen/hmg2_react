@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Spinner } from "react-bootstrap";
 import { closeCashierMonth } from "../../api/services/cashierService";
 import { useTranslation } from "react-i18next";
 import {
@@ -101,6 +101,7 @@ export default function CashierFinancePanel({
   if (!finance)
     return (
       <div className="cashier-month-panel" role="status">
+        <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
         {label("loading")}
       </div>
     );

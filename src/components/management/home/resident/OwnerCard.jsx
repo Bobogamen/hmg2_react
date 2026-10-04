@@ -33,6 +33,7 @@ const OwnerCard = ({
 
         try {
 
+            setShowActivate(false);
             setIsLoading(true);
 
             await activateResident(
@@ -48,7 +49,6 @@ const OwnerCard = ({
                 }
             );
 
-            setShowActivate(false);
             await onSaved?.();
 
         } catch (error) {

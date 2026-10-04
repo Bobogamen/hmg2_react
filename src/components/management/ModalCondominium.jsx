@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import { Trans, useTranslation } from "react-i18next";
 import { addCondominium, deleteCondominium, editCondominium, getCondominium, getCondominiumStartDateYear } from "../../api/services/managementService";
 import { useLoading } from "../../loader/LoadingContext";
@@ -27,6 +27,7 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
   const [condominiumData, setCondominiumData] = useState(initialState);
   const [condominiumErrors, setCondominiumError] = useState({});
   const [minYear, setMinYear] = useState(null);
+  const [isStartDateLoading, setIsStartDateLoading] = useState(false);
 
   const [openInfo, setOpenInfo] = useState(false);
   const [openWarning, setOpenWarning] = useState(false);
@@ -39,21 +40,31 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
   const isEditing = !!condominium?.id;
 
   useEffect(() => {
+    let active = true;
+
     const loadData = async () => {
-      if (!show) return;
+      if (!show) {
+        setIsStartDateLoading(false);
+        return;
+      }
 
       setCondominiumError({});
 
       if (!condominium?.id) {
+        setIsStartDateLoading(false);
         setCondominiumData(initialState);
         loadMinYear();
         return;
       }
 
+      setIsStartDateLoading(true);
+
       try {
 
         // 🔥 FETCH FRESH DATA FROM BACKEND
         const fresh = await getCondominium(condominium.id);
+
+        if (!active) return;
 
         const parsedDate = fresh.startDate
           ? new Date(fresh.startDate)
@@ -80,11 +91,16 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
         });
 
       } catch (error) {
-        toast.error(t("server:error"));
+        if (active) toast.error(t("server:error"));
+      } finally {
+        if (active) setIsStartDateLoading(false);
       }
     };
 
     loadData();
+    return () => {
+      active = false;
+    };
     // eslint-disable-next-line
   }, [show, condominium?.id]);
 
@@ -369,8 +385,20 @@ const ModalCondominium = ({ show, handleClose, condominium }) => {
                 )}
 
                 {isEditing ? (
-                  <p className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1">
-                    {condominiumData.startDate
+                  <p
+                    className="fw-bold text-danger border border-2 border-dark rounded px-1 mt-1 text-center"
+                    aria-live="polite"
+                    aria-busy={isStartDateLoading}
+                  >
+                    {isStartDateLoading ? (
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-label={t("loading")}
+                      />
+                    ) : condominiumData.startDate
                       ? condominiumData.startDate.toLocaleDateString(i18n.language, {
                         month: "long",
                         year: "numeric"

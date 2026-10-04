@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Building2, CalendarDays, MapPin } from "lucide-react";
 import { useUser } from "../../user/UserContext";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "react-bootstrap";
 import { formatDate } from "../../utils/formatDate";
 import { getCondominium } from "../../api/services/managementService";
 import profile_edit from "../../assets/images/app/profile_edit.png";
@@ -75,6 +76,7 @@ function CondominiumOverview({ condominium }) {
           </div>
         ) : !result ? (
           <p role="status" className="text-muted">
+            <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
             {t("profile:loading")}
           </p>
         ) : (
@@ -98,6 +100,7 @@ export default function Profile() {
   if (!user)
     return (
       <p className="container py-4" role="status">
+        <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
         {t("profile:loading")}
       </p>
     );
