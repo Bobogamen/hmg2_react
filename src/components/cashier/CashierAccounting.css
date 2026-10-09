@@ -980,10 +980,6 @@
     font-weight: 700;
   }
 
-  .cashier-homes-table tbody td:nth-child(2) {
-    text-align: end;
-  }
-
   .cashier-homes-table tbody td:nth-child(-n + 3)::before {
     display: inline;
     margin-right: 6px;
@@ -1109,16 +1105,16 @@
   table-layout: fixed;
 }
 .cashier-payment-table__fee {
-  width: 58%;
+  width: 46%;
 }
 .cashier-payment-table__value {
-  width: 15%;
+  width: 20%;
 }
 .cashier-payment-table__times {
-  width: 11%;
+  width: 16%;
 }
 .cashier-payment-table__total {
-  width: 16%;
+  width: 18%;
 }
 .cashier-payment-table th:first-child,
 .cashier-payment-table td:first-child {
@@ -1181,7 +1177,8 @@
 }
 @media (max-width: 575px) {
   .cashier-payment-table {
-    min-width: 560px;
+    min-width: auto;
+    font-size: medium;
   }
   .cashier-debtors-button span {
     display: none;

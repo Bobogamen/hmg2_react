@@ -817,10 +817,10 @@ export default function CashierAccounting() {
         <Modal.Body>
           {activeHome && (
             <>
-              <p className="fw-semibold text-break mb-1">
+              <p className="fw-semibold text-break mb-1 fs-3">
                 {activeHome.owner || "—"}
               </p>
-              <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
+              <div className="d-flex flex-wrap gap-3 text-muted small mb-3 fs-3">
                 <span>
                   {t("home:floor")}:{" "}
                   <strong className="text-dark">

@@ -346,6 +346,11 @@ export function createPrintDocument({
       overflow-wrap: anywhere;
   }
 
+  .receipt-home span {
+      font-size: 14pt;
+      font-weight: bold;
+  }
+
   .receipt th,
   .receipt td {
       padding: .6mm;
