@@ -26,10 +26,11 @@
 
 .aside {
     display: grid;
+    grid-auto-rows: 1fr;
 }
 
-.aside div {
-    height: auto;
+.aside > .card {
+    height: 100%;
 }
 
 .middle {
@@ -44,7 +45,7 @@
 }
 
 .card {
-    transform: scale(0.8);
+    transform: scale(0.95);
 }
 
 .card-body {
@@ -60,7 +61,7 @@
         width: 95%;
     }
 
-    .aside div {
+    .aside > .card {
         height: 15em;
     }
 

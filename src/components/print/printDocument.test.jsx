@@ -166,6 +166,19 @@ test("receipt has framed home identifiers and separate price, quantity and total
   expect([...receipt.querySelector("tbody tr").children].map(el => el.textContent)).toEqual([fee.name, "2,50", "2", "5,00"]);
   expect(receipt.querySelector(".receipt-total").textContent).toBe("Общо€ 7,50");
 });
+test("monthly report includes paid fees and bill payments while excluding unpaid homes", () => {
+  const homes = [
+    { ...details.homes[0], paid: 7.5, due: 0, paidDate: "2026-09-12", receipts: [{ ...fee, id: 1, amount: 7.5, paidDate: "2026-09-12" }] },
+    { ...details.homes[1], paid: 0, due: 5, receipts: [] },
+  ];
+  const html = createPrintDocument({ ...options, section: "report", details: { ...details, homes, billPayments: [{ id: 3, name: "Water", documentNumber: "B-3", documentDate: "2026-09-12", value: 20 }] } });
+  const dom = new DOMParser().parseFromString(html, "text/html");
+  expect(dom.querySelector("h1").textContent).toContain(labels.reportTitle);
+  expect(dom.body.textContent).toContain("Water");
+  expect(dom.body.textContent).toContain(fee.name);
+  expect(dom.body.textContent).not.toContain("Мария");
+  expect(dom.querySelectorAll(".receipt")).toHaveLength(0);
+});
 test("landscape slips use three per row and carry long fee lists into numbered parts", () => {
   const homes = Array.from({ length: 4 }, (_, id) => ({ ...details.homes[1], id }));
   const html = createPrintDocument({ ...options, mode: "portrait", details: { ...details, homes } });

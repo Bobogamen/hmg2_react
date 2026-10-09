@@ -38,7 +38,7 @@ test("shows debtors across accounting months and opens the selected month", asyn
   open(); await screen.findByText("Apartment 2");
   fireEvent.click(screen.getByRole("button", { name: "cashierAccounting.debtors" }));
   const debtorsDialog = await screen.findByRole("dialog", { name: "cashierAccounting.debtors" });
-  expect(within(debtorsDialog).getByText("Owner Name")).toBeInTheDocument();
+  await waitFor(() => expect(within(debtorsDialog).getByText("Owner Name")).toBeInTheDocument());
   expect(within(debtorsDialog).getAllByText("€ 13.00").length).toBeGreaterThan(0);
   fireEvent.click(within(debtorsDialog).getByRole("button", { name: "cashierAccounting.openMonth" }));
   await waitFor(() => expect(getCashierMonth).toHaveBeenLastCalledWith("1", "9"));
@@ -65,6 +65,15 @@ test("cashier can open print documents for the selected month using the print ic
   expect(printLink).toHaveAttribute("href", "/print?condominium=1&month=9");
   expect(printLink.querySelector("svg")).toBeInTheDocument();
   expect(printLink).toHaveTextContent("");
+});
+
+test("closed month keeps the monthly report enabled after month details load", async () => {
+  getCashierMonths.mockResolvedValue({ condominiumId: 1, name: "Building One", currentMonth: "2026-09", months: [{ ...month, completed: true }] });
+  getCashierMonth.mockResolvedValue({ ...details, month: { ...month, completed: true } });
+  open();
+  const report = await screen.findByRole("link", { name: "cashierAccounting.monthlyReport" });
+  expect(report).toHaveAttribute("href", "/print?condominium=1&month=9&report=1");
+  expect(report).not.toHaveAttribute("aria-disabled", "true");
 });
 
 test("shows the active residents count for each home", async () => {

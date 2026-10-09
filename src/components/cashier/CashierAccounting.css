@@ -1083,9 +1083,15 @@
     display: none;
   }
 }
-.cashier-print-link {
+.cashier-print-link,
+.cashier-report-link {
   min-width: 36px;
   min-height: 36px;
+}
+.cashier-report-link:disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: .65;
 }
 .cashier-debtors-button {
   min-height: 36px;

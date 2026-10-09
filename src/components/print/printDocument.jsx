@@ -1,6 +1,7 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import FeeLabel from "../../utils/FeeLabel";
+import { formatDate } from "../../utils/formatDate";
 
 const cents = (value) => Math.round(Number(value || 0) * 100);
 const feeOrder = (f) => (f.fund ? 3 : f.primary ? 0 : f.monthly ? 1 : 2);
@@ -58,7 +59,16 @@ export function createPrintDocument({
   section = "all",
   receiptHomeIds,
 }) {
-  const model = buildPrintModel(details);
+  const report = section === "report";
+  const sourceDetails = report
+    ? {
+        ...details,
+        homes: details.homes.filter(
+          (home) => Number(home.due) === 0 && Number(home.paid) > 0,
+        ),
+      }
+    : details;
+  const model = buildPrintModel(sourceDetails);
   const residentCounts = new Map(
     (condominium.homes || []).map((home) => [
       String(home.id),
@@ -77,10 +87,17 @@ export function createPrintDocument({
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value || 0);
+  const dateLanguage = locale?.startsWith("bg") ? "bg" : "en";
   const city = condominium.city
     ? `${locale?.startsWith("bg") ? "гр. " : ""}${condominium.city}`
     : "";
   const address = [condominium.address, city].filter(Boolean).join(", ");
+  const paidHomes = model.homes;
+  const paidFees = paidHomes.flatMap((home) =>
+    (home.receipts || []).map((fee) => ({ home, fee })),
+  );
+  const billPayments =
+    details.billPayments || details.finance?.billPayments || [];
   const period =
     new Intl.DateTimeFormat(locale, { month: "long" }).format(
       new Date(details.month.year, details.month.number - 1, 1),
@@ -88,8 +105,13 @@ export function createPrintDocument({
     " " +
     details.month.year;
   const title = text("documentTitle") + " " + (address || condominium.name);
-  const parts = model.homes.flatMap((home) => {
-    if (home.paidDate && Number(home.due) === 0) return [];
+  const parts = (report ? paidHomes : model.homes).flatMap((home) => {
+    if (
+      report
+        ? !(Number(home.due) === 0 && Number(home.paid) > 0)
+        : home.paidDate && Number(home.due) === 0
+    )
+      return [];
     if (
       receiptHomeIds &&
       !receiptHomeIds.some((id) => String(id) === String(home.id))
@@ -392,21 +414,22 @@ export function createPrintDocument({
   `;
   const content = (
     <>
-      {section !== "receipts" && (
+      {(report || section !== "receipts") && (
         <section className="properties-document">
           <h1>
-            {text("documentTitle")}
+            {text(report ? "reportTitle" : "documentTitle")}
             <br />
             {address || condominium.name}
           </h1>
           <p className="period">{period}</p>
           <table className="properties-table">
             <colgroup>
-              {["10%", "11%", "23%", "9%", "8%", "15%", "14%", "10%"].map(
-                (width, i) => (
-                  <col key={i} style={{ width }} />
-                ),
-              )}
+              {(report
+                ? ["10%", "12%", "33%", "10%", "10%", "25%"]
+                : ["10%", "11%", "23%", "9%", "8%", "15%", "14%", "10%"]
+              ).map((width, i) => (
+                <col key={i} style={{ width }} />
+              ))}
             </colgroup>
             <thead>
               <tr>
@@ -417,10 +440,11 @@ export function createPrintDocument({
                   "home:residents",
                   "total",
                   "date",
-                  "signature",
-                  "note",
+                  ...(!report ? ["signature", "note"] : []),
                 ].map((k) => (
-                  <th key={k}>{k === "total" ? `${text(k)} €` : text(k)}</th>
+                  <th className={k === "date" ? "center" : undefined} key={k}>
+                    {k === "total" ? `${text(k)} €` : text(k)}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -430,110 +454,238 @@ export function createPrintDocument({
                   <td className="center">{home.floor}</td>
                   <td className="center">{home.name}</td>
                   <td>{home.owner || "—"}</td>
-                  <td className="center">
-                    {activeResidentsOf(home) ?? "—"}
-                  </td>
+                  <td className="center">{activeResidentsOf(home) ?? "—"}</td>
                   <td className="number home-amount">{amount(home.total)}</td>
                   <td className="center">
                     {home.paidDate && Number(home.due) === 0
-                      ? new Intl.DateTimeFormat(locale).format(
-                          new Date(`${home.paidDate}T12:00:00`),
-                        )
+                      ? report
+                        ? formatDate(home.paidDate, dateLanguage)
+                        : new Intl.DateTimeFormat(locale).format(
+                            new Date(`${home.paidDate}T12:00:00`),
+                          )
                       : ""}
                   </td>
-                  <td></td>
-                  <td></td>
+                  {!report && <td></td>}
+                  {!report && <td></td>}
                 </tr>
               ))}
               <tr className="total">
                 <td colSpan={3}>{text("total")}</td>
                 <td className="center">{activeResidentsTotal}</td>
                 <td className="number">€ {amount(model.total)}</td>
-                <td colSpan={3}></td>
+                <td colSpan={report ? 1 : 3}></td>
               </tr>
             </tbody>
           </table>
-          <div className="fee-summaries">
-            {[false, true].map((fund) => {
-              const fees = model.fees.filter((fee) => fee.fund === fund);
-              const groups = fund
-                ? [...new Set(fees.map((fee) => fee.fundName || ""))]
-                    .sort((a, b) => a.localeCompare(b, locale))
-                    .map((name) => ({
-                      name,
-                      fees: fees.filter((fee) => (fee.fundName || "") === name),
-                    }))
-                : [{ name: "", fees }];
-              const total =
-                fees.reduce((sum, fee) => sum + fee.amountCents, 0) / 100;
-              return (
-                <table className="fee-summary" key={String(fund)}>
-                  <caption>
-                    {text(fund ? "fundsSummary" : "feesSummary")}
-                  </caption>
-                  <colgroup>
-                    <col style={{ width: "56%" }} />
-                    <col style={{ width: "16%" }} />
-                    <col style={{ width: "12%" }} />
-                    <col style={{ width: "16%" }} />
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      {["fee", "€", "homeCount", "total"].map((k) => (
-                        <th key={k}>{k === "€" ? "€" : text(k)}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {groups.map((group) => (
-                      <React.Fragment key={group.name}>
-                        {fund && (
-                          <tr className="fund-heading">
-                            <th colSpan={4} scope="rowgroup">
-                              {text("fund")}
-                              {group.name ? ` "${group.name}"` : ""}
-                            </th>
-                          </tr>
-                        )}
-                        {group.fees.map((f) => (
-                          <tr
-                            key={f.key}
-                            className={f.fund ? "fund-fee" : undefined}
-                          >
-                            <td>{f.name}</td>
-                            <td className="number">{amount(f.value)}</td>
-                            <td className="center">{f.homeCount}</td>
-                            <td className="number">{amount(f.amount)}</td>
-                          </tr>
+          {!report && (
+            <div className="fee-summaries">
+              {[false, true].map((fund) => {
+                const fees = model.fees.filter((fee) => fee.fund === fund);
+                const groups = fund
+                  ? [...new Set(fees.map((fee) => fee.fundName || ""))]
+                      .sort((a, b) => a.localeCompare(b, locale))
+                      .map((name) => ({
+                        name,
+                        fees: fees.filter(
+                          (fee) => (fee.fundName || "") === name,
+                        ),
+                      }))
+                  : [{ name: "", fees }];
+                const total =
+                  fees.reduce((sum, fee) => sum + fee.amountCents, 0) / 100;
+                return (
+                  <table className="fee-summary" key={String(fund)}>
+                    <caption>
+                      {text(fund ? "fundsSummary" : "feesSummary")}
+                    </caption>
+                    <colgroup>
+                      <col style={{ width: "56%" }} />
+                      <col style={{ width: "16%" }} />
+                      <col style={{ width: "12%" }} />
+                      <col style={{ width: "16%" }} />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        {["fee", "€", "homeCount", "total"].map((k) => (
+                          <th key={k}>{k === "€" ? "€" : text(k)}</th>
                         ))}
-                        {fund && (
-                          <tr className="fund-subtotal">
-                            <td colSpan={3}>{text("total")}</td>
-                            <td className="number">
-                              €{" "}
-                              {amount(
-                                group.fees.reduce(
-                                  (sum, fee) => sum + fee.amountCents,
-                                  0,
-                                ) / 100,
-                              )}
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {groups.map((group) => (
+                        <React.Fragment key={group.name}>
+                          {fund && (
+                            <tr className="fund-heading">
+                              <th colSpan={4} scope="rowgroup">
+                                {text("fund")}
+                                {group.name ? ` "${group.name}"` : ""}
+                              </th>
+                            </tr>
+                          )}
+                          {group.fees.map((f) => (
+                            <tr
+                              key={f.key}
+                              className={f.fund ? "fund-fee" : undefined}
+                            >
+                              <td>{f.name}</td>
+                              <td className="number">{amount(f.value)}</td>
+                              <td className="center">{f.homeCount}</td>
+                              <td className="number">{amount(f.amount)}</td>
+                            </tr>
+                          ))}
+                          {fund && (
+                            <tr className="fund-subtotal">
+                              <td colSpan={3}>{text("total")}</td>
+                              <td className="number">
+                                €{" "}
+                                {amount(
+                                  group.fees.reduce(
+                                    (sum, fee) => sum + fee.amountCents,
+                                    0,
+                                  ) / 100,
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      ))}
+                      <tr className="total">
+                        <td colSpan={3}>{text("total")}</td>
+                        <td className="number">€ {amount(total)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                );
+              })}
+            </div>
+          )}
+          {report && (
+            <>
+              <h2>{text("paidFeesTitle")}</h2>
+              <table className="fee-summary report-detail-table">
+                <colgroup>
+                  <col style={{ width: "10%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "26%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "10%" }} />
+                  <col style={{ width: "12%" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    {[
+                      "property",
+                      "owner",
+                      "fee",
+                      "value",
+                      "times",
+                      "total",
+                      "paidDate",
+                    ].map((key) => (
+                      <th
+                        className={key === "paidDate" ? "center" : undefined}
+                        key={key}
+                      >
+                        {key === "value" || key === "total" ? "€ " : null}{" "}
+                        {text(key)}
+                      </th>
                     ))}
-                    <tr className="total">
-                      <td colSpan={3}>{text("total")}</td>
-                      <td className="number">€ {amount(total)}</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paidFees.map(({ home, fee }, index) => (
+                    <tr key={`${home.id}-${fee.id || index}`}>
+                      <td>
+                        {home.floor} / {home.name}
+                      </td>
+                      <td>{home.owner || "—"}</td>
+                      <td>
+                        <FeeLabel fee={fee} fundLabel={text("fund")} />
+                      </td>
+                      <td className="number">{amount(fee.value)}</td>
+                      <td className="center">{fee.times}</td>
+                      <td className="number">{amount(fee.amount)}</td>
+                      <td className="center">
+                        {formatDate(
+                          fee.paidDate || home.paidDate,
+                          dateLanguage,
+                        )}
+                      </td>
                     </tr>
-                  </tbody>
-                </table>
-              );
-            })}
-          </div>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="total">
+                    <th colSpan={5}>{text("total")}</th>
+                    <td className="number">
+                      {"€ "}
+                      {amount(
+                        paidFees.reduce(
+                          (sum, item) => sum + cents(item.fee.amount),
+                          0,
+                        ) / 100,
+                      )}
+                    </td>
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+              <h2>{text("paidBillsTitle")}</h2>
+              <table className="fee-summary report-detail-table">
+                <colgroup>
+                  <col style={{ width: "40%" }} />
+                  <col style={{ width: "25%" }} />
+                  <col style={{ width: "20%" }} />
+                  <col style={{ width: "15%" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    {["bill", "document", "paidDate", "total"].map((key) => (
+                      <th
+                        className={key === "paidDate" ? "center" : undefined}
+                        key={key}
+                      >
+                        {text(key)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {billPayments.map((payment, index) => (
+                    <tr key={payment.id || index}>
+                      <td>{payment.name}</td>
+                      <td>{payment.documentNumber || ""}</td>
+                      <td className="center">
+                        {formatDate(
+                          payment.documentDate || payment.paidDate,
+                          dateLanguage,
+                        )}
+                      </td>
+                      <td className="number">{amount(payment.value)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="total">
+                    <th colSpan={3}>{text("total")}</th>
+                    <td className="number">
+                      {"€ "}
+                      {amount(
+                        billPayments.reduce(
+                          (sum, item) => sum + cents(item.value),
+                          0,
+                        ) / 100,
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </>
+          )}
         </section>
       )}
-      {section !== "properties" && (
+      {!report && section !== "properties" && (
         <section className="receipts-document">
           {rows.map((row, rowIndex) => (
             <div className="receipt-row" key={rowIndex}>

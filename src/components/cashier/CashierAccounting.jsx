@@ -252,6 +252,7 @@ export default function CashierAccounting() {
   };
   const loadDebtors = async () => {
     setDebtorsError(false);
+    setDebtors({ loading: true, debtors: [], totalDue: 0, homes: 0 });
     try {
       setDebtors(await getCashierDebtors(condominiumId));
     } catch {
@@ -307,6 +308,12 @@ export default function CashierAccounting() {
       : 0;
   const monthIndex =
     overview?.months.findIndex((month) => String(month.id) === monthId) ?? -1;
+  const reportReady = Boolean(
+    details &&
+    (details.month.completed ||
+      overview?.months.find((month) => String(month.id) === monthId)
+        ?.completed),
+  );
   return (
     <div className="container-fluid py-2 cashier-accounting cashier-management">
       <Breadcrumbs />
@@ -331,7 +338,22 @@ export default function CashierAccounting() {
                 <h3>
                   <Wallet size={21} aria-hidden="true" /> {label("collection")}
                 </h3>
-                <p>{details ? monthName(details.month) : <><Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />{label("loading")}</>}</p>
+                <p>
+                  {details ? (
+                    monthName(details.month)
+                  ) : (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        className="me-2"
+                        aria-hidden="true"
+                      />
+                      {label("loading")}
+                    </>
+                  )}
+                </p>
               </div>
             </div>
             {details && (
@@ -444,7 +466,7 @@ export default function CashierAccounting() {
               aria-label={label("debtors")}
             >
               <CircleDollarSign size={20} aria-hidden="true" />
-              <span>{label("debtors")}</span>
+              <span className="ms-1">{label("debtors")}</span>
             </button>
           )}
           {details && (
@@ -478,13 +500,36 @@ export default function CashierAccounting() {
               <Printer size={20} aria-hidden="true" />
             </Link>
           )}
+          {details && (
+            <Link
+              className={`btn btn-sm d-inline-flex align-items-center justify-content-center cashier-report-link ${reportReady ? "btn-outline-primary" : "btn-outline-secondary"}`}
+              disabled={!reportReady}
+              to={
+                reportReady
+                  ? `/print?condominium=${condominiumId}&month=${monthId}&report=1`
+                  : "#"
+              }
+              aria-disabled={!reportReady}
+              onClick={(event) => {
+                if (!reportReady) event.preventDefault();
+              }}
+              title={label(reportReady ? "monthlyReport" : "reportAfterClose")}
+              aria-label={label(
+                reportReady ? "monthlyReport" : "reportAfterClose",
+              )}
+            >
+              <ReceiptText size={20} aria-hidden="true" />
+            </Link>
+          )}
         </div>
       )}
       {overview?.months.length > 0 && !currentMonth && (
         <p className="alert alert-warning">{label("currentMonthMissing")}</p>
       )}
       {details?.month.completed && (
-        <p className="alert alert-info">{label("closed")}</p>
+        <p className="alert alert-info fw-bold border border-2 border-danger">
+          {label("closed")}
+        </p>
       )}
       {manager && overview && (
         <AccountingPeriodNotice
@@ -521,7 +566,22 @@ export default function CashierAccounting() {
                   <ReceiptText size={21} aria-hidden="true" />{" "}
                   {label("payments")}
                 </h3>
-                <p>{details ? monthName(details.month) : <><Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />{label("loading")}</>}</p>
+                <p>
+                  {details ? (
+                    monthName(details.month)
+                  ) : (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        className="me-2"
+                        aria-hidden="true"
+                      />
+                      {label("loading")}
+                    </>
+                  )}
+                </p>
               </div>
               <span className="cashier-count">
                 {visibleHomes.length} / {allHomes.length}
@@ -565,7 +625,13 @@ export default function CashierAccounting() {
             </div>
             {!details && !error && (
               <p role="status" className="cashier-loading">
-                <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  className="me-2"
+                  aria-hidden="true"
+                />
                 {label("loading")}
               </p>
             )}
@@ -948,72 +1014,85 @@ export default function CashierAccounting() {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {debtorsError && (
+          {debtors?.loading && (
+            <div
+              className="d-flex justify-content-center align-items-center gap-2 py-4"
+              role="status"
+            >
+              <Spinner animation="border" size="sm" aria-hidden="true" />
+              <span>{label("loading")}</span>
+            </div>
+          )}
+          {!debtors?.loading && debtorsError && (
             <div className="alert alert-danger">{label("debtorsError")}</div>
           )}
-          {!debtorsError && debtors?.debtors.length === 0 && (
-            <div className="alert alert-success">{label("noDebtors")}</div>
-          )}
-          {!debtorsError && debtors?.debtors.length > 0 && (
-            <>
-              <div className="cashier-debtors-summary">
-                <span>
-                  {label("debtorHomes")}: <strong>{debtors.homes}</strong>
-                </span>
-                <span>
-                  {label("totalDue")}:{" "}
-                  <strong>{money(debtors.totalDue)}</strong>
-                </span>
-              </div>
-              <div className="accordion" role="list">
-                {debtors.debtors.map((home) => (
-                  <details className="cashier-debtor" key={home.homeId}>
-                    <summary>
+          {!debtors?.loading &&
+            !debtorsError &&
+            debtors?.debtors.length === 0 && (
+              <div className="alert alert-success">{label("noDebtors")}</div>
+            )}
+          {!debtors?.loading &&
+            !debtorsError &&
+            debtors?.debtors.length > 0 && (
+              <>
+                <div className="cashier-debtors-summary">
+                  <span>
+                    {label("debtorHomes")}: <strong>{debtors.homes}</strong>
+                  </span>
+                  <span>
+                    {label("totalDue")}:{" "}
+                    <strong>{money(debtors.totalDue)}</strong>
+                  </span>
+                </div>
+                <div className="accordion" role="list">
+                  {debtors.debtors.map((home) => (
+                    <details className="cashier-debtor" key={home.homeId}>
+                      <summary>
+                        <div>
+                          <strong>{home.owner}</strong>
+                          <div className="d-flex gap-3 text-muted">
+                            <span>
+                              {t("home:floor")}:{" "}
+                              <strong className="text-dark">
+                                {home.floor ?? "—"}
+                              </strong>
+                            </span>
+                            <span>
+                              {label("home")}:{" "}
+                              <strong className="text-dark">
+                                {home.name || "—"}
+                              </strong>
+                            </span>
+                          </div>
+                        </div>
+                        <strong>{money(home.due)}</strong>
+                      </summary>
                       <div>
-                        <strong>{home.owner}</strong>
-                        <div className="d-flex gap-3 text-muted">
-                          <span>
-                            {t("home:floor")}:{" "}
-                            <strong className="text-dark">
-                              {home.floor ?? "—"}
-                            </strong>
-                          </span>
-                          <span>
-                            {label("home")}:{" "}
-                            <strong className="text-dark">
-                              {home.name || "—"}
-                            </strong>
-                          </span>
-                        </div>
-                      </div>
-                      <strong>{money(home.due)}</strong>
-                    </summary>
-                    <div>
-                      {home.months.map((month) => (
-                        <div
-                          className="cashier-debtor-month"
-                          key={month.monthId}
-                        >
-                          <span>{monthName(month)}</span>
-                          <strong>{money(month.due)}</strong>
-                          <Button
-                            size="sm"
-                            variant="outline-success"
-                            onClick={() => {
-                              setMonthId(String(month.monthId));
-                              setDebtors(null);
-                            }}
+                        {home.months.map((month) => (
+                          <div
+                            className="cashier-debtor-month"
+                            key={month.monthId}
                           >
-                            {label("openMonth")}
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                ))}
-              </div>
-            </>
-          )}
+                            <span>{monthName(month)}</span>
+                            <strong>{money(month.due)}</strong>
+                            <Button
+                              size="sm"
+                              variant="outline-success"
+                              onClick={() => {
+                                setMonthId(String(month.monthId));
+                                setDebtors(null);
+                              }}
+                            >
+                              {label("openMonth")}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </>
+            )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setDebtors(null)}>

@@ -53,7 +53,7 @@ export default function Cashier() {
     data && data.cashierLimit > 0 && data.cashiers.length >= data.cashierLimit;
 
   return (
-    <div className="py-1 container-fluid">
+    <div className="container-fluid py-2">
       <Breadcrumbs />
       <section className="cashier-page">
         <header className="text-center text-bg-light w-100 rounded border border-2 border-dark p-2">

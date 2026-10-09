@@ -27,6 +27,7 @@ import CardResident from "./resident/CardResident";
 import ModalBuilding from "./ModalBuilding";
 import HomeRepairsTable from "./HomeRepairsTable";
 import { getHomeRepairs } from "../../../api/services/repairService";
+import "./Home.css";
 
 export const findAdjacentHomes = (homes, currentHomeId) => {
   const orderedHomes = [...homes].sort(
@@ -269,6 +270,7 @@ const Home = () => {
         home={home}
         onSaved={fetchHome}
       />
+      <div className="home-detail-page">
       <div className="d-flex justify-content-center align-items-center">
         <button
           type="button"
@@ -429,6 +431,7 @@ const Home = () => {
         handleClose={() => setBuildingOpen(false)}
         condominium={home.condominium}
       />
+      </div>
     </>
   );
 };

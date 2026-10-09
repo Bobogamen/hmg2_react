@@ -7,6 +7,7 @@ import { useUser } from "../../user/UserContext";
 import {
   getCashierMonths,
   getCashierMonth,
+  getCashierFinance,
 } from "../../api/services/cashierService";
 import { getCondominium } from "../../api/services/managementService";
 import { createPrintDocument } from "./printDocument";
@@ -31,29 +32,58 @@ export default function Print() {
   const [error, setError] = useState(false);
   const [revision, setRevision] = useState(0);
   const [ready, setReady] = useState(false);
+  const previewFrame = useRef(null);
   const printFrames = useRef({});
   const [printReady, setPrintReady] = useState({});
   const requestedMonth = params.get("month");
+  const reportMode = params.get("report") === "1";
+  const selectedMonth = overview?.months.find((m) => String(m.id) === monthId);
+  const reportAvailable =
+    !reportMode ||
+    (!!selectedMonth?.completed && details?.month?.completed === true);
   useEffect(() => {
     const condominium =
       overview?.selected === condominiumId
         ? overview.condominium
         : user?.condominiums?.find((item) => String(item.id) === condominiumId);
-    setBreadcrumbs([
-      { label: t("dashboard:cashier"), path: "/cashier" },
-      ...(condominium
+    setBreadcrumbs(
+      reportMode
         ? [
-            {
-              label: condominium.name,
-              path: `/cashier/condominium/${condominiumId}`,
-              color: condominium.backgroundColor,
-            },
+            { label: t("dashboard:cashier"), path: "/cashier" },
+            ...(condominium
+              ? [
+                  {
+                    label: condominium.name,
+                    path: `/cashier/condominium/${condominiumId}`,
+                    color: condominium.backgroundColor,
+                  },
+                ]
+              : []),
+            { label: t("dashboard:printPage.report") },
           ]
-        : []),
-      { label: t("dashboard:printPage.breadcrumb") },
-    ]);
+        : [
+            { label: t("dashboard:cashier"), path: "/cashier" },
+            ...(condominium
+              ? [
+                  {
+                    label: condominium.name,
+                    path: `/cashier/condominium/${condominiumId}`,
+                    color: condominium.backgroundColor,
+                  },
+                ]
+              : []),
+            { label: t("dashboard:printPage.breadcrumb") },
+          ],
+    );
     return () => setBreadcrumbs([]);
-  }, [condominiumId, overview, user?.condominiums, setBreadcrumbs, t]);
+  }, [
+    condominiumId,
+    overview,
+    reportMode,
+    user?.condominiums,
+    setBreadcrumbs,
+    t,
+  ]);
   useEffect(() => {
     let active = true;
     setOverview(null);
@@ -97,9 +127,14 @@ export default function Print() {
     setReady(false);
     if (monthId && overview?.selected === condominiumId) {
       setError(false);
-      getCashierMonth(condominiumId, monthId)
-        .then((data) => {
-          if (active) setDetails({ ...data, selected: condominiumId });
+      Promise.all([
+        getCashierMonth(condominiumId, monthId),
+        reportMode
+          ? getCashierFinance(condominiumId, monthId)
+          : Promise.resolve(null),
+      ])
+        .then(([data, finance]) => {
+          if (active) setDetails({ ...data, finance, selected: condominiumId });
         })
         .catch(() => {
           if (active) setError(true);
@@ -108,7 +143,7 @@ export default function Print() {
     return () => {
       active = false;
     };
-  }, [condominiumId, monthId, overview]);
+  }, [condominiumId, monthId, overview, reportMode]);
   const valid =
     details?.selected === condominiumId &&
     String(details?.month.id) === monthId;
@@ -137,12 +172,19 @@ export default function Print() {
     ),
   );
   const documents = useMemo(() => {
-    if (!valid || !overview) return {};
+    if (!valid || !overview || !reportAvailable) return {};
     const labels = Object.fromEntries(
       [
         "documentTitle",
+        "reportTitle",
+        "paidFeesTitle",
+        "paidBillsTitle",
+        "paidDate",
+        "bill",
+        "document",
         "floor",
         "home",
+        "property",
         "owner",
         "receiptFloor",
         "receiptHome",
@@ -169,16 +211,34 @@ export default function Print() {
         section,
         createPrintDocument({
           condominium: overview.condominium,
-          details,
+          details: reportMode
+            ? { ...details, billPayments: details.finance?.billPayments || [] }
+            : details,
           locale: i18n.language,
           labels,
-          section: section === "allReceipts" ? "receipts" : section,
-          receiptHomeIds:
-            section === "allReceipts" ? undefined : receiptHomeIds,
+          section: reportMode
+            ? "report"
+            : section === "allReceipts"
+              ? "receipts"
+              : section,
+          receiptHomeIds: reportMode
+            ? []
+            : section === "allReceipts"
+              ? undefined
+              : receiptHomeIds,
         }),
       ]),
     );
-  }, [valid, overview, details, t, i18n.language, receiptHomeIds]);
+  }, [
+    valid,
+    overview,
+    details,
+    t,
+    i18n.language,
+    receiptHomeIds,
+    reportMode,
+    reportAvailable,
+  ]);
   const document = documents.all || "";
   const print = (section) => {
     if (
@@ -186,6 +246,7 @@ export default function Print() {
       printReady[section] !== documents[section] ||
       error ||
       !valid ||
+      !reportAvailable ||
       (section === "receipts" && !receiptHomeIds.length)
     )
       return;
@@ -196,109 +257,122 @@ export default function Print() {
       setError(true);
     }
   };
+  const printReport = () => {
+    if (ready !== document || !previewFrame.current) return;
+    try {
+      previewFrame.current.contentWindow.focus();
+      previewFrame.current.contentWindow.print();
+    } catch {
+      setError(true);
+    }
+  };
   return (
-    <main className="print-page">
+    <main className="container-fluid py-2">
       <Breadcrumbs />
       <header className="print-header text-center text-bg-light w-100 rounded border border-2 border-dark p-3">
         <h2 className="fw-bold mb-2">
           <Printer size={25} aria-hidden="true" />
-          {label("title")}
+          {label(reportMode ? "reportTitle" : "title")}
         </h2>
         <p className="print-intro mb-0 fw-semibold text-light-emphasis">
-          {label("intro")}
+          {label(reportMode ? "reportIntro" : "intro")}
         </p>
       </header>
-      <div className="print-controls">
-        <label>
-          {label("building")}
-          <select
-            className="form-select"
-            value={condominiumId}
-            onChange={(e) => setParams({ condominium: e.target.value })}
-          >
-            {!user?.condominiums?.length && (
-              <option value="">{label("noBuildings")}</option>
-            )}
-            {user?.condominiums?.map((c) => (
-              <option value={c.id} key={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {label("month")}
-          <select
-            className="form-select"
-            disabled={!overview?.months.length}
-            value={monthId}
-            onChange={(e) => setMonthId(e.target.value)}
-          >
-            {overview?.months.map((m) => (
-              <option value={m.id} key={m.id}>
-                {new Intl.DateTimeFormat(i18n.language, {
-                  month: "long",
-                }).format(new Date(m.year, m.number - 1, 1))}{" "}
-                {m.year}
-              </option>
-            ))}
-          </select>
-        </label>
-        {condominiumId && (
-          <Link
-            className="btn btn-outline-primary print-current-month"
-            to={`/cashier/condominium/${condominiumId}`}
-          >
-            <CalendarDays size={18} aria-hidden="true" />
-          </Link>
-        )}
-      </div>
-      <div className="print-document-guide" aria-label={label("included")}>
-        <div>
-          <span className="print-step">1</span>
-          <div>
-            <strong>{label("properties")}</strong>
-            <small>{label("propertiesHint")}</small>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={
-              error ||
-              !valid ||
-              !details?.homes.length ||
-              ready !== document ||
-              printReady.properties !== documents.properties
-            }
-            onClick={() => print("properties")}
-          >
-            <Printer size={18} aria-hidden="true" />
-          </button>
+      {!reportMode && (
+        <div className="print-controls">
+          <label>
+            {label("building")}
+            <select
+              className="form-select"
+              value={condominiumId}
+              onChange={(e) => setParams({ condominium: e.target.value })}
+            >
+              {!user?.condominiums?.length && (
+                <option value="">{label("noBuildings")}</option>
+              )}
+              {user?.condominiums?.map((c) => (
+                <option value={c.id} key={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            {label("month")}
+            <select
+              className="form-select"
+              disabled={!overview?.months.length}
+              value={monthId}
+              onChange={(e) => setMonthId(e.target.value)}
+            >
+              {overview?.months.map((m) => (
+                <option value={m.id} key={m.id}>
+                  {new Intl.DateTimeFormat(i18n.language, {
+                    month: "long",
+                  }).format(new Date(m.year, m.number - 1, 1))}{" "}
+                  {m.year}
+                </option>
+              ))}
+            </select>
+          </label>
+          {condominiumId && (
+            <Link
+              className="btn btn-outline-primary print-current-month"
+              to={`/cashier/condominium/${condominiumId}`}
+            >
+              <CalendarDays size={18} aria-hidden="true" />
+            </Link>
+          )}
         </div>
-        <div>
-          <span className="print-step">2</span>
+      )}
+      {!reportMode && (
+        <div className="print-document-guide" aria-label={label("included")}>
           <div>
-            <strong>{label("allReceipts")}</strong>
-            <small>{label("receiptsHint")}</small>
+            <span className="print-step">1</span>
+            <div>
+              <strong>{label("properties")}</strong>
+              <small>{label("propertiesHint")}</small>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={
+                error ||
+                !valid ||
+                !details?.homes.length ||
+                ready !== document ||
+                printReady.properties !== documents.properties
+              }
+              onClick={() => print("properties")}
+            >
+              <Printer size={18} aria-hidden="true" />
+            </button>
           </div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={
-              error ||
-              !valid ||
-              !details?.homes.length ||
-              printReady.allReceipts !== documents.allReceipts ||
-              !receiptHomes.length
-            }
-            onClick={() => print("allReceipts")}
-            aria-label={label("allReceipts")}
-          >
-            <Printer size={18} aria-hidden="true" />
-          </button>
+          <div>
+            <span className="print-step">2</span>
+            <div>
+              <strong>{label("allReceipts")}</strong>
+              <small>{label("receiptsHint")}</small>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={
+                error ||
+                !valid ||
+                !details?.homes.length ||
+                printReady.allReceipts !== documents.allReceipts ||
+                !receiptHomes.length
+              }
+              onClick={() => print("allReceipts")}
+              aria-label={label("allReceipts")}
+            >
+              <Printer size={18} aria-hidden="true" />
+            </button>
+          </div>
         </div>
-      </div>
-      {valid && !error && (
+      )}
+      {!reportMode && valid && !error && (
         <fieldset className="print-home-selection">
           <legend>{label("selectReceiptHomes")}</legend>
           {receiptHomes.length ? (
@@ -425,22 +499,49 @@ export default function Print() {
         <p>{label("noMonths")}</p>
       ) : !valid ? (
         <p role="status">
-          <Spinner as="span" animation="border" size="sm" className="me-2" aria-hidden="true" />
+          <Spinner
+            as="span"
+            animation="border"
+            size="sm"
+            className="me-2"
+            aria-hidden="true"
+          />
           {label("loading")}
+        </p>
+      ) : reportMode &&
+        (!selectedMonth?.completed || !details?.month?.completed) ? (
+        <p role="status" className="alert alert-warning">
+          {label("reportAfterClose")}
         </p>
       ) : !details.homes.length ? (
         <p>{label("noHomes")}</p>
       ) : (
-        <iframe
-          key={document}
-          title={label("preview")}
-          className="print-preview"
-          srcDoc={document}
-          sandbox="allow-same-origin allow-modals"
-          onLoad={() => setReady(document)}
-        />
+        <>
+          {reportMode && (
+            <div className="mt-3 text-center">
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={ready !== document}
+                onClick={printReport}
+              >
+                <Printer size={18} aria-hidden="true" /> {label("printReport")}
+              </button>
+            </div>
+          )}
+          <iframe
+            key={document}
+            ref={previewFrame}
+            title={label("preview")}
+            className="print-preview"
+            srcDoc={document}
+            sandbox="allow-same-origin allow-modals"
+            onLoad={() => setReady(document)}
+          />
+        </>
       )}
-      {valid &&
+      {!reportMode &&
+        valid &&
         !error &&
         details?.homes.length > 0 &&
         ["properties", "receipts", "allReceipts"].map((section) => (

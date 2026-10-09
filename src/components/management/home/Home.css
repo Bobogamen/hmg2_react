@@ -1,0 +1,20 @@
+.home-detail-page {
+  min-width: 0;
+}
+
+@media (max-width: 999.98px) {
+  .home-detail-page {
+    width: calc(100% + 1rem);
+    margin-inline: -0.5rem;
+  }
+
+  .home-detail-page .homes-section,
+  .home-detail-page .utility-section {
+    width: 100%;
+  }
+
+  .home-detail-page > .layout,
+  .home-detail-page > .d-flex {
+    min-width: 0;
+  }
+}
