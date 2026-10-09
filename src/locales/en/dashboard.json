@@ -339,6 +339,7 @@
     "retry": "Try again",
     "refresh": "Refresh data",
     "paymentError": "Payment could not be confirmed. Refresh the data before trying again.",
+    "paymentDateInFuture": "The payment date cannot be in the future.",
     "homeFeesChanged": "The fees have changed. Refresh the data and review the new amount.",
     "homeFeesAlreadyPaid": "There are no unpaid fees. Refresh the data to view the payment.",
     "accountingMonthCompleted": "This month has already been closed.",

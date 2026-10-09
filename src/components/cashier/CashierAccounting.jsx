@@ -196,6 +196,10 @@ export default function CashierAccounting() {
   };
   const pay = async () => {
     if (submitting.current || !activeHome || !paidDate) return;
+    if (paidDate > format(new Date(), "yyyy-MM-dd")) {
+      setPayError("paymentDateInFuture");
+      return;
+    }
     submitting.current = true;
     setSaving(true);
     setIsLoading(true);
@@ -243,7 +247,19 @@ export default function CashierAccounting() {
         "feeNotAssignedToFund",
         "fundFeeCorrectionNotAllowed",
       ];
-      setPayError(known.includes(reason) ? reason : "paymentError");
+      const futureDateErrors = [
+        "cashierInvalidPaidDate",
+        "paidDateInFuture",
+        "pastOrPresent",
+        "repairInvalidPaidDate",
+      ];
+      setPayError(
+        futureDateErrors.includes(reason)
+          ? "paymentDateInFuture"
+          : known.includes(reason)
+            ? reason
+            : "paymentError",
+      );
     } finally {
       submitting.current = false;
       setSaving(false);
@@ -831,9 +847,18 @@ export default function CashierAccounting() {
                       className="form-control form-control-lg"
                       required
                       value={paidDate}
+                      max={format(new Date(), "yyyy-MM-dd")}
                       disabled={saving}
                       aria-describedby="fee-paid-date-help"
-                      onChange={(event) => setPaidDate(event.target.value)}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setPaidDate(value);
+                        setPayError(
+                          value > format(new Date(), "yyyy-MM-dd")
+                            ? "paymentDateInFuture"
+                            : "",
+                        );
+                      }}
                     />
                   </div>
                   <div className="cashier-payment-amount">
@@ -845,15 +870,17 @@ export default function CashierAccounting() {
               {payError && (
                 <div role="alert" className="alert alert-danger">
                   {label(payError)}{" "}
-                  <button
-                    className="btn btn-outline-dark btn-sm"
-                    onClick={() => {
-                      setModal(null);
-                      loadMonth();
-                    }}
-                  >
-                    {label("refresh")}
-                  </button>
+                  {payError !== "paymentDateInFuture" && (
+                    <button
+                      className="btn btn-outline-dark btn-sm"
+                      onClick={() => {
+                        setModal(null);
+                        loadMonth();
+                      }}
+                    >
+                      {label("refresh")}
+                    </button>
+                  )}
                 </div>
               )}
               <div className="table-responsive">
