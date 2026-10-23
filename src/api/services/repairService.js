@@ -17,8 +17,8 @@ export const getRepairDetails = async ({ condominiumId, repairId }) => {
     return data;
 };
 
-export const addRepairExpense = async ({ condominiumId, repairId, name, value, documentNumber, documentDate }) => {
-    const { data } = await api.post(`/management/condominiums/${condominiumId}/repairs/${repairId}/expenses`, { name, value, documentNumber, documentDate });
+export const addRepairExpense = async ({ condominiumId, repairId, name, value, documentNumber, documentDate, createReceipt = false }) => {
+    const { data } = await api.post(`/management/condominiums/${condominiumId}/repairs/${repairId}/expenses`, { name, value, documentNumber, documentDate, createReceipt });
     return data;
 };
 

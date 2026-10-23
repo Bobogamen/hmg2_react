@@ -10,6 +10,11 @@ export const getCashierFinance = async (condominiumId, monthId) => {
   return data;
 };
 
+export const getCashierReceipts = async (condominiumId, monthId) => {
+  const { data } = await api.get(`/cashier/condominium/${condominiumId}/months/${monthId}/receipts`);
+  return data;
+};
+
 export const saveCashierFinanceEntry = async ({ condominiumId, monthId, mode, billId, ...entry }) => {
   const suffix = mode === "bill" ? `bills/${billId}/payments` : mode === "income" ? "incomes" : "expenses";
   const { data } = await api.post(`/cashier/condominium/${condominiumId}/months/${monthId}/${suffix}`, entry);

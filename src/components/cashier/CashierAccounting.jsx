@@ -5,12 +5,14 @@ import FeeLabel from "../../utils/FeeLabel";
 import { Link, useParams } from "react-router-dom";
 import { Modal, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { Bounce, toast } from "react-toastify";
 import {
   getCashierMonths,
   getCashierMonth,
   payCashierHomeFees,
   getCashierFinance,
   getCashierDebtors,
+  getCashierReceipts,
 } from "../../api/services/cashierService";
 import { useLoading } from "../../loader/LoadingContext";
 import { useUser } from "../../user/UserContext";
@@ -29,6 +31,7 @@ import {
   LockKeyhole,
   LockKeyholeOpen,
   CircleDollarSign,
+  Summary,
 } from "lucide-react";
 import "./CashierAccounting.css";
 import "./CashierManagement.css";
@@ -76,6 +79,11 @@ export default function CashierAccounting() {
   const [debtors, setDebtors] = useState(null);
   const [debtorsError, setDebtorsError] = useState(false);
   const [corrections, setCorrections] = useState({});
+  const [receiptsModal, setReceiptsModal] = useState(false);
+  const [receiptEditor, setReceiptEditor] = useState(null);
+  const [receipts, setReceipts] = useState([]);
+  const [receiptsLoading, setReceiptsLoading] = useState(false);
+  const [receiptsError, setReceiptsError] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("allHomes");
   const submitting = useRef(false);
@@ -88,6 +96,18 @@ export default function CashierAccounting() {
   const manager = user?.roles?.some((role) =>
     ["MANAGER", "ADMIN"].includes(role),
   );
+  const openReceipts = async () => {
+    setReceiptsModal(true);
+    setReceiptsLoading(true);
+    setReceiptsError(false);
+    try {
+      setReceipts(await getCashierReceipts(condominiumId, monthId));
+    } catch {
+      setReceiptsError(true);
+    } finally {
+      setReceiptsLoading(false);
+    }
+  };
   const money = (value) =>
     "€ " +
     new Intl.NumberFormat(i18n.language, {
@@ -102,6 +122,64 @@ export default function CashierAccounting() {
       year: "numeric",
     }).format(new Date(month.year, month.number - 1, 1));
   const label = (key) => t(`cashierAccounting.${key}`);
+  const condominiumAddress = () =>
+    [
+      overview?.city || overview?.condominium?.city,
+      overview?.address || overview?.condominium?.address,
+    ]
+      .filter(Boolean)
+      .join(", ");
+  const editReceipt = (receipt) =>
+    setReceiptEditor({
+      ...receipt,
+      recipient: receipt.recipient || receipt.payee || "",
+      recipientIdentifier: receipt.recipientIdentifier || "",
+      description: receipt.description || "",
+      address: receipt.address ?? condominiumAddress(),
+    });
+  const printReceipt = (receipt) => {
+    const printWindow = window.open(
+      "about:blank",
+      "_blank",
+      "width=700,height=600",
+    );
+    if (!printWindow) return;
+    const isIncome = receipt.type === "INCOME";
+    const isExpense = receipt.type === "EXPENSE";
+    const title = t(
+      isIncome
+        ? "dashboard:cashierAccounting.incomeOrder"
+        : "dashboard:cashierAccounting.expenseOrder",
+    );
+    const escapeHtml = (value) =>
+      String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    const building =
+      overview?.name || overview?.condominium?.name || t("cashier");
+    const printDate = date(receipt.createdOn);
+    const address = receipt.address ?? condominiumAddress();
+    const basis = [receipt.name, receipt.description]
+      .filter(Boolean)
+      .map(escapeHtml)
+      .join("<br>");
+    const payeeRow = isExpense
+      ? `<div class="row payee-row"><strong>${escapeHtml(t("dashboard:cashierAccounting.payee"))}</strong><span>${escapeHtml(receipt.recipient || receipt.payee || "")}</span><strong>${escapeHtml(label("recipientIdentifier"))}</strong><span>${escapeHtml(receipt.recipientIdentifier || "")}</span></div>`
+      : "";
+    const paidBySignature = isExpense
+      ? `<div class="signature">${escapeHtml(t("dashboard:cashierAccounting.paidBy"))}<small>${escapeHtml(t("dashboard:cashierAccounting.signature"))}</small></div>`
+      : "";
+    printWindow.document
+      .write(`<!doctype html><html lang="${escapeHtml(i18n.language)}"><head><meta charset="utf-8"><title>${escapeHtml(title)} ${escapeHtml(receipt.receiptNumber)}</title><style>
+      @page{size:A5 portrait;margin:10mm}*{box-sizing:border-box}body{margin:0;color:#111;font-family:Arial,sans-serif;font-size:12px}.receipt{max-width:660px;margin:0 auto;border:1px solid #111}.organization{display:grid;grid-template-columns:120px 1fr}.organization strong,.organization span{padding:7px;border:1px solid #111}.organization span{text-align:center;font-size:14px}.organization small{font-size:11px;font-weight:normal}.heading{display:grid;grid-template-columns:1fr 32px 70px 55px 85px;align-items:center;border:1px solid #111}.heading h1{margin:0;padding:7px;font-size:16px}.heading span,.heading b{padding:7px;border-left:1px solid #111;text-align:center}.heading span{font-weight:bold}.row{display:grid;grid-template-columns:120px 1fr;border:1px solid #111;min-height:35px}.row strong,.row span{padding:7px;border-right:1px solid #111}.row span{border-right:0}.row.payee-row{grid-template-columns:120px 1fr 90px 1fr}.row.description{min-height:80px}.amount{display:grid;grid-template-columns:90px 1fr 80px 1fr;border:1px solid #111}.amount>*{padding:7px;border-right:1px solid #111}.amount>*:last-child{border-right:0}.signatures{display:grid;grid-template-columns:repeat(4,1fr);margin-top:12px;border:1px solid #111}.signatures.income-signatures{grid-template-columns:repeat(3,1fr)}.signature{position:relative;min-height:70px;padding:7px 4px;border-right:1px solid #111;font-weight:bold}.signature:last-child{border-right:0}.signature small{position:absolute;right:5px;bottom:4px;font-size:8px;font-weight:normal;color:#444}@media print{.receipt{break-inside:avoid}}
+      </style></head><body><section class="receipt"><div class="organization"><strong>${escapeHtml(t("dashboard:cashierAccounting.organization"))}</strong><span>${escapeHtml(building)}${address ? `<br><small>${escapeHtml(t("dashboard:cashierAccounting.address"))} ${escapeHtml(address)}</small>` : ""}</span></div><div class="heading"><h1>${escapeHtml(title)}</h1><span>#</span><b>${escapeHtml(receipt.receiptNumber)}</b><span>${escapeHtml(label("receiptDate"))}</span><b>${escapeHtml(printDate)}</b></div>${payeeRow}<div class="row description"><strong>${escapeHtml(label("basis"))}</strong><span>${basis}</span></div><div class="amount"><strong>${escapeHtml(label("amount"))}:</strong><span>${escapeHtml(money(receipt.amount))}</span><strong>${escapeHtml(t("dashboard:cashierAccounting.currency"))}:</strong><span>EUR</span></div><div class="signatures${isExpense ? "" : " income-signatures"}"><div class="signature">${escapeHtml(t("dashboard:cashierAccounting.accountant"))}<small>${escapeHtml(t("dashboard:cashierAccounting.signature"))}</small></div><div class="signature">${escapeHtml(t("dashboard:cashierAccounting.manager"))}<small>${escapeHtml(t("dashboard:cashierAccounting.signature"))}</small></div>${paidBySignature}<div class="signature">${escapeHtml(t("dashboard:cashierAccounting.receivedBy"))}<small>${escapeHtml(t("dashboard:cashierAccounting.signature"))}</small></div></div></section></body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
 
   const loadOverview = useCallback(async () => {
     const requestId = ++overviewRequests.current;
@@ -223,6 +301,9 @@ export default function CashierAccounting() {
       if (correctionPayload) paymentArguments.push(correctionPayload);
       const data = await payCashierHomeFees(...paymentArguments);
       if (requestId === requests.current) {
+        toast.success(t("dashboard:cashierAccounting.paymentSuccess"), {
+          transition: Bounce,
+        });
         setDetails(data);
         setModal(null);
         try {
@@ -260,6 +341,9 @@ export default function CashierAccounting() {
             ? reason
             : "paymentError",
       );
+      toast.error(t("dashboard:cashierAccounting.paymentError"), {
+        transition: Bounce,
+      });
     } finally {
       submitting.current = false;
       setSaving(false);
@@ -534,11 +618,242 @@ export default function CashierAccounting() {
                 reportReady ? "monthlyReport" : "reportAfterClose",
               )}
             >
-              <ReceiptText size={20} aria-hidden="true" />
+              <Summary size={20} aria-hidden="true" />
             </Link>
+          )}
+          {details && (
+            <button
+              type="button"
+              className="btn btn-outline-success btn-sm cashier-report-link d-inline-flex align-items-center justify-content-center"
+              onClick={openReceipts}
+              title={label("receipts")}
+              aria-label={label("receipts")}
+            >
+              <ReceiptText size={20} aria-hidden="true" />
+            </button>
           )}
         </div>
       )}
+      <Modal
+        show={receiptsModal}
+        onHide={() => setReceiptsModal(false)}
+        centered
+        aria-labelledby="cashier-receipts-title"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="cashier-receipts-title" className="fw-bold">
+            {label("receipts")} {details?.month && monthName(details.month)}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {receiptsLoading && <Spinner animation="border" size="sm" />}
+          {receiptsError && (
+            <div className="alert alert-danger mb-0">
+              {label("receiptsError")}
+            </div>
+          )}
+          {!receiptsLoading && !receiptsError && !receipts.length && (
+            <p className="text-muted mb-0">{label("noReceipts")}</p>
+          )}
+          {!receiptsLoading && !receiptsError && receipts.length > 0 && (
+            <div className="table-responsive">
+              <table className="table table-sm table-bordered mb-0">
+                <thead>
+                  <tr>
+                    <th>{label("receiptNumber")}</th>
+                    <th>{label("receiptName")}</th>
+                    <th>{label("receiptType")}</th>
+                    <th>{label("amount")}</th>
+                    <th>{label("receiptDate")}</th>
+                    <th aria-label={label("printReceipt")} />
+                  </tr>
+                </thead>
+                <tbody>
+                  {receipts.map((receipt) => (
+                    <tr key={receipt.id}>
+                      <td>{receipt.receiptNumber}</td>
+                      <td>{receipt.name || "—"}</td>
+                      <td>
+                        {receipt.type === "INCOME"
+                          ? t("dashboard:cashierFinance.income")
+                          : t("dashboard:cashierFinance.expense")}
+                      </td>
+                      <td>{money(receipt.amount)}</td>
+                      <td>{date(receipt.createdOn)}</td>
+                      <td className="text-center">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => editReceipt(receipt)}
+                          title={label("printReceipt")}
+                          aria-label={label("printReceipt")}
+                        >
+                          <Printer size={16} aria-hidden="true" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setReceiptsModal(false)}>
+            {t("common:close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal
+        show={Boolean(receiptEditor)}
+        onHide={() => setReceiptEditor(null)}
+        centered
+        aria-labelledby="cashier-receipt-editor-title"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title
+            id="cashier-receipt-editor-title"
+            className="fs-5 fw-bold"
+          >
+            {label("editReceipt")} {receiptEditor?.receiptNumber}
+          </Modal.Title>
+        </Modal.Header>
+        {receiptEditor && (
+          <>
+            <Modal.Body>
+              <div className="mb-3">
+                <label className="form-label" htmlFor="cashier-receipt-name">
+                  {receiptEditor.type === "INCOME"
+                    ? label("basis")
+                    : label("receiptName")}
+                </label>
+                <input
+                  id="cashier-receipt-name"
+                  className="form-control"
+                  value={receiptEditor.name || ""}
+                  readOnly
+                />
+              </div>
+              {receiptEditor.type === "EXPENSE" && (
+                <>
+                  <div className="mb-3">
+                    <label className="form-label" htmlFor="cashier-receipt-payee">
+                      {t("dashboard:cashierFinance.receiptPayee")}
+                    </label>
+                    <input
+                      id="cashier-receipt-payee"
+                      className="form-control"
+                      maxLength={150}
+                      value={receiptEditor.recipient}
+                      onChange={(event) =>
+                        setReceiptEditor((current) => ({
+                          ...current,
+                          recipient: event.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      className="form-label"
+                      htmlFor="cashier-receipt-identifier"
+                    >
+                      {label("recipientIdentifier")}
+                    </label>
+                    <input
+                      id="cashier-receipt-identifier"
+                      className="form-control"
+                      maxLength={20}
+                      value={receiptEditor.recipientIdentifier}
+                      onChange={(event) =>
+                        setReceiptEditor((current) => ({
+                          ...current,
+                          recipientIdentifier: event.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      className="form-label"
+                      htmlFor="cashier-receipt-description"
+                    >
+                      {t("dashboard:cashierFinance.receiptDescription")}
+                    </label>
+                    <textarea
+                      id="cashier-receipt-description"
+                      className="form-control"
+                      maxLength={500}
+                      rows={3}
+                      value={receiptEditor.description}
+                      onChange={(event) =>
+                        setReceiptEditor((current) => ({
+                          ...current,
+                          description: event.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </>
+              )}
+              {receiptEditor.type === "INCOME" && (
+                <div className="mb-3">
+                  <label
+                    className="form-label"
+                    htmlFor="cashier-receipt-description"
+                  >
+                    {t("dashboard:cashierFinance.receiptDescription")}
+                  </label>
+                  <textarea
+                    id="cashier-receipt-description"
+                    className="form-control"
+                    maxLength={500}
+                    rows={3}
+                    value={receiptEditor.description}
+                    onChange={(event) =>
+                      setReceiptEditor((current) => ({
+                        ...current,
+                        description: event.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              )}
+              <div>
+                <label className="form-label" htmlFor="cashier-receipt-address">
+                  {label("address")}
+                </label>
+                <input
+                  id="cashier-receipt-address"
+                  className="form-control"
+                  maxLength={250}
+                  value={receiptEditor.address}
+                  readOnly
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setReceiptEditor(null)}
+              >
+                {t("common:close")}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  const receiptToPrint = receiptEditor;
+                  setReceiptEditor(null);
+                  printReceipt(receiptToPrint);
+                }}
+              >
+                <Printer size={16} className="me-1" aria-hidden="true" />
+                {label("printReceipt")}
+              </Button>
+            </Modal.Footer>
+          </>
+        )}
+      </Modal>
       {overview?.months.length > 0 && !currentMonth && (
         <p className="alert alert-warning">{label("currentMonthMissing")}</p>
       )}

@@ -28,25 +28,58 @@ function EntryTable({ entries, label, money, date, empty }) {
           </tr>
         </thead>
         <tbody>
-          {entries.map((entry) => (
-            <tr
-              key={`${entry.kind || "income"}-${entry.id}`}
-              className={entry.kind ? `cashier-entry-${entry.kind}` : undefined}
-            >
-              <td data-label={label("name")}>
-                {entry.kind === "bill" ? <em>{entry.name}</em> : entry.name}
-              </td>
-              <td data-label={label("amount")} className="fw-semibold">
-                {money(entry.value)}
-              </td>
-              <td data-label={label("documentNumber")}>
-                {entry.documentNumber}
-              </td>
-              <td data-label={label("documentDate")}>
-                {date(entry.documentDate)}
-              </td>
-            </tr>
-          ))}
+          {entries.map((entry) => {
+            const generatedReceiptNumber =
+              entry.receiptNumber ||
+              entry.generatedReceiptNumber ||
+              entry.systemGeneratedNumber ||
+              entry.receipt?.receiptNumber ||
+              entry.receipt?.number;
+            const documentNumber =
+              generatedReceiptNumber || entry.documentNumber;
+            const systemGeneratedNumber =
+              typeof documentNumber === "string" && /^HMG\d+$/i.test(documentNumber);
+            const systemGenerated = Boolean(
+              documentNumber &&
+                (systemGeneratedNumber ||
+                  generatedReceiptNumber ||
+                  entry.createReceipt ||
+                  entry.receiptGenerated ||
+                  entry.receiptCreated ||
+                  entry.hasReceipt ||
+                  entry.isReceipt ||
+                  entry.isSystemGenerated ||
+                  entry.documentNumberGenerated),
+            );
+            return (
+              <tr
+                key={`${entry.kind || "income"}-${entry.id}`}
+                className={entry.kind ? `cashier-entry-${entry.kind}` : undefined}
+              >
+                <td data-label={label("name")}>
+                  {entry.kind === "bill" ? <em>{entry.name}</em> : entry.name}
+                </td>
+                <td data-label={label("amount")} className="fw-semibold">
+                  {money(entry.value)}
+                </td>
+                <td data-label={label("documentNumber")}>
+                  {systemGenerated && (
+                    <span
+                      role="img"
+                      aria-label={label("systemGeneratedReceipt")}
+                      title={label("systemGeneratedReceipt")}
+                    >
+                      🧾{" "}
+                    </span>
+                  )}
+                  {documentNumber}
+                </td>
+                <td data-label={label("documentDate")}>
+                  {date(entry.documentDate)}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

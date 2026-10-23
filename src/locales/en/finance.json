@@ -247,7 +247,13 @@
     "noHomes": "No homes are assigned to this repair.",
     "homeReference": "Home #{{id}}",
     "retry": "Try again",
-    "loading": "Loading repairs"
+    "loading": "Loading repairs",
+    "createReceipt": "Create receipt",
+    "receiptInfo": {
+      "open": "Receipt information",
+      "title": "Create receipt",
+      "description": "When selected, a receipt is created for this expense. It receives an automatic sequential number that cannot be changed."
+    }
   },
   "homeRepairs": {
     "empty": "No repairs are assigned to this home.",

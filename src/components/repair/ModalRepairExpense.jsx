@@ -7,12 +7,14 @@ import { format } from "date-fns";
 import { addRepairExpense } from "../../api/services/repairService";
 import { useLoading } from "../../loader/LoadingContext";
 import renderFieldErrors from "../../utils/renderFieldErrors";
+import ReceiptOption from "../common/ReceiptOption";
 
 const initialState = {
   name: "",
   value: "",
   documentNumber: "",
   documentDate: "",
+  createReceipt: false,
 };
 
 const ModalRepairExpense = ({
@@ -70,6 +72,7 @@ const ModalRepairExpense = ({
         value: expenseData.value,
         documentNumber: expenseData.documentNumber.trim(),
         documentDate: expenseData.documentDate,
+        createReceipt: expenseData.createReceipt,
       });
 
       resetForm();
@@ -190,6 +193,7 @@ const ModalRepairExpense = ({
                   value={expenseData.documentNumber}
                   onChange={handleChange}
                   placeholder={t("finance:repairDetails.documentNumber")}
+                  disabled={expenseData.createReceipt}
                 />
 
                 {renderFieldErrors(errors, "documentNumber", t)}
@@ -211,6 +215,18 @@ const ModalRepairExpense = ({
 
                 {renderFieldErrors(errors, "documentDate", t)}
               </div>
+              <ReceiptOption
+                id="repair-expense-create-receipt"
+                checked={expenseData.createReceipt}
+                onChange={(createReceipt) =>
+                  setExpenseData((current) => ({
+                    ...current,
+                    createReceipt,
+                    documentNumber: createReceipt ? "" : current.documentNumber,
+                  }))
+                }
+                translationKey="finance:repairDetails"
+              />
             </div>
 
             <button type="submit" className="authentication-button mt-3 m-auto">

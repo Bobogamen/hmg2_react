@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { saveCashierFinanceEntry } from "../../api/services/cashierService";
 import renderFieldErrors from "../../utils/renderFieldErrors";
+import ReceiptOption from "../common/ReceiptOption";
 import "./CashierManagement.css";
 
 const requestId = () => {
@@ -35,6 +36,7 @@ export default function ModalCashierFinance({
     value: "",
     documentNumber: "",
     documentDate: format(new Date(), "yyyy-MM-dd"),
+    createReceipt: false,
   });
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
@@ -80,6 +82,7 @@ export default function ModalCashierFinance({
       value: data.value,
       documentNumber: data.documentNumber.trim(),
       documentDate: data.documentDate,
+      createReceipt: mode !== "bill" && data.createReceipt,
     };
     try {
       const result = await saveCashierFinanceEntry(payload);
@@ -220,6 +223,7 @@ export default function ModalCashierFinance({
                   maxLength={30}
                   value={data.documentNumber}
                   onChange={change}
+                  disabled={data.createReceipt}
                 />
                 {renderFieldErrors(errors, "documentNumber", t)}
               </div>
@@ -238,6 +242,22 @@ export default function ModalCashierFinance({
                 {renderFieldErrors(errors, "documentDate", t)}
               </div>
             </div>
+            {mode !== "bill" && (
+              <>
+                <ReceiptOption
+                  id="cashier-finance-create-receipt"
+                  checked={data.createReceipt}
+                  onChange={(createReceipt) =>
+                    setData((current) => ({
+                      ...current,
+                      createReceipt,
+                      documentNumber: createReceipt ? "" : current.documentNumber,
+                    }))
+                  }
+                  translationKey="dashboard:cashierFinance"
+                />
+              </>
+            )}
           </fieldset>
           {error && (
             <div className="alert alert-danger mt-3 mb-0" role="alert">
